@@ -1,6 +1,8 @@
-# Fox Dining Project
+# DevOps Project
 
-For this project you will build a (simple) restaurant management and billing system.
+For this project you will build a (simple) application with user management and perform various Dev - Ops activities with it.
+
+You can check sample project to get inspiration for your application:
 
 See [PROJECT](PROJECT.md)
 
