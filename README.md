@@ -6,13 +6,12 @@ You can check sample project to get inspiration for your application:
 
 See [PROJECT](PROJECT.md)
 
-- [Fox Dining Project](#fox-dining-project)
-  - [Dependencies](#dependencies)
-  - [Development rules:](#development-rules)
-  - [Processes:](#processes)
-  - [Useful links](#useful-links)
-  - [Git Workflow](#git-workflow)
-  - [Material Review](#material-review)
+- [Dependencies](#dependencies)
+- [Development rules:](#development-rules)
+- [Processes:](#processes)
+- [Useful links](#useful-links)
+- [Git Workflow](#git-workflow)
+- [Material Review](#material-review)
 
 ## Dependencies
 
