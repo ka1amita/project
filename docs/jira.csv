@@ -1,0 +1,2267 @@
+Summary,Issue key,Issue id,Issue Type,Status,Project key,Project name,Project type,Project lead,Project lead id,Project description,Priority,Resolution,Assignee,Assignee Id,Reporter,Reporter Id,Creator,Creator Id,Created,Updated,Last Viewed,Resolved,Due date,Votes,Description,Environment,Watchers,Watchers Id,Original estimate,Remaining Estimate,Time Spent,Work Ratio,Σ Original Estimate,Σ Remaining Estimate,Σ Time Spent,Security Level,Attachment,Custom field (Development),Custom field (Issue color),Custom field (Rank),Custom field (Start date),Custom field (Story point estimate),Parent,Parent summary,Status Category
+Development Environment,FDP-1,14461,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:10 PM,13/Jun/22 1:10 PM,15/Jun/22 3:08 AM,,,0,All team members must have their development environment set and ready to use,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00upp:,,,,,To Do
+  Studying Materials,FDP-2,14462,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:12 PM,13/Jun/22 1:12 PM,15/Jun/22 3:08 AM,,,0,All team members should be either familiar with or review (and learn) the materials and concepts required to contribute in a substantial manner to the project,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00upx:,,,,,To Do
+White Label,FDP-3,14463,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:15 PM,13/Jun/22 1:15 PM,15/Jun/22 3:08 AM,,,0,"Develop a (reusable) Java library for user management featuring users, roles, permissions and teams and a white-label solution for billing and booking, which will then be applied to build a restuarant specific solution",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00uq5:,,,,,To Do
+Fox Dining,FDP-4,14464,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:17 PM,13/Jun/22 1:17 PM,15/Jun/22 1:59 AM,,,0,"The restaurant management system (Fox Dining) will provides features to allow ‘hrs' to manage users (staff), ‘managers’ to manage menus, meals, drinks, ‘waiters’ to manage orders (bills/checks), etc.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00uqd:,,,,,To Do
+CI/CD,FDP-5,14465,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:20 PM,13/Jun/22 1:20 PM,15/Jun/22 3:08 AM,,,0,Basic CI/CD should be setup for the project to create automatic builds after every merged pull request (into the {{production}} branch). The process should include running all tests and the Checkstyle,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00uql:,,,,,To Do
+Frontend,FDP-6,14466,Epic,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:22 PM,13/Jun/22 1:22 PM,15/Jun/22 3:08 AM,,,0,"Time permitting build a basic React.js application to provide clients (frontend) for the restaurant manager, for the waiting staff and for customers ",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},purple,0|i00uqt:,,,,,To Do
+Code base,FDP-7,14467,Task,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:25 PM,13/Jun/22 2:17 PM,15/Jun/22 3:08 AM,,,0,"* check out the code from github (you’ll find your repository URL in discord)
+* make sure to switch to the {{develop}} branch (it should be set as the repo default)
+* open the project in IntelliJ (use the {{backend}} folder as the project’s root folder)
+* build the application locally and make sure it works (there are no issues)
+** you’ll need to run a local MySQL database server and provide the credentials in a {{.env}} file (see {{.env.sample}}). You can use either MySQL Workbench or {{Docker}} container",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00ur1:,,,14461,Development Environment,To Do
+JIRA,FDP-8,14468,Task,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:26 PM,13/Jun/22 2:16 PM,15/Jun/22 3:08 AM,,,0,"Create Jira accounts and familiarize yourselfes with the layout, tools and workflows (sprint, scrum, backlog, etc.)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00ur9:,,,14461,Development Environment,To Do
+Google Java Format plugin,FDP-9,14469,Task,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:30 PM,13/Jun/22 2:16 PM,15/Jun/22 3:08 AM,,,0,"Install and enable the Google Java Format plugin in IntelliJ - [https://plugins.jetbrains.com/plugin/8527-google-java-format|https://plugins.jetbrains.com/plugin/8527-google-java-format|smart-link]. You’ll find the {{intellij-java-google-style.xml}} in the docs folder of the project repository\!
+
+!google-java-format-plugin.png|width=675,height=525!
+
+Have a look at [https://stackoverflow.com/questions/42979700/how-to-configure-google-java-code-formatter-in-intellij-idea-17|https://stackoverflow.com/questions/42979700/how-to-configure-google-java-code-formatter-in-intellij-idea-17|smart-link]  ",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,13/Jun/22 1:30 PM;ug:13f86432-18ce-4973-9628-d0e1a0bec07d;google-java-format-plugin.png;https://greenfoxacademy.atlassian.net/secure/attachment/10167/google-java-format-plugin.png,{},,0|i00urh:,,,14461,Development Environment,To Do
+Common package,FDP-10,14470,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:45 PM,13/Jun/22 3:53 PM,15/Jun/22 3:04 AM,,,0,"Create the {{com.gfa.common.dtos}} package and add the {{dtos}} which will be used throughout the application;
+
+* {{RequestDto}}
+** empty abstract class will server as the superclass for all request dto’s
+* {{ResponseDto}}
+** empty abstract class will server as the superclass for all response dto’s
+** all REST endpoint methods should be set to return {{ResponseEntity<ResponseDto>}}
+* {{IdRequestDto}}
+** A request dto containing an {{id}} value; make sure to use inheritance correctly (e.g. {{IdRequestDto extends RequestDto}})
+** {{id}} - {{Long}}
+* {{AmountRequestDto}}
+** A request dto containing an {{id}} and an {{amount}} values; make sure to use inheritance correctly (e.g. {{IdRequestDto extends IdRequestDto}})
+** {{id}} - {{Long}}
+** {{amount}} - {{Integer}}
+* {{ErrorResponseDto}}
+** A responso dto containing an error message
+** {{message}} - {{String}}
+* {{EmailRequestDto}}
+** A request dto containing an email address
+** {{email}} - {{String}}
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00urp:,,,14463,White Label,To Do
+User model and entity,FDP-11,14471,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 1:59 PM,13/Jun/22 2:16 PM,15/Jun/22 3:05 AM,,,0,"The user model/entity should be in the {{com.gfa.users.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* username (unique, not null)
+* email (unique, not null)
+* password (hashed \[bcrypt], not null)
+* verified_at (datetime/timestamp, default null)
+* verification_token (unique, not null)
+* verification_token_expires_at (datetime/timestamp, not null)
+* forgotten_password_token (unique, can be null)
+* forgotten_password_token_expires_at (datetime/timestamp, can be null)
+* created_at (datetime/timestamp, not null)
+* permissions (N:M)
+* roles (N:M)
+* teams (N:M)
+
+h3. Advanced Features:
+
+Adding features such as the 2FA and/or soft delete will require additional properties to the added to the model (e.g. mfa, secret, deleted, etc.)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00urx:,,,14463,White Label,To Do
+Role model and entity,FDP-12,14472,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 2:09 PM,13/Jun/22 2:16 PM,15/Jun/22 12:17 AM,,,0,"The role model/entity should be in the {{com.gfa.users.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* ability (unique, not null)
+* users (N:M)
+* permissions (N:M)
+* teams (N:M)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00us5:,,,14463,White Label,To Do
+Permission model and entity,FDP-13,14473,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 2:15 PM,13/Jun/22 2:16 PM,15/Jun/22 3:08 AM,,,0,"The permission model/entity should be in the {{com.gfa.users.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* ability (unique, not null)
+* users (N:M)
+* roles (N:M)
+* teams (N:M)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00usd:,,,14463,White Label,To Do
+Team model and entity,FDP-14,14474,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 2:15 PM,13/Jun/22 2:16 PM,15/Jun/22 3:08 AM,,,0,"The team model/entity should be in the {{com.gfa.users.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* name (unique, not null)
+* users (N:M)
+* roles (N:M)
+* permissions (N:M)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00usl:,,,14463,White Label,To Do
+User registration,FDP-15,14558,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 9:50 PM,13/Jun/22 10:08 PM,15/Jun/22 3:08 AM,,,0,"h2. Endpoint
+
+{{POST /register}}
+
+The URI above should be relative to the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/register}}, for MemberController the URI could be {{/members/register}}
+
+To register a new user *_username_*, *_email_*, and *_password_* must be provided.
+
+h3. Data Validation:
+
+* *username*: required, may not be empty, must be at least 4 characters long, must be unique
+* *email*: required, may not be empty, must be unique, must be a valid email address (see email validation in Java for example [here|https://kodejava.org/how-do-i-validate-email-address-using-java-mail-api/])
+* *password*: must be at least 8 characters long
+
+Optional (Bonus): make the validation rules above configurable 
+
+h3. Sample Request:
+
+{code:json}{
+ ""username"": ""johndoe"",
+ ""email"": ""john.doe@gmail.com"",
+ ""password"": ""P4$$w0rd""
+}{code}
+
+h3. Sample Response:
+
+{code:json}{
+  ""status"": ""ok""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Username already exists!""
+}{code}
+
+h4. Scenarios
+
+# Request with an empty username results in “Username is required” error - {{400}}
+# Request with an empty password results in “Password is required” error - {{400}}
+# Request with an empty email results in “Email is required” error - {{400}}
+# Request with an existing username results in “Username is already taken” error - {{409}}
+# Request with a username shorter than 4 characters results in “Username must be at least 4 characters long” error - {{400}}
+# Request with a password shorter than 8 characters results in “Password must be at least 8 characters long” error - {{400}}
+# Request with an invalid email results in “Invalid email” error - {{400}}
+# Request with valid data but the creation of a new user fails returns the “Unknown error” message - {{400}}
+# Request with valid data which results in a successful creation of a new user returns a “status” message “ok” - {{201}} . When a new user is created the {{`verified_at`}} value is {{null}}, the {{verification_token}} is  set to a random secure value (use {{java.security.SecureRandom}}) and the {{verification_token_expires_at}} is set to 1 hour (this value should be configurable)\!
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. Furthemore write a test to create a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vb9:,,,14463,White Label,To Do
+Request validation,FDP-16,14559,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 9:53 PM,13/Jun/22 9:53 PM,15/Jun/22 3:08 AM,,,0,"Validate Registration request in the {{UserService}}, use global exception handling. Research {{@RestControllerAdvice}} (e.g. [here|https://www.bezkoder.com/spring-boot-restcontrolleradvice/]) and use it to separate validation and exception handling",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vbh:,,,14463,White Label,To Do
+User email verification,FDP-17,14560,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 9:57 PM,13/Jun/22 10:24 PM,15/Jun/22 3:08 AM,,,0,"h3. Endpoint
+
+{{GET /email/verify/{token}}}
+
+The URI above should be relative to the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/email/verify/{token}}}, for MemberController the URI could be {{/members/email/verify/{token}}}
+
+Email is sent to specified email address and registration has to be confirmed by clicking on provided link that contains unique registration token within 1 hour of registration. If registration is not finished within 1 hour a new token has to be regenerated via the {{/email/verify/resend}} endpoint.
+
+h3. Sample Response:
+
+{code:json}{
+  ""status"": ""ok""
+}{code}
+
+When the email has been verified the User’s {{`verified_at`}} field should be set to the current datetime/timestamp and the {{verification_token_expires_at}} should be set to 0
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Token expired""
+}{code}
+
+h3.  Scenarios
+
+# The verification token is invalid (does not match any token in the database) results in “Invalid token” error - {{400}}
+# The verification token is valid but the email has already been verified results in “Email already verified” error - {{400}}
+# The verification link is clicked after the expiration period which results in the “Token expired\!” error - {{400}}
+# The verification link is clicked within the expiration period (1h) and the email address is verified results in the “ok” status message - {{200}}
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. 
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vbp:,,,14463,White Label,To Do
+Resend email verification,FDP-18,14561,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 10:08 PM,13/Jun/22 10:24 PM,15/Jun/22 3:08 AM,,,0,"h3. Endpoint
+
+{{GET /email/verify/resend}}
+
+The URI above should be relative to the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/email/verify/resend}}, for MemberController the URI could be {{/members/email/verify/resend}}
+
+Email is sent to specified email address and registration has to be confirmed by clicking on provided link that contains unique registration token within 1 hour of registration. If registration is not finished within 1 hour a new token has to be regenerated via the {{/email/verify/resend}} endpoint.
+
+h3. Data Validation:
+
+* *email*: required, may not be empty, must be unique, must be a valid email address (see email validation in Java for example [here|https://kodejava.org/how-do-i-validate-email-address-using-java-mail-api/])
+
+h3. Sample Request:
+
+{code:json}{
+ ""email"": ""john.doe@gmail.com""
+}{code}
+
+h3. Sample Response:
+
+{code:json}{
+  ""status"": ""ok""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Email already verified!""
+}{code}
+
+h3. Scenarios:
+
+# The specified email address is already verified results in “Email already verified\!” error - {{400}}
+# The specified email address is invalid results in “Invalid email” error - {{400}}
+# The specified email address exists and is not yet verified results in “ok” status message (and the verification email is resent) - {{200}}
+# The specified email address does not exist results in “ok” status message (but no email is sent - obviously) - {{200}}
+
+Please note that the #4 is a security feature to prevent malicious users from determining which email addresses (users) exist in the system. For an even improved security, the code should actually send an email to a “random” (or designated) email address so that it takes roughly the same amount of time to return the {{200}} response regardless of whether the specified email exists in the system (otherwise, a malicious user could use the response timing to determine if a given email is in the database or not). 
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. 
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vbx:,,,14463,White Label,To Do
+Reset password,FDP-19,14562,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 10:24 PM,13/Jun/22 10:25 PM,15/Jun/22 3:08 AM,,,0,"h3. Endpoint
+
+{{POST /reset-password}}
+
+The URI above should be relative to the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/reset-password}}, for MemberController the URI could be {{/members/reset-password}}
+
+To reset a password the user must provide a registered (and verified) *_email address_*. A password reset link will then be sent to the provided email. The reset token is valid for 1 hour (configurable). When the reset token expires a new one has to be generated via the this endpoint.
+
+h3. Data Validation:
+
+* *email*: required, may not be empty, must be unique, must be a valid email address (see email validation in Java for example [here|https://kodejava.org/how-do-i-validate-email-address-using-java-mail-api/])
+
+h3. Sample Request:
+
+{code:json}{
+ ""email"": ""john.doe@gmail.com""
+}{code}
+
+h3. Sample Response:
+
+{code:json}{
+  ""status"": ""ok""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Invalid email!""
+}{code}
+
+h3. Scenarios:
+
+# Trying to reset a password for an unverfied email address results in “Unverified email\!” error - {{400}}
+# The specified email address is invalid results in “Invalid email” error - {{400}}
+# A request with an existing (and verified) email address results in a sending an email to the specified email address with an link including the reset token (which expires in 1 hour). The “ok” status message is returned as the response - {{200}}
+# The specified email address does not exist results in “ok” status message (but no email is sent - obviously) - {{200}}
+
+Please note that the #4 is a security feature to prevent malicious users from determining which email addresses (users) exist in the system. For an even improved security, the code should actually send an email to a “random” (or designated) email address so that it takes roughly the same amount of time to return the {{200}} response regardless of whether the specified email exists in the system (otherwise, a malicious user could use the response timing to determine if a given email is in the database or not). 
+
+h3. Reset Password Endpoint
+
+{{POST /reset-password/{token}}}
+
+The URI above should be relative to the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/reset-password/{token}}}, for MemberController the URI could be {{/members/reset-password/{token}}}
+
+The link above is emailed when a user requests to reset his or her password. In typical web application this endpoint would display an html form into which the user would enter the new password. Since this a back-end REST API project reseting the password will be done by sending a {{POST}} request (with the new password in the body of the request)
+
+h3. Data Validation:
+
+* *password*: must be at least 8 characters long (configurable)
+
+h3. Sample Request:
+
+{code:json}{
+ ""password"": ""N3WP4$$w0rd""
+}{code}
+
+h3. Sample Response:
+
+{code:json}{
+  ""status"": ""ok""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Invalid token""
+}{code}
+
+h3. Scenarios:
+
+# Request with an empty password results in “Password is required” error - {{400}}
+# Request in an invalid token (token not found in the database) results in “Invalid token” error - {{400}}
+# Request in an expired token (1h but configurable) results in “Expired token” error - {{400}}
+# Request with a password shorter than 8 characters results in “Password must be at least 8 characters long” error - {{400}}
+# Request with a valid token and a valid password will result in the user’s password updated to the (hash of the) specified value and the “ok” status message will be returned - {{200}}
+# Request in the same password as currently set should just set the password and return the “ok” status message, i.e. there should be no indication that the password is identical to the one currently set (for security reasons)\! - {{200}}
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. 
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vc5:,,,14463,White Label,To Do
+Default root user,FDP-20,14563,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 10:31 PM,13/Jun/22 10:31 PM,15/Jun/22 3:08 AM,,,0,"Implement a default root user who has all permissions. The root user credentials should be configurable via {{application.properties}}, i.e.
+
+{noformat}root.username=
+root.password=
+root.enabled=
+root.auto_disable={noformat}
+
+The root user shouldn’t require 2FA. Setting {{auto_disable}} to true (default) will automatically disable the root user whenever any other users exist in the system. The root user is a convenience feature, e.g. it can be used to create the first root/manager account, which will then manage all other users.
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. 
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vcd:,,,14463,White Label,To Do
+Two Factor Authentication,FDP-21,14564,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:21 PM,13/Jun/22 11:25 PM,15/Jun/22 3:08 AM,,,0,"Implement two factor authentication (2FA) with Spring security using the Google Authenticator mobile app. Have a look at intro into 2FA & Spring Boot for example at [https://medium.com/javarevisited/spring-boot-two-factor-authentication-78e00aa10176|https://medium.com/javarevisited/spring-boot-two-factor-authentication-78e00aa10176|smart-link]
+
+h3. Testing:
+
+* Create *_unit tests_* which cover both the successful response as well as all error responses. 
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vcl:,,,14463,White Label,To Do
+MailTrap,FDP-22,14565,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:25 PM,13/Jun/22 11:25 PM,15/Jun/22 3:08 AM,,,0,"* Review [http://mailtrap.io|http://mailtrap.io|smart-link]
+* Implement sending (dev) emails from the code using mailtrap in Java - [https://mailtrap.io/blog/sending-email-using-java/|https://mailtrap.io/blog/sending-email-using-java/|smart-link]
+* [https://mvnrepository.com/artifact/com.sun.mail/javax.mail|https://mvnrepository.com/artifact/com.sun.mail/javax.mail|smart-link] 
+* [https://mvnrepository.com/artifact/org.springframework/spring-context-support/|https://mvnrepository.com/artifact/org.springframework/spring-context-support/|smart-link]  
+
+
+
+Make sure to configure the SMTP server using credentials in {{.env}}",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vct:,,,14463,White Label,To Do
+Use Thymeleaf email templates,FDP-23,14566,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:27 PM,13/Jun/22 11:27 PM,15/Jun/22 3:08 AM,,,0,"Use Thymelead template(s) for html emails, e.g. [https://www.thymeleaf.org/doc/articles/springmail.html|https://www.thymeleaf.org/doc/articles/springmail.html|smart-link]",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vd1:,,,14463,White Label,To Do
+User endpoints,FDP-24,14567,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:40 PM,15/Jun/22 12:39 AM,15/Jun/22 12:53 AM,,,0,"Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /users}}
+
+Returns the list of existing users
+
+The URI above should be “overwritten” in the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff}}, for MemberController the URI could be {{/members}}.
+
+h3. Sample Response
+
+{code:json}[
+  {
+    ""id"": 1,
+    ""username"": ""johndoe"",
+    ""email"": ""john.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:00+00:00""
+  },
+  {
+    ""id"": 2,
+    ""username"": ""janedoe"",
+    ""email"": ""jane.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:05+00:00""
+  }
+]{code}
+
+h3. Endpoint
+
+{{POST /users/}}
+
+Create a new user 
+
+The URI above should be “overwritten” in the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/{id}}}, for MemberController the URI could be {{/members/{id}}}.
+
+h3. Sample Request
+
+{code:json}{
+  ""username"": ""mikesmith"",
+  ""email"": ""mike.smith@gmail.com""
+  ""password"": ""P4$$w0rd""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""username"": ""mikesmith"",
+  ""email"": ""mike.smith@gmail.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{code}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Password is required""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing empty username results in “Username is required” error - {{400}}
+# Providing empty email results in “Email is required” error - {{400}}
+# Providing invalid email results in “Invalid email” error - {{400}}
+# Providing empty password results in “Password is required” error - {{400}}
+# Providing a password which is too short results in “Password too short” error - {{400}}
+# Providing a username identical to one already in the database results in “Username already exists” error - {{409}}
+# Providing an email identical to one already in the database results in “Email already exists” error - {{409}}
+# Providing a valid username, email and password creates and stores a new user and returns that user data - {{201}}
+
+h3. Endpoint
+
+{{GET /users/{id}}}
+
+Returns the user data
+
+The URI above should be “overwritten” in the {{@RequestMapping}} specified by the controller class which extends the UserController. For example, for StaffController the URI could be {{/staff/{id}}}, for MemberController the URI could be {{/members/{id}}}.
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""username"": ""mikesmith"",
+  ""email"": ""mike.smith@gmail.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{code}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing user id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing user id which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid user id (which does exist in the database) returns that user data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /users/{id}}}
+
+Updates the specified user
+
+h3. Sample Request
+
+{noformat}{
+  ""email"": ""email@example.com""
+  ""username"": ""new.username""
+  ""password"": ""N3wP4$$w0rd""
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 3,
+  ""username"": ""new.username"",
+  ""email"": ""email@example.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing user id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing user id which deos not exist in the database results in “User not found” error - {{404}}
+# The body of the request should contain either a valid {{email}}, a valid {{usernam}} or a valid {{password}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid user id (which does exist in the database) along with a valid json body returns the updated user data (and updates the corresponding database table columns) - {{200}}
+
+NOTE: If the email is changed as a result of this request the email verification process needs to be repeated, i.e. a verification token is generated, the email verification message is sent to the new email address and the {{verified_at}} value is set to null
+
+h3. Endpoint
+
+{{DELETE /users/{id}}}
+
+Delete the specified user
+
+h3. Sample Response
+
+{noformat}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing user id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing user id which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid user id (which does exist in the database) returns a response with no body (content) and (soft) deletes the user from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{UserRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/users}}|{{index()}}|
+|{{GET}}|{{/users/create}}|{{create()}}|
+|{{POST}}|{{/users/}}|{{store()}}|
+|{{GET}}|{{/users/{id}}}|{{show()}}|
+|{{GET}}|{{/users/{id}/edit}}|{{edit()}}|
+|{{PUT/PATCH}}|{{/users/{id}}}|{{update()}}|
+|{{DELETE}}|{{/users/{id}}}|{{destroy()}}|
+
+Only the {{index()}}, {{store()}}, {{show()}}, {{update()}} and {{destroy()}} methods should be added.  Do NOT add  the {{/users/create}} and {{/users/edit}} endpoints; these are to be used to display the html forms which are then submitted to {{/users/store}} and {{/users/update}} and as such are not needed for purely (backend) REST API
+
+Creating users will be handled in {{/register}}. That endpoint (and the controller which provides that functionality) should just pass on the call to this {{store()}}method.
+
+{code:java}public class RegisterRestController {
+  // ...
+  private final UserRestController userController;
+  
+  @Autowired
+  public RegisterRestController(UserRestController userController){
+    this.userController= userController;
+  }
+  
+  public ResponseEntity<? extends ResponseDto> register(@RequestBody RegisterRequestDto){
+    // pass this on
+    this.userController.store(RegisterRequestDto);
+  }
+}{code}
+
+ 
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+h3. Service
+
+Create the {{UserService}} interface and {{DatabaseUserService}} implementation with all methods necessary to accomplish the required tasks from the {{UserRestController}}
+
+h3. Repository
+
+Create the {{UserRepository}} with all methods necessary to implement the {{DatabaseUserService}} functionality
+
+h3. Dto
+
+Create (or use the existing) {{UserRequestDto}} and {{UserResponseDto}} for the sample output as specified above. You can use the {{@JsonCreator}} and {{@JsonProperty(name="""")}} annotations within the Dto’s to achieve the correct output. *_All_* Dto class variables should be defined as {{public final}} and set only via the constructor\!
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vd9:,,,14463,White Label,To Do
+Role endpoints,FDP-25,14568,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:45 PM,15/Jun/22 12:29 AM,15/Jun/22 2:04 AM,,,0,"h2. Description
+
+Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /roles}}
+
+Returns the list of existing roles
+
+h3. Sample Response
+
+{code:json}[
+  {
+    ""id"": 1,
+    ""role"": ""admin""
+  },
+  {
+    ""id"": 2,
+    ""role"": ""manager""
+  },
+  {
+    ""id"": 3,
+    ""role"": ""waiter""
+  }
+]{code}
+
+h3. Endpoint
+
+{{POST /roles/}}
+
+Create a new role
+
+h3. Sample Request
+
+{code:json}{
+  ""role"": ""hr"",
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 4,
+  ""role"": ""hr""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Role is required""
+}{code}
+
+h3. Scenarios:
+
+# Providing empty role results in “Role is required” error - {{400}}
+# Providing a role identical to one already in the database results in “Role already exists” error - {{409}}
+# Providing a valid role creates and stores a new role and returns that role data - {{201}}
+
+h3. Endpoint
+
+{{GET /roles/{id}}}
+
+Returns the role data
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 4,
+  ""role"": ""hr""
+}{code}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Role not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing role id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing role id which deos not exist in the database results in “Role not found” error - {{404}}
+# Providing a valid role id (which does exist in the database) returns that role data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /roles/{id}}}
+
+Updates the specified role
+
+h3. Sample Request
+
+{code:json}{
+  ""role"": ""HR""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 4,
+  ""role"": ""HR""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Role not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing role id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing role id which deos not exist in the database results in “Role not found” error - {{404}}
+# The body of the request should contain a valid {{role}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid role id (which does exist in the database) along with a valid json body returns the updated role data (and updates the corresponding database table columns) - {{200}}
+
+h3. Endpoint
+
+{{DELETE /roles/{id}}}
+
+Delete the specified role
+
+h3. Sample Response
+
+{code:json}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Role not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing role id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing role id which deos not exist in the database results in “Role not found” error - {{404}}
+# Providing a valid role id (which does exist in the database) returns a response with no body (content) and (soft) deletes the role from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{RoleRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/roles}}|{{index()}}|
+|{{GET}}|{{/roles/create}}|{{create()}}|
+|{{POST}}|{{/roles/}}|{{store()}}|
+|{{GET}}|{{/roles/{id}}}|{{show()}}|
+|{{GET}}|{{/roles/{id}/edit}}|{{edit()}}|
+|{{PUT/PATCH}}|{{/roles/{id}}}|{{update()}}|
+|{{DELETE}}|{{/roles/{id}}}|{{destroy()}}|
+
+Only the {{index()}}, {{store()}}, {{show()}}, {{update()}} and {{destroy()}} methods should be added.  Do NOT add  the {{/roles/create}} and {{/roles/edit}} endpoints; these are to be used to display the html forms which are then submitted to {{/roles/store}} and {{/roles/update}} and as such are not needed for purely (backend) REST API
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+h3. Service
+
+Create the {{RoleService}} interface and {{DatabaseRoleService}} implementation with all methods necessary to accomplish the required tasks from the {{RoleRestController}}
+
+h3. Repository
+
+Create the {{RoleRepository}} with all methods necessary to implement the {{DatabaseRoleService}} functionality
+
+h3. Dto
+
+Create the {{RoleRequestDto}} and {{RoleResponseDto}} for the sample output as specified above. You can use the {{@JsonCreator}} and {{@JsonProperty(name="""")}} annotations within the Dto’s to achieve the correct output. *_All_* Dto class variables should be defined as {{public final}} and set only via the constructor\!
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vdh:,,,14463,White Label,To Do
+Permission endpoints,FDP-26,14569,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,13/Jun/22 11:59 PM,15/Jun/22 12:28 AM,15/Jun/22 12:32 AM,,,0,"Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /permissions}}
+
+Returns the list of existing permissions
+
+h3. Sample Response
+
+{code:json}[
+	{
+		""id"": 1,
+		""ability"": ""manage menus""
+	},
+	{
+		""id"": 2,
+		""ability"": ""create order""
+	},
+    {
+		""id"": 3,
+		""ability"": ""manage staff""
+	},
+]{code}
+
+h3. Endpoint
+
+{{POST /permissions/}}
+
+Create a new permission
+
+h3. Sample Request
+
+{code:json}{
+  ""ability"": ""book a table""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 4,
+  ""ability"": ""book a table""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Ability is required""
+}{code}
+
+h3. Scenarios:
+
+# Providing empty ability results in “Ability is required” error - {{400}}
+# Providing an ability identical to one already in the database results in “Abilty already exists” error - {{409}}
+# Providing a valid ability creates and stores a new permission and returns that permission data - {{201}}
+
+h3. Endpoint
+
+{{GET /permissions/{id}}}
+
+Returns the permission data
+
+h3. Sample Response
+
+{code:json}{
+	""id"": 4,
+	""role"": ""book a table""
+}{code}
+
+h3. Sample Error Response
+
+{noformat}{
+	""error"": ""Permission not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing permission id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing permission id which deos not exist in the database results in “Permission not found” error - {{404}}
+# Providing a valid permission id (which does exist in the database) returns that permission data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /permissions/{id}}}
+
+Updates the specified permission
+
+h3. Sample Request
+
+{noformat}{
+  ""ability"": ""book a vIP saloon""
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 4,
+  ""role"": ""book a vIP saloon""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Permission not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing permission id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing permission id which deos not exist in the database results in “Permission not found” error - {{404}}
+# The body of the request should contain a valid {{ability}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid permission id (which does exist in the database) along with a valid json body returns the updated permission data (and updates the corresponding database table columns) - {{200}}
+
+h3. Endpoint
+
+{{DELETE /permissions/{id}}}
+
+Delete the specified permission 
+
+h3. Sample Response
+
+{noformat}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Permission not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing permission id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing permission id which deos not exist in the database results in “Permission not found” error - {{404}}
+# Providing a valid permission id (which does exist in the database) returns a response with no body (content) and (soft) deletes the permission from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{PermissionRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/permissions}}|{{index()}}|
+|{{POST}}|{{/permissions/}}|{{store()}}|
+|{{GET}}|{{/permissions/{id}}}|{{show()}}|
+|{{PUT/PATCH}}|{{/permissions/{id}}}|{{update()}}|
+|{{DELETE}}|{{/permissions/{id}}}|{{destroy()}}|
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+h3. Service
+
+Create the {{PermissionService}} interface and {{DatabasePermissionService}} implementation with all methods necessary to accomplish the required tasks from the {{PermissionRestController}}
+
+h3. Repository
+
+Create the {{PermissionRepository}} with all methods necessary to implement the {{DatabasePermissionService}} functionality
+
+h3. Dto
+
+Create the {{PermissionRequestDto}} and {{PermissionResponseDto}} for the sample output as specified above. You can use the {{@JsonCreator}} and {{@JsonProperty(name="""")}} annotations within the Dto’s to achieve the correct output. *_All_* Dto class variables should be defined as {{public final}} and set only via the constructor\!
+
+h4. Migrations
+
+The application should be initialized with some pre-defined permissions in the database migrations. These permissions can then be used in the code to make sure users requesting a particular resource are authorized to do so. A simple code to check authorization would be along these lines:
+
+{code:java}if (user.can(""create order"")){
+  // create a new table order
+}
+else {
+  throw new UnauthorizedUserException(""Insufficient rights to create orders"");
+}{code}
+
+the {{user.can()}} implementation can be something else simple as
+
+{code:java}public class User
+  @ManyToMany private List<Permission> permissions;
+  @ManyToMany private List<Role> roles;
+  @ManyToMany private List<Team> teams;
+  
+  public boolean can(String ability){
+    for (Role role: roles){ 
+      if (role.can(ability)){ 
+        return true; 
+      }
+    }
+    for (Permission permission: permissions){ 
+      if (permission.is(abililty)){ 
+	    return true; 
+	  }
+    }
+    for (Team team: teams){ 
+	  if (team.can(ability)){
+	    return true; 
+	  }
+	}
+    return false;
+  }
+}{code}
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vdp:,,,14463,White Label,To Do
+Team endpoints,FDP-27,14570,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 12:04 AM,15/Jun/22 12:33 AM,15/Jun/22 12:29 AM,,,0,"Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /teams}}
+
+Returns the list of existing teams
+
+h3. Sample Response
+
+{code:json}[
+  {
+    ""id"": 1,
+    ""team"": ""admins""
+  },
+  {
+    ""id"": 2,
+    ""team"": ""managers""
+  },
+  {
+    ""id"": 3,
+    ""team"": ""waiters""
+  }
+]{code}
+
+h3. Endpoint
+
+{{POST /teams/}}
+
+Create a new team
+
+h3. Sample Request
+
+{noformat}{
+  ""team"": ""hrs"",
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 4,
+  ""team"": ""hrs""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Team is required""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing empty team results in “Team is required” error - {{400}}
+# Providing a team identical to one already in the database results in “Team already exists” error - {{409}}
+# Providing a valid team creates and stores a new team and returns that role data - {{201}}
+
+h3. Endpoint
+
+{{GET /teams/{id}}}
+
+Returns the teams data
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 4,
+  ""team"": ""hr2""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Team not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing team id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing team id which deos not exist in the database results in “Team not found” error - {{404}}
+# Providing a valid team id (which does exist in the database) returns that team data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /teams/{id}}}
+
+Updates the specified team
+
+h3. Sample Request
+
+{noformat}{
+  ""team"": ""HRs""
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 4,
+  ""team"": ""HRs""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Team not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing team id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing team id which deos not exist in the database results in “Team not found” error - {{404}}
+# The body of the request should contain a valid {{team}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid team id (which does exist in the database) along with a valid json body returns the updated team data (and updates the corresponding database table columns) - {{200}}
+
+h3. Endpoint
+
+{{DELETE /teams/{id}}}
+
+Delete the specified team
+
+h3. Sample Response
+
+{noformat}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Team not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing team id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing team id which deos not exist in the database results in “Team not found” error - {{404}}
+# Providing a valid team id (which does exist in the database) returns a response with no body (content) and (soft) deletes the team from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{TeamRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/teams}}|{{index()}}|
+|{{POST}}|{{/teams/}}|{{store()}}|
+|{{GET}}|{{/teams/{id}}}|{{show()}}|
+|{{PUT/PATCH}}|{{/teams/{id}}}|{{update()}}|
+|{{DELETE}}|{{/teams/{id}}}|{{destroy()}}|
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+h3. Service
+
+Create the {{TeamService}} interface and {{DatabaseTeamService}} implementation with all methods necessary to accomplish the required tasks from the {{TeamRestController}}
+
+h3. Repository
+
+Create the {{TeamRepository}} with all methods necessary to implement the {{DatabaseTeamService}} functionality
+
+h3. Dto
+
+Create the {{TeamRequestDto}} and {{TeamResponseDto}} for the sample output as specified above. You can use the {{@JsonCreator}} and {{@JsonProperty(name="""")}} annotations within the Dto’s to achieve the correct output. *_All_* Dto class variables should be defined as {{public final}} and set only via the constructor\!
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vdx:,,,14463,White Label,To Do
+Abstract controllers,FDP-28,14571,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 12:26 AM,14/Jun/22 2:10 AM,15/Jun/22 3:08 AM,,,0,"Add abstract controllers to the {{users}} library, which can then be used/extended by the actual rest controllers implementing the user management functionality. 
+
+For example, the UserController (in {{com.gfa.users.controllers}} package) can be defined as abstract and provide reusable functionality like so:
+
+{code:java}package com.gfa.users.controllers;
+
+import com.gfa.common.dtos.ResponseDto;
+import com.gfa.users.services.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+public abstract class UserController {
+
+  private final UserService service;
+
+  public UserController(UserService service){
+    this.service = service;
+  }
+
+  @GetMapping(""/"")
+  public ResponseEntity<ResponseDto> index(){
+    return service.index();
+  }
+
+  @GetMapping(""/{id}"")
+  public ResponseEntity<ResponseDto> show(@PathVariable Long id){
+    return service.show(id);
+  }
+}{code}
+
+NOTE: the {{UserController}} (abstract class) is not marked with the {{@Controller}} or {{@RestController}} annotations. Those should be only in the subclasses so that JavaSpring registers only those endpoints (relative to the class request mapping specified for the subclass)
+
+
+
+To use the {{UserController}} to create endpoings for staff management, we can implement the {{StaffController}} like so:
+
+{code:java}package com.gfa.foxdining.controllers;
+
+import com.gfa.users.controllers.UserController;
+
+import com.gfa.whitelabeltest.services.StaffService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(""/staff"")
+public class StaffController extends UserController {
+
+  @Autowired
+  public StaffController(StaffService service) {
+    super(service);
+  }
+}{code}
+
+
+
+The {{GET /}} and {{GET /{id}}} endpoints defined in the {{UserController}} class are treated as relative to the {{/staff}} class {{@RequestMapping}} in the {{StaffController}}. Using the dependency injection for the appropriate service class (e.g. {{StaffService}}) ensures the correct code (service, repository) handles those http requests.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00ve5:,,,14463,White Label,To Do
+Abstract services and repositories,FDP-29,14572,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 1:16 AM,14/Jun/22 2:10 AM,15/Jun/22 3:08 AM,,,0,"Add abstract services to the {{users}} library, which can then be used/extended by the actual rest services implementing the user management functionality. 
+
+For example, the UserService interface (in {{com.gfa.users.services}} package) can be defined like so:
+
+{code:java}package com.gfa.users.services;
+
+// ...
+
+public interface UserService {
+  ResponseEntity<ResponseDto> index();
+  ResponseEntity<ResponseDto> show(Long id);
+}{code}
+
+Then the implementation in the DatabaseUserService abstract class would like something like this:
+
+{code:java}package com.gfa.users.services;
+
+// ...
+
+public abstract class DatabaseUserService implements UserService {
+
+  private final UserRepository repository;
+
+  public DatabaseUserService(UserRepository repository){
+    this.repository = repository;
+  }
+
+  public ResponseEntity<ResponseDto> index(){
+    List<User> users = repository.findAll();
+    List<UserResponseDto> dtos = users.stream()
+      .map(UserResponseDto::new)
+      .collect(Collectors.toList())
+    ;
+    return new ResponseEntity(dtos, HttpStatus.OK);
+  }
+
+  public ResponseEntity<ResponseDto> show(Long id){
+    Optional<User> optional = repository.findById(id);   
+    if (optional.isPresent()){
+      return new ResponseEntity(optional.get(), HttpStatus.OK);
+    }
+    throw new UserNotFoundException();
+  }
+}{code}
+
+The subclasses extending this service implementation need to provide the correct repository in the constructor …
+
+{code:java}package com.gfa.foxdining.services;
+
+// ...
+
+@Service
+public class StaffService extends DatabaseUserService {
+
+  @Autowired
+  public StafervicefS(StaffRepository repository) {
+    super(repository);
+  }
+}{code}
+
+The repositories need to be defined in the following way, i.e. extending the {{JpaRepository}} with a generic type {{T}} which extends the {{User}} model
+
+{code:java}package com.gfa.users.repositories;
+
+// ...
+public interface UserRepository<T extends User> extends JpaRepository<T, Long> {
+  List<T> findAll();
+  Optional<T> findById(Long id);
+}{code}
+
+Finally, the {{StaffRepository}} then extends the {{UserRepository}} specifying the {{Staff}} model as the entity.
+
+{code:java}package com.gfa.foxdining.repositories;
+
+// ...
+
+public interface StaffRepository extends UserRepository<Staff> {
+
+}{code}",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00ved:,,,14463,White Label,To Do
+Abstract models,FDP-30,14573,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 1:27 AM,14/Jun/22 2:09 AM,15/Jun/22 3:08 AM,,,0,"Add abstract models to the {{users}} library, which can then be used/extended by the actual models implementing the user management functionality. 
+
+For example, the User model/entity (in {{com.gfa.users.services}} package) can be defined like so:
+
+{code:java}package com.gfa.users.models;
+
+// ...
+
+@MappedSuperclass
+public abstract class User {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column
+  private String username;
+
+  @Column
+  private String email;
+
+  public User(){}
+  public User(Long id, String username, String email) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+  }
+
+  public Long getId() { return id; }
+  public String getUsername() { return username; }
+  public String getEmail() { return email; }
+}{code}
+
+The {{@MappedSuperclass}} annotation defines a JPA/Hibernate strategy for mapping an inheritance structure to the database tables. Basically, it just tells the Spring framework that entities which extends the {{User}} class will inherit properties (table columns) from it.
+
+Therefore, we can define the {{Staff}} model to be as simple as this:
+
+{code:java}package com.gfa.foxdining.models;
+
+// ...
+
+@Entity
+@Table(name = ""staff"")
+public class Staff extends User {
+
+  public Staff(){ super(); }
+  public Staff(Long id, String username, String email) {
+    super(id, username, email);
+  }
+}{code}
+
+Spring will then create (use) the {{staff}} database table with the {{id}}, {{username}},  and {{email}} column. 
+
+
+
+The advantage of this approach is that now it’s _trivial_ to create the {{Member}} repository, model, service, controller by simply extending the corresponding classes/interfaces from the {{users}} package/library:
+
+{code:java}package com.gfa.foxdining.models;
+
+// ...
+
+@Entity
+@Table(name = ""members"")
+public class Member extends User {
+
+  public Member(){ super(); }
+  public Member(Long id, String username, String email) {
+    super(id, username, email);
+  }
+}{code}
+
+{code:java}package com.gfa.foxdining.repositories;
+
+// ...
+
+public interface MemberRepository extends UserRepository<Member> {
+}{code}
+
+Spring will now automatically create/use the {{members}} database table with the {{id}}, {{username}},  and {{email}} columns. ",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vel:,,,14463,White Label,To Do
+Billing package,FDP-31,14574,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 2:08 AM,14/Jun/22 2:09 AM,15/Jun/22 3:08 AM,,,0,"Create the {{com.gfa.billing}} package and add models and dtos which will be used for billing related parts of the application:
+
+* {{AbstractBillableDto}}
+** Response dto to display a billable item data 
+** {{id}} - {{Long}}
+** {{amount}} - {{integer}}
+** {{description}} - {{String}}
+** {{unitPrice}} - {{double}}
+* {{BillableRequestDto}}
+** Request dto to add a billable item to an order
+** {{id}} - {{Long}}
+** {{amount}} - {{integer}}
+* {{BillableResponseDto}}
+** Response dto to display a billable item data 
+** {{extends AbstractBillableDto}}
+* {{BillableCreateRequestDto}}
+** Request dto to create a new billable item
+** {{extends AbstractBillableDto}}
+* {{BillablePatchRequestDto}}
+** Request dto to edit/update a billable item data
+** {{amount}} - {{interger}}
+** {{description}} - {{String}}
+** {{unitPrice}} - {{double}}
+* {{OrderResponseDto}}
+** Response dto to show order details
+** {{id}} - {{Long}}
+** {{items}} - {{array(BillableResponseDto)}}
+* {{OrderItemResponseDto}}
+** Response dto to display details of an order item (billable)
+** {{extends AbstractBillableDto}}
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vet:,,,14463,White Label,To Do
+Billable model and entity,FDP-32,14575,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 2:12 AM,14/Jun/22 2:16 AM,15/Jun/22 3:08 AM,,,0,"The billable model/entity should be in the {{com.gfa.billing.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* amount (non-negative, not null)
+* description (not null)
+* unit_price (decimal, not null)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vf1:,,,14463,White Label,To Do
+Order model and entity,FDP-33,14576,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 2:20 AM,14/Jun/22 10:31 PM,15/Jun/22 3:08 AM,,,0,"The order model/entity should be in the {{com.gfa.billing.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* status (enum(“unpaid”, “paid”, “archived”))
+* items (N:M)
+* payments (1:N)
+
+
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vf9:,,,14463,White Label,To Do
+Payment model and entity,FDP-34,14577,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 2:26 AM,14/Jun/22 11:13 PM,15/Jun/22 3:08 AM,,,0,"The payment model/entity should be in the {{com.gfa.billing.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, non null, auto increment)
+* order_id (FK, not null)
+* value (decimal, not null)
+
+Payments are tightly linked to orders. In my cases, orders will have a single payment (paying the order in full) but there is an option to ‘split the check’ and pay for an order with several (separate) payments.
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vfh:,,,14463,White Label,To Do
+Booking package,FDP-35,14615,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 10:23 PM,14/Jun/22 11:13 PM,15/Jun/22 3:08 AM,,,0,"Create the {{com.gfa.booking}} package and add models and dtos which will be used for billing related parts of the application:
+
+* {{BookableRequestDto}}
+** Request dto to add a bookable item to a reservation
+** {{id}} - {{Long}}
+** {{amount}} - {{integer}}
+* {{BookableResponseDto}}
+** Response dto to display a bookable item data
+** {{extends com.gfa.billing.dtos.BillableResponseDto}}
+** {{order}} - {{Order}}
+** {{startDate}} - {{String (date-time)}}
+** {{endDate}} - {{String (date-time)}}
+* {{BookablePatchRequestDto}}
+** Request dto to edit/update a bookable item data
+** {{amount}} - {{interger}}
+** {{startDate}}- {{String (date-time)}}
+** {{endDate}}- {{String (date-time)}}
+* {{ReservationResponseDto}}
+** Response dto to show reservation details
+** {{id}} - {{Long}}
+** {{items}} - {{array(BookableResponseDto)}}
+* {{ReservationItemResponseDto}}
+** Response dto to display details of an reservation item (bookable)
+** {{extends BookableResponseDto}}
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vol:,,,14463,White Label,To Do
+Bookable model and entity,FDP-36,14616,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 10:27 PM,14/Jun/22 11:13 PM,15/Jun/22 3:08 AM,,,0,"The bookable model/entity should be in the {{com.gfa.booking.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, not null, auto increment)
+* amount (non-negative, not null)
+* description (not null)
+* unit_price (decimal, not null)
+* order_id (FK, not null)
+* start_date (datetime/timestamp not null)
+* end_date (datetime/timestamp not null
+
+(amount, description, unit_price can be inherited from either the {{Billable}} model of both {{Bookable}} and {{Billable}} models should inherited these properties from a common superclass (e.g., in the {{common}} package)
+
+h3. Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vot:,,,14463,White Label,To Do
+Reservation model and entity,FDP-37,14617,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 10:29 PM,14/Jun/22 11:13 PM,15/Jun/22 3:08 AM,,,0,"The reservation model/entity should be in the {{com.gfa.booking.models}} package. It will require (at least) the following details:
+
+* Id (PK, unique, not null, auto increment)
+* status (enum(“pending”, “confirmed”, “cancelled”, “archived))
+* bookables (N:M)
+
+ Testing:
+
+* Create *_unit tests_* which creates a new instance of the model and test *all* its values (properties) are set correctly
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vp1:,,,14463,White Label,To Do
+Error handling,FDP-38,14618,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 10:40 PM,14/Jun/22 11:13 PM,15/Jun/22 1:42 AM,,,0,"Create {{exceptions}} package(s) under the {{common}}, {{billing}}, {{booking}} and {{foxdinning}} packages and add exceptions for error handling. 
+
+Every error should have its own properly named exception, e.g.
+
+* {{UserNotFoundException}}
+* {{DuplicateUsernameException}}
+* {{PasswordTooShortException}}
+* {{UnauthorizedUserException}}
+* {{UnauthenticatedUserException}}
+* {{EmailAlreadyVerifiedException}}
+* {{TeamNotFoundException}}
+
+etc.
+
+In most cases these exception classes should extend the {{RuntimeException}}  and may be empty of any code, e.g.
+
+{code:java}package com.gfa.users.exceptions;
+
+public class UserNotFoundException extends RuntimeException {}{code}",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vp9:,,,14463,White Label,To Do
+Controller advice,FDP-39,14619,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 11:12 PM,15/Jun/22 1:47 AM,15/Jun/22 1:47 AM,,,0,"Research the use of {{@ControllerAdvice}} and rewrite all (controller) exception handling using it.
+
+All error messages (sent in the response dtos) should be loaded from the _message_ file(s), i.e.
+
+{code:java}@RestControllerAdvice
+public class ControllerExceptionHandler {
+
+  private final Environment environment;
+
+  @Autowired
+  public ControllerExceptionHandler(Environment environment) {
+    this.environment = environment;
+  }
+  // ...
+  
+  @ExceptionHandler(EmailAlreadyVerifiedException.class)
+  @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+  public ErrorResponseDto emailAlreadyVerified() {
+    return new ErrorResponseDto(
+      environment.getProperty(""config.errors.email_already_verified"")
+    );
+  }
+}{code}",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vph:,,,14463,White Label,To Do
+Soft delete,FDP-40,14620,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 11:16 PM,14/Jun/22 11:17 PM,15/Jun/22 1:58 AM,,,0,"Read [https://www.baeldung.com/spring-jpa-soft-delete|https://www.baeldung.com/spring-jpa-soft-delete|smart-link] and implemented Soft Delete in the application. Add an option in the {{application.properties}} to enable/disable this feature, e.g.
+
+{noformat}config.soft_delete.enabled=true/false{noformat}
+
+NOTE: it is recommend to enable the soft delete feature by default. ",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vpp:,,,14463,White Label,To Do
+Fox Dining,FDP-41,14621,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 11:30 PM,14/Jun/22 11:30 PM,15/Jun/22 3:08 AM,,,0,"Use the libraries created so far (common, users, billing. booking, etc.) to build Fox Dining - (The Ultimate) Restaurant Management and Billing Application.
+
+The application should feature:
+
+* {{hr}} team/role with the permissions to create, edit and delete staff (users) via REST API
+* {{managers}} team / {{manager}} role with the permssions to
+** create restaurant menus (breakfast, lunch, dinner, party, birthday, new years, event, etc.)
+** create/edit/delete menut items (cheese platter, sirloin steak, cheesecake, etc.) and menu item categories (appetizer, meal, drink, dessert, etc.)
+** create tags, e.g. tags for allergens, meal spiciness, etc.
+** create bookable items (e.g. tables, rooms)
+* {{waiters}} team / {{waiter}} role with the permissions to create a new orders and reservations, add (billable) items, pay/split the check, apply discounts/vouchers (e.g. billables with negative unit_price)
+
+Have at a look at the {{PROJECT.md}} file in your github repository for more details.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vpx:,,,14464,Fox Dining,To Do
+Staff endpoints,FDP-42,14622,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,14/Jun/22 11:37 PM,15/Jun/22 12:54 AM,15/Jun/22 1:39 AM,,,0,"Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /staff}}
+
+Returns the list of existing staff users
+
+h3. Sample Response
+
+{code:json}[
+  {
+    ""id"": 1,
+    ""username"": ""johndoe"",
+    ""email"": ""john.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:00+00:00""
+  },
+  {
+    ""id"": 2,
+    ""username"": ""janedoe"",
+    ""email"": ""jane.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:05+00:00""
+  }
+]{code}
+
+h3. Endpoint
+
+{{POST /staff/}}
+
+Create a new staff user
+
+h3. Sample Request
+
+{noformat}{
+  ""username"": ""mikesmith"",
+  ""email"": ""mike.smith@gmail.com""
+  ""password"": ""P4$$w0rd""
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 3,
+  ""username"": ""mikesmith"",
+  ""email"": ""mike.smith@gmail.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""Password is required""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing empty username results in “Username is required” error - {{400}}
+# Providing empty email results in “Email is required” error - {{400}}
+# Providing invalid email results in “Invalid email” error - {{400}}
+# Providing empty password results in “Password is required” error - {{400}}
+# Providing a password which is too short results in “Password too short” error - {{400}}
+# Providing a username identical to one already in the database results in “Username already exists” error - {{409}}
+# Providing an email identical to one already in the database results in “Email already exists” error - {{409}}
+# Providing a valid username, email and password creates and stores a new staff user and returns that staff user data - {{201}}
+
+h3. Endpoint
+
+{{GET /staff/{id}}}
+
+Returns the staff user data
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 1,
+  ""username"": ""johndoe"",
+  ""email"": ""john.doe@gmail.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""User not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing staff id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing staff id which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid staff id (which does exist in the database) returns that user data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /staff/{id}}}
+
+Updates the specified staff user
+
+h3. Sample Request
+
+{noformat}{
+  ""email"": ""email@example.com""
+  ""username"": ""new.username""
+  ""password"": ""N3wP4$$w0rd""
+}{noformat}
+
+h3. Sample Response
+
+{noformat}{
+  ""id"": 3,
+  ""username"": ""new.username"",
+  ""email"": ""email@example.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}{noformat}
+
+h3. Scenarios:
+
+# Providing staff id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing staff id which deos not exist in the database results in “User not found” error - {{404}}
+# The body of the request should contain either a valid {{email}}, a valid {{usernam}} or a valid {{password}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid staff id (which does exist in the database) along with a valid json body returns the updated staff data (and updates the corresponding database table columns) - {{200}}
+
+NOTE: If the email is changed as a result of this request the email verification process needs to be repeated, i.e. a verification token is generated, the email verification message is sent to the new email address and the {{verified_at}} value is set to null
+
+h3. Endpoint
+
+{{DELETE /staff/{id}}}
+
+Delete the specified staff user
+
+h3. Sample Response
+
+{noformat}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}
+
+{noformat}
+
+h3. Scenarios:
+
+# Providing staff id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing staffid which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid staffid (which does exist in the database) returns a response with no body (content) and (soft) deletes the staff from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{StaffRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/staff}}|{{index()}}|
+|{{POST}}|{{/staff/}}|{{store()}}|
+|{{GET}}|{{/staff/{id}}}|{{show()}}|
+|{{PUT/PATCH}}|{{/staff/{id}}}|{{update()}}|
+|{{DELETE}}|{{/staff/{id}}}|{{destroy()}}|
+
+
+
+Staff users can be created only through the REST API, i.e. *no* {{/staff/register}} end should be available\!
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-28|https://greenfoxacademy.atlassian.net/browse/FDP-28|smart-link] for details on how to use controllers  inheritance properly for our needs.
+
+h3. Service
+
+Create the {{StaffService}} class which extends {{DatabaseUserService}} and override all necessary code
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-29|https://greenfoxacademy.atlassian.net/browse/FDP-29|smart-link] for details on how to use service inheritance properly for our needs.
+
+h3. Repository
+
+Create the {{StaffRepository}} with all methods necessary to implement the {{StaffService}} functionality
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-30|https://greenfoxacademy.atlassian.net/browse/FDP-30|smart-link]  for details on how to use repository inheritance properly for our needs.
+
+h3. Dto
+
+Create staff dtos by extending the existing {{UserRequestDto}} and {{UserResponseDto}} for the sample output as specified above. 
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vq5:,,,14464,Fox Dining,To Do
+Items endpoints,FDP-43,14623,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 12:04 AM,15/Jun/22 12:04 AM,15/Jun/22 12:54 AM,,,0,"h3. Endpoint
+
+{{GET /manage/items}}
+
+Returns the list of billable items
+
+h3. Sample Response
+
+{code:json}[
+  {
+	""id"": 1,
+	""amount"": ""3"",
+	""description"": ""pizza margherita - San Marzano tomatoes, mozzarella cheese, basic ...""
+	""unit_price"": ""5.99""
+  },
+  {
+	""id"": 2,
+    ""amount"": ""3"",
+	""description"": ""lemonade""
+	""unit_price"": ""2.99""
+  }
+]{code}
+
+h3. Endpoint
+
+{{POST /manage/items}}
+
+Creates a new billable item
+
+h3. Sample Request
+
+{code:json}{
+  ""description"": ""USDA Prime Top Sirloin""
+  ""unit_price"": ""49.99""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""description"": ""USDA Prime Top Sirloin""
+  ""unit_price"": ""49.99""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""Invalid unit price""
+}{code}
+
+h3. Scenarios:
+
+# Providing empty description results in “Description is required” error - {{400}}
+# Providing a description identical to one already in the database results in “Item already exists” error - {{409}}
+# Providing a unit price which is not a decimal number (with two decimal places at most) results in “Invalid unit price” error - {{400}}
+# Providing a valid description and unit price create returns that user data - {{201}}
+
+h3. Endpoint
+
+{{GET /manage/items/{id}}}
+
+Returns the billable item data
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""description"": ""USDA Prime Top Sirloin""
+  ""unit_price"": ""49.99""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+	""error"": ""Item not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing item id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing item id which deos not exist in the database results in “Item not found” error - {{404}}
+# Providing a valid item id (which does exist in the database) returns that item data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /manage/items/{id}}}
+
+Updates the specified billable item
+
+h3. Sample Request
+
+{code:json}{
+  ""description"": ""USDA Prime Top Sirloin Steak""
+  ""unit_price"": ""44.99""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""description"": ""USDA Prime Top Sirloin Steak""
+  ""unit_price"": ""44.99""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+	""error"": ""Item not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing item id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing item id which deos not exist in the database results in “Item not found” error - {{404}}
+# The body of the request should contain either a valid {{description}} or a valid {{unit_price}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid item id (which does exist in the database) along with a valid json body returns the update item data (and updates the corresponding database table columns) - {{200}}
+
+h3. Endpoint
+
+{{DELETE /manage/items/{id}}}
+
+Delete the specified billable item
+
+h3. Sample Response
+
+{code:json}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+	""error"": ""Item not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing item id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing item id which deos not exist in the database results in “Item not found” error - {{404}}
+# Providing a valid item id (which does exist in the database) returns a response with no body (content) and (soft) deletes the item from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{ItemRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/manage/items}}|{{index()}}|
+|{{POST}}|{{/manage/items}}|{{store()}}|
+|{{GET}}|{{/manage/items/{id}}}|{{show()}}|
+|{{PUT/PATCH}}|{{/manage/items/{id}}}|{{update()}}|
+|{{DELETE}}|{{/manage/items/{id}}}|{{destroy()}}|
+
+
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+h3. Service
+
+Create the {{ItemService}} class which extends {{DatabaseBillableService}} and override all necessary code
+
+h3. Repository
+
+Create the {{ItemRepository}} with all methods necessary to implement the {{ItemService}} functionality
+
+h3. Dto
+
+Create item dtos by extending the existing {{BillableRequestDto}} and {{BillableResponseDto}} for the sample output as specified above. 
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vqd:,,,14464,Fox Dining,To Do
+Members endpoints,FDP-44,14624,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 12:50 AM,15/Jun/22 12:54 AM,15/Jun/22 12:54 AM,,,0,"Read the API endpoints definitions in Swagger for a more detailed description of the http request/response
+
+h3. Endpoint
+
+{{GET /members}}
+
+Returns the list of existing members
+
+h3. Sample Response
+
+{code:json}[
+  {
+    ""id"": 1,
+    ""username"": ""johndoe"",
+    ""email"": ""john.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:00+00:00""
+  },
+  {
+    ""id"": 2,
+    ""username"": ""janedoe"",
+    ""email"": ""jane.doe@gmail.com"",
+    ""verified_at"": ""2022-06-13T21:39:05+00:00""
+  }
+]{code}
+
+h3. Endpoint
+
+{{GET /members/{id}}}
+
+Returns the members data
+
+h3. Sample Response
+
+{code:json}{
+	""id"": 1,
+	""username"": ""johndoe"",
+    ""email"": ""john.doe@gmail.com""
+	""verified_at"": ""<datetime/timestamp>""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""User not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing member id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing member id which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid member id (which does exist in the database) returns that user data - {{200}}
+
+h3. Endpoint
+
+{{PATCH /members/{id}}}
+
+Updates the specified member
+
+h3. Sample Request
+
+{code:json}{
+  ""email"": ""email@example.com""
+  ""username"": ""new.username""
+  ""password"": ""N3wP4$$w0rd""
+}{code}
+
+h3. Sample Response
+
+{code:json}{
+  ""id"": 3,
+  ""username"": ""new.username"",
+  ""email"": ""email@example.com""
+  ""verified_at"": ""<datetime/timestamp>""
+}{code}
+
+h3. Sample Error Response
+
+{code:json}{
+  ""error"": ""User not found""
+}{code}
+
+h3. Scenarios:
+
+# Providing member id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing member id which deos not exist in the database results in “User not found” error - {{404}}
+# The body of the request should contain either a valid {{email}}, a valid {{usernam}} or a valid {{password}}. Otherwise the “Invalid data” error is returned - {{400}}
+# Providing a valid member id (which does exist in the database) along with a valid json body returns the updated member data (and updates the corresponding database table columns) - {{200}}
+
+NOTE: If the email is changed as a result of this request the email verification process needs to be repeated, i.e. a verification token is generated, the email verification message is sent to the new email address and the {{verified_at}} value is set to null
+
+h3. Endpoint
+
+{{DELETE /users/{id}}}
+
+Delete the specified member 
+
+h3. Sample Response
+
+{noformat}{noformat}
+
+h3. Sample Error Response
+
+{noformat}{
+  ""error"": ""User not found""
+}
+{noformat}
+
+h3. Scenarios:
+
+# Providing member id which is not a _positive_ integer results in “Invalid id” error - {{400}}
+# Providing member id which deos not exist in the database results in “User not found” error - {{404}}
+# Providing a valid member id (which does exist in the database) returns a response with no body (content) and (soft) deletes the member from the database - {{201}}
+
+h3. Controller
+
+The endpoint should be defined in a class called {{MemberRestController}} . The route / method naming should follow the usual REST template
+
+||*HTTP Method*||*URI*||*Method Name*||
+|{{GET}}|{{/members}}|{{index()}}|
+| | |{{store()}}|
+|{{GET}}|{{/members/{id}}}|{{show()}}|
+|{{PUT/PATCH}}|{{/members/{id}}}|{{update()}}|
+|{{DELETE}}|{{/members/{id}}}|{{destroy()}}|
+
+ 
+
+Member users can be created *only* through the the {{/members/register}} endpoint, i.e. there should be no {{POST /members}} endpoint available. Nevertheless, the MemberRestController should have the {{store}} method fully implemented, and the {{RegisterMemberController}} (which exposes the {{POST /members/register}} endpoint) should just call the {{MemberRestController.store}} method.
+
+
+
+{code:java}@RestController
+public class MemberRegistrationController {
+  // ...
+  private final MemberController userController;
+  
+  @Autowired
+  public MemberRegistrationController(MemberController userController){
+    this.userController = userController;
+  }
+  
+  @PostMapping(""/members/register"")
+  public ResponseEntity<? extends ResponseDto> register (
+      @RequestBody(required = false) RegisterRequestDto dto){
+    return userController.store(dto);
+  }
+}{code}
+
+
+
+All controler methods should be as succinct as possible, i.e. all the heavy lifting should be done in the corresponding {{Service}} class.
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-28|https://greenfoxacademy.atlassian.net/browse/FDP-28|smart-link] for details on how to use controllers inheritance properly for our needs.
+
+h3. Service
+
+Create the {{StaffService}} class which extends {{DatabaseUserService}} and override all necessary code
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-29|https://greenfoxacademy.atlassian.net/browse/FDP-29|smart-link] for details on how to use service inheritance properly for our needs.
+
+h3. Repository
+
+Create the {{StaffRepository}} with all methods necessary to implement the {{StaffService}} functionality
+
+See: [https://greenfoxacademy.atlassian.net/browse/FDP-30|https://greenfoxacademy.atlassian.net/browse/FDP-30|smart-link] for details on how to use repository inheritance properly for our needs.
+
+h3. Dto
+
+Create staff dtos by extending the existing {{UserRequestDto}} and {{UserResponseDto}} for the sample output as specified above.
+
+h3. Testing:
+
+Create *_unit tests_* to cover the controller, service and dtos. Then write *_integration tests_* for the controller endpoints testing several scenarios (no worlds in the db, single world in the db, multiple worlds in the db)
+
+h3. Definitions:
+
+See the detailed model definitions on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] (in the {{Models}} section)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vql:,,,14464,Fox Dining,To Do
+Database Migrations with Flyway,FDP-45,14625,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:00 AM,15/Jun/22 1:58 AM,15/Jun/22 1:58 AM,,,0,"Review the [https://www.youtube.com/watch?v=NDlZ6fP4X7s|https://www.youtube.com/watch?v=NDlZ6fP4X7s|smart-link] article and implement database migrations using the Flyway library (the core and mysql dependencies are already in {{build.gradle}})
+
+
+
+Make sure that your migrations create all database tables required by the application. Put all migrations scripts in the {{resources/db/migrations}} folder.
+
+Furthermore, populate the database with some initial data for users, teams, permission and roles. Whenever a user needs to be authorized to perform an action in the code, there should be an authorization check and an exception throw in case of a failure.
+
+{code:java}if (user.can('create tables')){
+  // create a new table
+}
+else {
+  throw new UnauthorizedUserException();
+}{code}
+
+
+
+Therefore, all such user permissions (roles, teams) need to be initialized through the migrations so that those abilities can used directly in the code.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vqt:,,,14464,Fox Dining,To Do
+Spring Security,FDP-46,14626,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:36 AM,15/Jun/22 1:58 AM,15/Jun/22 1:58 AM,,,0,"Review the following materials:
+
+* [https://www.youtube.com/watch?v=VVn9OG9nfH0|https://www.youtube.com/watch?v=VVn9OG9nfH0|smart-link]
+* [https://www.youtube.com/watch?v=X80nJ5T7YpE|https://www.youtube.com/watch?v=X80nJ5T7YpE|smart-link]
+* [https://www.youtube.com/watch?v=7Q17ubqLfaM|https://www.youtube.com/watch?v=7Q17ubqLfaM|smart-link]
+* [https://curity.io/resources/learn/spring-boot-api/|https://curity.io/resources/learn/spring-boot-api/|smart-link] 
+
+and implement Spring Security using JWT authentication.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vr1:,,,14464,Fox Dining,To Do
+Application security,FDP-47,14627,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:40 AM,15/Jun/22 1:58 AM,15/Jun/22 1:58 AM,,,0,"Use Spring Secutiy to protect the application endpoints.
+
+The public endpoints should be
+
+* {{POST /register}}
+* {{POST /login}}
+* {{POST /reset-password}}
+* {{POST /reset-password/{token}}}
+* {{GET /email/verify/{token}}}
+* {{POST /email/verify/resend}}
+
+All other endpoints should be accessible only with a valid JWT token
+
+h3. Scenarios:
+
+# Request with no JWT token to any of the protected endpoints results in “Authentification token is required” error - {{401}}
+# Request with an invalid JWT token to any of the protected endpoints results in “Authentification token is invalid” error - {{401}}
+# Request with a valid JWT token to any of the protected endpoints should decode the data (payload) and put it intot the Security Context
+
+Hint: OncePerRequestFilter
+
+Use the [JJWT |https://github.com/jwtk/jjwt]library",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vr9:,,,14464,Fox Dining,To Do
+i18n,FDP-48,14628,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:43 AM,15/Jun/22 1:58 AM,15/Jun/22 1:58 AM,,,0,"Implementat internalization (i18n) to all game strings (messages, building/unit/resource names). Have a look at how to implement translations eg here: [https://www.baeldung.com/spring-boot-internationalization|https://www.baeldung.com/spring-boot-internationalization|smart-link]
+
+h3. Endpoints:
+
+{{/<url>?lang=[en,sk,cz,hu]}}
+
+Language files:
+
+{{/java/main/resources/messages.properties}}
+{{/java/main/resources/messages_sk.properties}}
+{{/java/main/resources/messages_cz.properties}}
+{{/java/main/resources/messages_hu.properties}}
+
+etc.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vrh:,,,14464,Fox Dining,To Do
+Endpoint strings,FDP-49,14629,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:47 AM,15/Jun/22 1:58 AM,15/Jun/22 1:58 AM,,,0,"h3. Endpoint:
+
+{{GET /strings}}
+
+Returns all game strings (messages, names, etc.) in a single request.
+
+This is an auxiliary endpoint to enable easier/quicker unit testing 😉
+
+{code:json}{
+  ""application.name"": ""Fox Dining"",
+  ""application.description"": ""Restaurant reservation and billing system"",
+  ...
+  ""config.language.select"": ""Select language"",
+  ""config.language.en"": ""English"",
+  ""config.language.cz"": ""Czech"",
+  ...
+  ""config.errors.invalid_token"": ""Invalid token"",
+  ...
+}
+{code}
+
+h3. Tests
+
+Write unit tests for all languages to check all game strings are translated correctly.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vrp:,,,14464,Fox Dining,To Do
+Response Data Pagination,FDP-50,14630,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:49 AM,15/Jun/22 1:59 AM,15/Jun/22 1:59 AM,,,0,"Add response data pagination to the application endpoints using the following settings:
+
+* no. of entries per page should be configurable
+* the default no. per page should be 20
+* by default, the latest database entries should be returned first (i.e. order by id desc)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vrx:,,,14464,Fox Dining,To Do
+Full Feature Test(s),FDP-51,14631,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 1:57 AM,15/Jun/22 1:58 AM,15/Jun/22 1:59 AM,,,0,"Write test(s) which will check the full functionality of the application, i.e. the test(s) should:
+
+* register & verify 2 new staff user and 3 new member users
+** resend the email verification to 1 staff user and 1 member user
+** reset the password of 1 (another) staff user and 1 (another) member user
+* list all staff users, list all member users
+* add another new staff & member user
+* modify the added staff/member users email
+** verify the new email address
+* create a new team
+** add some staff users to the team
+* create 2 new permissions
+** add 1 of the permissions to the team
+** check the users in the team have the team’s permission
+** add the other permission to a staff user
+* create a new staff role
+* create, edit, delete menus
+* create, edit, delete menu items
+** add tags to the items (e.g. allergens, spiciness)
+* create, edit, delete menu item categories
+* create, edit, delete tables
+* create some reservations
+* create a few orders, add billlable items
+* pay for an order in full and then archive
+* split the payments for an other 
+
+
+
+You can use [Java Faker|https://www.baeldung.com/java-faker] to populate the database for the test(s)",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vs5:,,,14464,Fox Dining,To Do
+Create frontend layout,FDP-52,14632,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:02 AM,15/Jun/22 2:03 AM,15/Jun/22 2:03 AM,,,0,"Create the front-end layout:
+
+* header
+* navigation
+* main
+* footer
+
+The header should contain the project name and a login/logout button. When a user is logged in there should also be the “profile” button
+
+The navigation menu should have links/buttons to each endpoint. Endpoints which require a valid JWT should be shown only when a player is logged in\! Only the endpoints the user is authorized to use should be displayed.
+
+The main section will be used to display the actual data
+
+The footer should have a link to {{/about}} “page” and (fake) copyright info
+
+You can use a simple grid system, or bootstrap dashboard or even core-ui libraries/pre-built layouts
+
+Have a look at examples of restaurant POS (billing screens) for an inspiration for the managers/waiters layout.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vsd:,,,14466,Frontend,To Do
+Create the main navigation,FDP-53,14633,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:05 AM,15/Jun/22 2:05 AM,15/Jun/22 2:07 AM,,,0,"The main navigation should group all available endpoints by their tag/group. Have a look at the endpoint groups on [swagger.io|https://app.swaggerhub.com/apis-docs/fox-dining/fox-dining/1.0.0#/] 
+
+The user endpoints should be in a separate nav menu from the rest of the nav links (e.g. the main nav menu can be vertical on the left ‘side’ of the layout, and the user links (login/logout/register) at the top, in the header)
+
+User email verification endpoints, forgotten password endpoints etc, should not be included in the navigation",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vsl:,,,,,To Do
+Create about page / section,FDP-54,14634,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:07 AM,15/Jun/22 2:07 AM,15/Jun/22 3:08 AM,,,0,"The about page / section should include:
+
+* the team details (greenfox class, project name, your (devs) names & photos?\! )
+* project technical details
+** list used technologies e.g.
+*** Backend: Java 1.8/8, Spring Boot, JUnit, Heroku, [MailTrap.io|http://MailTrap.io]
+*** Frontend: Node.js, React, Bootstrap, …
+** extra features:
+*** user email verification
+*** 2FA
+*** i18n
+*** css darkmode
+*** etc …
+** test coverage report
+
+Bonus: Give the technical details pages a “tech look” with the “right” css 😉",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vst:,,,,,To Do
+Mock backend with db.json file,FDP-55,14635,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:08 AM,15/Jun/22 2:08 AM,15/Jun/22 3:08 AM,,,0,To speed up the frontend development use the [JSON Server|https://www.npmjs.com/package/json-server] package which will allow you to work with mocked data for all API request. Connect the frontend to the real backend you've developed only once the frontend is (mostly) finished,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vt1:,,,,,To Do
+Darkmode,FDP-56,14636,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:17 AM,15/Jun/22 2:17 AM,15/Jun/22 3:08 AM,,,0,Add darkmode to the front end with a toggle button to switch between the default (light) and the dark versions.,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vt9:,,,,,To Do
+Create user management frontend,FDP-57,14637,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:17 AM,15/Jun/22 2:17 AM,15/Jun/22 3:08 AM,,,0,,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vth:,,,,,To Do
+Create staff frontend,FDP-58,14638,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:18 AM,15/Jun/22 2:18 AM,15/Jun/22 3:08 AM,,,0,,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vtp:,,,,,To Do
+Create customer (members) frontend,FDP-59,14639,Story,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:18 AM,15/Jun/22 2:18 AM,15/Jun/22 3:08 AM,,,0,,,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vtx:,,,,,To Do
+Add frontend stories,FDP-60,14640,Task,To Do,FDP,Fox-Dining-Template,software,Tom,624ac6c6258562006fa61e8d,,Medium,,,,Tom,624ac6c6258562006fa61e8d,Tom,624ac6c6258562006fa61e8d,15/Jun/22 2:19 AM,15/Jun/22 2:19 AM,15/Jun/22 3:08 AM,,,0,"Create a frontend story (JIRA story) for every endpoint available on the backend. Group the endpoints by the (controller) class, e.g. all {{users}}endpoints, i.e. {{GET /staff}}, {{GET /staff/{id}}} etc. should be in the same story/task.",,Tom,624ac6c6258562006fa61e8d,,,,,,,,,,{},,0|i00vu5:,,,,,To Do

@@ -1,0 +1,117 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id 'checkstyle'
+}
+
+group = 'com.gfa'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+checkstyle {
+  toolVersion "8.32"
+  configFile file("config/checkstyle/checkstyle.xml")
+}
+checkstyleMain {
+  source = 'src/main/java'
+}
+checkstyleTest {
+  source = 'src/test/java'
+}
+tasks.withType(Checkstyle) {
+    exclude 'src/main/resources'
+    exclude 'src/test/resources'
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        html.required = true
+        html.outputLocation = file("${buildDir}/jacoco")    
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.9
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 1.0
+            }
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 1.0
+            }
+        }
+    }
+}
+jacocoTestCoverageVerification.dependsOn jacocoTestReport
+
+check.dependsOn jacocoTestCoverageVerification
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Dependency for MailTrap
+    implementation 'org.springframework:spring-context-support'
+        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+
+    // Dependency for env files
+        // https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    // Dependency for JWT Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+        // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+        // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+
+    //Dependency for 2 factor authentication
+        // https://mvnrepository.com/artifact/dev.samstevens.totp/totp
+    //noinspection VulnerableLibrariesLocal
+    implementation 'dev.samstevens.totp:totp:1.7.1'
+
+    //Dependency for Flyway
+        // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+    implementation 'org.flywaydb:flyway-core:8.5.12'
+        // https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
+    implementation 'org.flywaydb:flyway-mysql:8.5.12'
+
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+springBoot {
+    mainClass = "com.gfa.ProjectApplication"
+}
