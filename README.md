@@ -2,9 +2,7 @@
 
 For this project you will build a (simple) application with user management and perform various Dev - Ops activities with it.
 
-You can check sample project to get inspiration for your application:
-
-See [PROJECT](PROJECT.md)
+You can check sample project to get inspiration for your application: [PROJECT](PROJECT.md)
 
 - [Dependencies](#dependencies)
 - [Development rules:](#development-rules)
