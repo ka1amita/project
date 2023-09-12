@@ -16,9 +16,9 @@ public class User {
     @Column(unique = true)
     private String email;
     private boolean active;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-            name = "user_roles",
+            name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
@@ -26,6 +26,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<ActivationCode> activationCodes;
+
     public User() {
     }
 
@@ -34,7 +35,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        this.active = false;
+        active = false;
     }
 
     public Long getId() {
