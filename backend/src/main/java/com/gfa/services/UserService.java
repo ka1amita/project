@@ -9,7 +9,7 @@ public interface UserService {
 
   Role saveRole(Role role);
 
-  void addRoleToUser(String userName, String roleName);
+  void addRoleToUser(String username, String roleName);
 
   User getUser(String username);
 
