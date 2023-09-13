@@ -1,5 +1,8 @@
 package com.gfa.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
@@ -18,6 +21,7 @@ public class Role {
     @NotNull
     private String name;
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<AppUser> appUsers = new ArrayList<>();
 
     public Role() {

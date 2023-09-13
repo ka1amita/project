@@ -27,9 +27,11 @@ public class AppUser {
             joinColumns = @JoinColumn(name = "app_user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
     public AppUser() {
