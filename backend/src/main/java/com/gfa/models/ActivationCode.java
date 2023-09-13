@@ -1,11 +1,13 @@
 package com.gfa.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "activation_codes")
+@JsonIgnoreProperties("appUser")
 public class ActivationCode {
 
     @Id
