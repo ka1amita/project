@@ -52,13 +52,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .antMatchers("/login")
+        .antMatchers("/login", "/api/token/refresh")
         .permitAll();
     http.authorizeRequests()
-        .antMatchers(GET, "/api/user/**")
-        .hasAuthority("ROLE_USER");
+        .antMatchers(GET, "/api/users/**")
+        .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER","ROLE_ADMIN");
     http.authorizeRequests()
-        .antMatchers(GET, "/api/dashboard/***")
+        .antMatchers(GET,"/api/dashboard")
         .hasAuthority("ROLE_ADMIN");
     http.authorizeRequests()
         .anyRequest()
