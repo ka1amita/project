@@ -44,11 +44,11 @@ public class ActivationCode {
         this.activationCode = activationCode;
     }
 
-    public AppUser getUser() {
+    public AppUser getAppUser() {
         return appUser;
     }
 
-    public void setUser(AppUser appUser) {
+    public void setAppUser(AppUser appUser) {
         this.appUser = appUser;
     }
 

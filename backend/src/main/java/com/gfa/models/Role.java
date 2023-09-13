@@ -8,16 +8,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "user_role")
-public class UserRole {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
-    @ManyToMany(mappedBy = "userRoles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<AppUser> appUsers = new ArrayList<>();
 
-    public UserRole() {
+    public Role() {
     }
 
     public Long getId() {

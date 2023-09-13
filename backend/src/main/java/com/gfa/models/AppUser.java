@@ -25,19 +25,19 @@ public class AppUser {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "userRole_id")
     )
-    private List<UserRole> userRoles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "appUser")
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
     public AppUser() {
     }
 
-    public AppUser(String username, String password, String email, List<UserRole> userRoles) {
+    public AppUser(String username, String password, String email, List<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.userRoles = userRoles;
+        this.roles = roles;
         active = false;
     }
 
@@ -81,12 +81,12 @@ public class AppUser {
         this.active = active;
     }
 
-    public List<UserRole> getRoles() {
-        return userRoles;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     public List<ActivationCode> getActivationCodes() {
