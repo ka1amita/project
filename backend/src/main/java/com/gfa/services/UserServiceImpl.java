@@ -78,6 +78,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     if (user == null) {
       throw new UsernameNotFoundException("User not found in the database");
     }
+    if (!user.isActive()) {
+      throw new UsernameNotFoundException("User is not active");
+    }
+
     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
     user.getRoles()
         .forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getName())));
