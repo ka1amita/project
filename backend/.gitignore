@@ -1,5 +1,25 @@
-.env
+### General
+*.zip
+*.log
+*.bak
+*.tmp
+logs
 
+### Mac OS
+.DS_Store
+
+### IntelliJ IDEA ###
+.idea
+.env
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Java / Spring
+HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -17,13 +37,3 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
