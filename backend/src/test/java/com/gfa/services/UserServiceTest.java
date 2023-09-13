@@ -1,4 +1,4 @@
-package com.gfa.Services;
+package com.gfa.services;
 
 import com.gfa.dtos.responsedtos.RegisterRequestDTO;
 import com.gfa.exceptions.EmailAlreadyExistsException;
@@ -8,7 +8,6 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.UserRepository;
-import com.gfa.services.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +22,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 
 @ExtendWith(SpringExtension.class)
@@ -62,7 +63,6 @@ public class UserServiceTest {
         assertEquals(testEmail, returnedUser.getEmail());
     }
 
-
     @Test
     public void register_user_null_username() {
         RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@mail.com", "S@ck4D");
@@ -100,7 +100,6 @@ public class UserServiceTest {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "invalid");
         Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
     }
-
     @Test
     public void activateAccount_successful() {
         AppUser mockUser = new AppUser();
@@ -113,27 +112,18 @@ public class UserServiceTest {
 
         when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
 
-        when(userRepository.save(any(AppUser.class))).thenAnswer(invocation -> {
-            AppUser savedUser = invocation.getArgument(0);
-            mockUser.setActive(savedUser.isActive());
-            return savedUser;
-        });
-
+        when(userRepository.save(any())).thenReturn(mockUser);
 
         userService.activateAccount("validCode");
 
         assertTrue(mockUser.isActive());
 
-        when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.empty());
-        Optional<ActivationCode> retrievedCode = activationCodeRepository.findByActivationCode("validCode");
-        assertFalse(retrievedCode.isPresent());
+        verify(activationCodeRepository, times(1)).delete(mockActivationCode);
     }
-
 
     @Test
     public void activate_account_invalid_code() {
         when(activationCodeRepository.findByActivationCode("invalidCode")).thenReturn(Optional.empty());
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
-
 }
