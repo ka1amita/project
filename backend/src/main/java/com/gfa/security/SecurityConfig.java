@@ -1,8 +1,10 @@
 package com.gfa.security;
 
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import com.gfa.filters.CustomAuthenticationFilter;
+import com.gfa.filters.CustomAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -49,8 +52,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .anyRequest()
+        .antMatchers("/login")
         .permitAll();
+    http.authorizeRequests()
+        .antMatchers(GET, "/api/user/**")
+        .hasAuthority("ROLE_USER");
+    http.authorizeRequests()
+        .antMatchers(GET, "/api/dashboard/***")
+        .hasAuthority("ROLE_ADMIN");
+    http.authorizeRequests()
+        .anyRequest()
+        .authenticated();
     http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+    http.addFilterBefore(new CustomAuthorizationFilter(),
+                         UsernamePasswordAuthenticationFilter.class);
   }
 }
