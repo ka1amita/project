@@ -7,7 +7,7 @@ import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
-import com.gfa.repositories.UserRepository;
+import com.gfa.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class AppAppUserServiceImpl implements AppUserService {
 
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
     private final ActivationCodeRepository activationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ActivationCodeRepository activationCodeRepository) {
-        this.userRepository = userRepository;
+    public AppAppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
+        this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         // this.passwordEncoder = passwordEncoder;
     }
@@ -35,14 +35,14 @@ public class UserServiceImpl implements UserService {
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty.");
         }
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists.");
         }
 
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
             throw new IllegalArgumentException("Email cannot be empty.");
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (appUserRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists.");
         }
 
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        AppUser savedUser = userRepository.save(newUser);
+        AppUser savedUser = appUserRepository.save(newUser);
         activationCodeRepository.save(activationCode);
 
         activationCode.setAppUser(savedUser);
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
         }
 
         appUser.setActive(true);
-        userRepository.save(appUser);
+        appUserRepository.save(appUser);
 
         activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
     }
@@ -121,11 +121,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isUsernameUnique(String username) {
-        return !userRepository.existsByUsername(username);
+        return !appUserRepository.existsByUsername(username);
     }
 
     @Override
     public boolean isEmailUnique(String email) {
-        return !userRepository.existsByEmail(email);
+        return !appUserRepository.existsByEmail(email);
     }
 }

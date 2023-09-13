@@ -5,7 +5,7 @@ import com.gfa.dtos.responsedtos.RegisterRequestDTO;
 import com.gfa.models.AppUser;
 
 
-public interface UserService {
+public interface AppUserService {
 
     AppUser registerUser(RegisterRequestDTO request);
 

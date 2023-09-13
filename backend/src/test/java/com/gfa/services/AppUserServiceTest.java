@@ -7,7 +7,7 @@ import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
-import com.gfa.repositories.UserRepository;
+import com.gfa.repositories.AppUserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,13 +28,13 @@ import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class UserServiceTest {
+public class AppUserServiceTest {
 
     @Autowired
-    private UserServiceImpl userService;
+    private AppAppUserServiceImpl userService;
 
     @MockBean
-    private UserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     @MockBean
     private ActivationCodeRepository activationCodeRepository;
@@ -45,15 +45,15 @@ public class UserServiceTest {
         String testEmail = "testEmail@example.com";
         String testPassword = "S@ck4Dic";
 
-        when(userRepository.existsByUsername(testUsername)).thenReturn(false);
-        when(userRepository.existsByEmail(testEmail)).thenReturn(false);
+        when(appUserRepository.existsByUsername(testUsername)).thenReturn(false);
+        when(appUserRepository.existsByEmail(testEmail)).thenReturn(false);
 
         AppUser savedUser = new AppUser();
         savedUser.setUsername(testUsername);
         savedUser.setEmail(testEmail);
         savedUser.setPassword(testPassword);
 
-        when(userRepository.save(any())).thenReturn(savedUser);
+        when(appUserRepository.save(any())).thenReturn(savedUser);
 
         RegisterRequestDTO request = new RegisterRequestDTO(testUsername, testEmail, testPassword);
         AppUser returnedUser = userService.registerUser(request);
@@ -71,7 +71,7 @@ public class UserServiceTest {
 
     @Test
     public void register_user_existing_username() {
-        when(userRepository.existsByUsername("testUser")).thenReturn(true);
+        when(appUserRepository.existsByUsername("testUser")).thenReturn(true);
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "S@ck4D");
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(request));
     }
@@ -84,7 +84,7 @@ public class UserServiceTest {
 
     @Test
     public void register_user_existing_email() {
-        when(userRepository.existsByEmail("testEmail@example.com")).thenReturn(true);
+        when(appUserRepository.existsByEmail("testEmail@example.com")).thenReturn(true);
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "S@ck4D");
         Assertions.assertThrows(EmailAlreadyExistsException.class, () -> userService.registerUser(request));
     }
@@ -112,7 +112,7 @@ public class UserServiceTest {
 
         when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
 
-        when(userRepository.save(any())).thenReturn(mockUser);
+        when(appUserRepository.save(any())).thenReturn(mockUser);
 
         userService.activateAccount("validCode");
 
