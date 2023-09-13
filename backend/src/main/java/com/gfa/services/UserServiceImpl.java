@@ -1,7 +1,9 @@
 package com.gfa.services;
 
+import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
+import com.gfa.repositories.ActivationCodeRepo;
 import com.gfa.repositories.RoleRepo;
 import com.gfa.repositories.UserRepo;
 import java.util.ArrayList;
@@ -23,12 +25,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   private final UserRepo userRepo;
   private final RoleRepo roleRepo;
+  private final ActivationCodeRepo activationCodeRepo;
   private final PasswordEncoder passwordEncoder;
 
   @Autowired
-  public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo,@Lazy PasswordEncoder passwordEncoder) {
+  public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo,
+                         ActivationCodeRepo activationCodeRepo,
+                         @Lazy PasswordEncoder passwordEncoder) {
     this.userRepo = userRepo;
     this.roleRepo = roleRepo;
+    this.activationCodeRepo = activationCodeRepo;
     this.passwordEncoder = passwordEncoder;
   }
 
@@ -59,6 +65,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   @Override
   public List<AppUser> getUsers() {
     return userRepo.findAll();
+  }
+
+  @Override
+  public ActivationCode saveActivationCode(ActivationCode code) {
+    return activationCodeRepo.save(code);
   }
 
   @Override
