@@ -2,6 +2,8 @@ package com.gfa.models;
 
 import javax.persistence.*;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "activation_codes")
@@ -14,13 +16,15 @@ public class ActivationCode {
     private String activationCode;
     @ManyToOne
     private User user;
+    private LocalDateTime createdAt;
 
     public ActivationCode() {
     }
 
-    public ActivationCode(User user) {
-        this.activationCode = generateActivationCode();
+    public ActivationCode(String activationCode, User user) {
+        this.activationCode = activationCode;
         this.user = user;
+        this.createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public Long getId() {
@@ -47,16 +51,11 @@ public class ActivationCode {
         this.user = user;
     }
 
-    private String generateActivationCode() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        int length = 48;
-        SecureRandom secureRandom = new SecureRandom();
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int index = secureRandom.nextInt(characters.length());
-            stringBuilder.append(characters.charAt(index));
-        }
-        return stringBuilder.toString();
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
