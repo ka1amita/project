@@ -57,7 +57,7 @@ public class AppUserServiceImp implements AppUserService {
     public LoginResponseDto userLogin(Optional<LoginRequestDto> loginRequestDto) {
         LoginRequestDto payload = loginRequestDto.orElseThrow(() -> new NullPointerException("Input body was not received."));
         if (payload.getLoginInput() == null || payload.getLoginInput().isEmpty()) {
-            throw new IllegalArgumentException("Plesae provide a name or an email address.");
+            throw new IllegalArgumentException("Please provide a name or an email address.");
         }
         if (payload.getPassword() == null || payload.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Please provide a password.");
