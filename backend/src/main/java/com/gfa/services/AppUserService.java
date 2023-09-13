@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface AppUserService {
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
-    AppUser saveAppUser(AppUser appUser);
-    Role saveRole(Role role);
-    void addRoleToAppUser(String username,String roleName);
-    AppUser getAppUser(String username);
-    List<AppUser> getAppUsers();
+//    AppUser saveUser(AppUser appUser);
+//    Role saveRole(Role role);
+//    void addRoleToUser(String username,String roleName);
+//    AppUser getUser(String username);
+//    List<AppUser> getUsers();
 }

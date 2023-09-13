@@ -25,33 +25,33 @@ public class AppUserServiceImp implements AppUserService {
         this.roleRepository = roleRepository;
     }
 
-    @Override
-    public AppUser saveAppUser(AppUser appUser) {
-        return appUserRepository.save(appUser);
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        return roleRepository.save(role);
-    }
-
-    @Override
-    public void addRoleToAppUser(String username, String roleName) {
-        AppUser appUser = appUserRepository.findByUsername(username);
-        Role role = roleRepository.findByName(roleName);
-        appUser.getRoles().add(role);
-        appUserRepository.save(appUser);
-    }
-
-    @Override
-    public AppUser getAppUser(String username) {
-        return appUserRepository.findByUsername(username);
-    }
-
-    @Override
-    public List<AppUser> getAppUsers() {
-        return appUserRepository.findAll();
-    }
+//    @Override
+//    public AppUser saveUser(AppUser appUser) {
+//        return appUserRepository.save(appUser);
+//    }
+//
+//    @Override
+//    public Role saveRole(Role role) {
+//        return roleRepository.save(role);
+//    }
+//
+//    @Override
+//    public void addRoleToUser(String username, String roleName) {
+//        AppUser appUser = appUserRepository.findByUsername(username);
+//        Role role = roleRepository.findByName(roleName);
+//        appUser.getRoles().add(role);
+//        appUserRepository.save(appUser);
+//    }
+//
+//    @Override
+//    public AppUser getUser(String username) {
+//        return appUserRepository.findByUsername(username);
+//    }
+//
+//    @Override
+//    public List<AppUser> getUsers() {
+//        return appUserRepository.findAll();
+//    }
 
     @Override
     public LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto) {
