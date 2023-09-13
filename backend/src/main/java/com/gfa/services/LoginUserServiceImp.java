@@ -3,24 +3,22 @@ package com.gfa.services;
 import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.models.AppUser;
-import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AppUserServiceImp implements AppUserService {
+public class LoginUserServiceImp implements LoginUserService {
 
     private final AppUserRepository appUserRepository;
 
     private final RoleRepository roleRepository;
 
     @Autowired
-    public AppUserServiceImp(AppUserRepository appUserRepository, RoleRepository roleRepository) {
+    public LoginUserServiceImp(AppUserRepository appUserRepository, RoleRepository roleRepository) {
         this.appUserRepository = appUserRepository;
         this.roleRepository = roleRepository;
     }

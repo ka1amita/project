@@ -1,15 +1,8 @@
 package com.gfa;
 
-import com.gfa.models.AppUser;
-import com.gfa.models.Role;
-import com.gfa.services.AppUserService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-
-import java.util.ArrayList;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 public class ProjectApplication {
@@ -19,7 +12,7 @@ public class ProjectApplication {
     }
 
 //    @Bean
-//    CommandLineRunner run(AppUserService appUserService) {
+//    CommandLineRunner run(LoginUserService appUserService) {
 //        return args -> {
 //            appUserService.saveRole(new Role("ROLE_USER"));
 //            appUserService.saveRole(new Role("ROLE_MANAGER"));

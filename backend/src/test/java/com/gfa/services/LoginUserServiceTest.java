@@ -15,10 +15,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class AppUserServiceTest {
+public class LoginUserServiceTest {
 
     @InjectMocks
-    private AppUserServiceImp appUserService;
+    private LoginUserServiceImp appUserService;
 
     @Mock
     private AppUserRepository appUserRepository;

@@ -2,13 +2,10 @@ package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.responsedtos.LoginResponseDTO;
-import com.gfa.models.AppUser;
-import com.gfa.models.Role;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface AppUserService {
+public interface LoginUserService {
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
 //    AppUser saveUser(AppUser appUser);
