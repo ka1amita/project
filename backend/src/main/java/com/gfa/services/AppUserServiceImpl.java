@@ -65,7 +65,7 @@ public class AppUserServiceImpl implements AppUserService {
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(10).isAfter(LocalDateTime.now())) {
             if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty()) {
                 // TODO: Some more advanced password validation (maybe in a Util class)...
-                AppUser appUser = activationCode.get().getUser();
+                AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
                 appUserRepository.save(appUser);
                 activationCodeRepository.delete(activationCode.get());
