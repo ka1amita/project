@@ -1,78 +1,99 @@
 package com.gfa.models;
 
+import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "app_users")
 public class AppUser {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Long id;
 
-  String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long id;
+    @Column(unique = true, nullable = false)
+    private String username;
+    @Column(nullable = false)
+    private String password;
+    @Column(unique = true, nullable = false)
+    private String email;
+    private boolean active;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "app_users_roles",
+            joinColumns = @JoinColumn(name = "app_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles = new ArrayList<>();
 
-  String username;
+    @OneToMany(mappedBy = "appUser")
+    private List<ActivationCode> activationCodes = new ArrayList<>();
 
-  String password;
+    public AppUser() {
+    }
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  Collection<Role> roles = new ArrayList<>();
+    public AppUser(String username, String password, String email, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.roles = roles;
+        active = false;
+    }
 
-  public AppUser() {}
+    public Long getId() {
+        return id;
+    }
 
-  public AppUser(Long id, String name, String username, String password, Collection<Role> roles) {
-    this.id = id;
-    this.name = name;
-    this.username = username;
-    this.password = password;
-    this.roles = roles;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public Long getId() {
-    return id;
-  }
+    public String getUsername() {
+        return username;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getPassword() {
+        return password;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    public String getEmail() {
+        return email;
+    }
 
-  public void setUsername(String username) {
-    this.username = username;
-  }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    public boolean isActive() {
+        return active;
+    }
 
-  public void setPassword(String password) {
-    this.password = password;
-  }
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-  public Collection<Role> getRoles() {
-    return roles;
-  }
+    public List<Role> getRoles() {
+        return roles;
+    }
 
-  public void setRoles(Collection<Role> roles) {
-    this.roles = roles;
-  }
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<ActivationCode> getActivationCodes() {
+        return activationCodes;
+    }
+
+    public void setActivationCodes(List<ActivationCode> activationCodes) {
+        this.activationCodes = activationCodes;
+    }
 }
