@@ -1,5 +1,7 @@
 package com.gfa.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +27,11 @@ public class AppUser {
             joinColumns = @JoinColumn(name = "app_user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
     public AppUser() {
