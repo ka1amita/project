@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository, ActivationCodeRepository activationCodeRepository) {
         this.userRepository = userRepository;
         this.activationCodeRepository = activationCodeRepository;
-       // this.passwordEncoder = passwordEncoder;
+        // this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyExistsException("Email already exists.");
         }
 
-        if (request.getPassword() == null || request.getPassword().isEmpty()){
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty.");
         }
 
@@ -62,14 +63,13 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(request.getPassword());
         newUser.setActive(false);
 
-        AppUser savedUser = userRepository.save(newUser);
-
         String code = generateActivationCode();
-        ActivationCode activationCode = new ActivationCode(code,savedUser);
-        //TODO: Wait for Daniel to add the timestamp field.
+        ActivationCode activationCode = new ActivationCode(code, newUser);
+
+        AppUser savedUser = userRepository.save(newUser);
         activationCodeRepository.save(activationCode);
-        //TODO: Tell Daniel to instantiate an empty list @OneToMany(mappedBy = "user") private List<ActivationCode> activationCodes = new ArrayList<>();
-        savedUser.getActivationCodes().add(activationCode);
+
+        activationCode.setAppUser(savedUser);
 
         // TODO: Integrate Daniel's email utility here to send activation code to the user.
         //Mock email sending
@@ -86,9 +86,23 @@ public class UserServiceImpl implements UserService {
         }
 
         ActivationCode activationCode = activationCodeOpt.get();
-        AppUser user = activationCode.getUser();
-        user.setActive(true);
-        userRepository.save(user);
+        AppUser appUser = activationCode.getAppUser();
+
+        if (appUser.isActive()) {
+            throw new IllegalStateException("User account is already active.");
+        }
+
+        LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expirationTime = activationCodeCreationTime.plusDays(1);
+
+        if (now.isAfter(expirationTime)) {
+            throw new IllegalStateException("Activation code has expired.");
+        }
+
+        appUser.setActive(true);
+        userRepository.save(appUser);
+
         activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
     }
 
