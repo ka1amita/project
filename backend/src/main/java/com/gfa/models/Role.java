@@ -23,6 +23,10 @@ public class Role {
     public Role() {
     }
 
+    public Role(@NotNull String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
