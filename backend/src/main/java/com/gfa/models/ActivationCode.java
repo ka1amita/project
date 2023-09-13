@@ -1,7 +1,6 @@
 package com.gfa.models;
 
 import javax.persistence.*;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -16,16 +15,16 @@ public class ActivationCode {
     @Column(unique = true, nullable = false)
     private String activationCode;
     @ManyToOne
-    private User user;
+    private AppUser appUser;
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public ActivationCode() {
     }
 
-    public ActivationCode(String activationCode, User user) {
+    public ActivationCode(String activationCode, AppUser appUser) {
         this.activationCode = activationCode;
-        this.user = user;
+        this.appUser = appUser;
         this.createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
@@ -45,12 +44,12 @@ public class ActivationCode {
         this.activationCode = activationCode;
     }
 
-    public User getUser() {
-        return user;
+    public AppUser getAppUser() {
+        return appUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setAppUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     public LocalDateTime getCreatedAt() {
