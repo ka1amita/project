@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +23,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   private final UserRepo userRepo;
   private final RoleRepo roleRepo;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
-  public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo) {
+  public UserServiceImpl(UserRepo userRepo, RoleRepo roleRepo,@Lazy PasswordEncoder passwordEncoder) {
     this.userRepo = userRepo;
     this.roleRepo = roleRepo;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Override
   public User saveUser(User user) {
+    user.setPassword(passwordEncoder.encode(user.getUsername()));
     return userRepo.save(user);
   }
 
