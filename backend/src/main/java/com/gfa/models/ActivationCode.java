@@ -11,8 +11,9 @@ public class ActivationCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String activationCode;
     @ManyToOne
     private User user;
