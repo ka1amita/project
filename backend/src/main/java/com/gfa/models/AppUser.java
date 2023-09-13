@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "app_users")
+public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,23 +21,23 @@ public class User {
     private boolean active;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "userRole_id")
+            name = "app_users_roles",
+            joinColumns = @JoinColumn(name = "app_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<UserRole> userRoles = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "appUser")
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
-    public User() {
+    public AppUser() {
     }
 
-    public User(String username, String password, String email, List<UserRole> userRoles) {
+    public AppUser(String username, String password, String email, List<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.userRoles = userRoles;
+        this.roles = roles;
         active = false;
     }
 
@@ -81,12 +81,12 @@ public class User {
         this.active = active;
     }
 
-    public List<UserRole> getRoles() {
-        return userRoles;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoles(List<UserRole> userRoles) {
-        this.userRoles = userRoles;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     public List<ActivationCode> getActivationCodes() {
