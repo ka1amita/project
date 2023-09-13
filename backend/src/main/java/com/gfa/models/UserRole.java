@@ -18,7 +18,7 @@ public class UserRole {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role roleName;
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "userRoles", fetch = FetchType.LAZY)
     private List<User> users = new ArrayList<>();
 
     public UserRole() {
