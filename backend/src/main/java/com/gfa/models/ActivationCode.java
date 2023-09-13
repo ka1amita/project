@@ -17,6 +17,7 @@ public class ActivationCode {
     private String activationCode;
     @ManyToOne
     private User user;
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public ActivationCode() {
