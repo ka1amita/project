@@ -62,7 +62,7 @@ public class AppUserServiceImp implements AppUserService {
         if (payload.getPassword() == null || payload.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Please provide a password.");
         }
-        AppUser appUser = appUserRepository.findByUsernameOrEmail(payload.getLoginInput(), payload.getLoginInput())
+        AppUser appUser = appUserRepository.findByEmailContainsAndUsernameContains(payload.getLoginInput(), payload.getLoginInput())
                 .orElseThrow(() -> new NullPointerException("The user can not be found in the database."));
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
