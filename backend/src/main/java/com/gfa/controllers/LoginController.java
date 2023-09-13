@@ -1,7 +1,7 @@
 package com.gfa.controllers;
 
-import com.gfa.dtos.requestdtos.LoginRequestDto;
-import com.gfa.dtos.responsedtos.LoginResponseDto;
+import com.gfa.dtos.requestdtos.LoginRequestDTO;
+import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody Optional<LoginRequestDto> loginRequestDto) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody Optional<LoginRequestDTO> loginRequestDto) {
         return ResponseEntity.ok(appUserService.userLogin(loginRequestDto));
     }
 }

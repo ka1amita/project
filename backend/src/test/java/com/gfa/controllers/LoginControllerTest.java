@@ -1,7 +1,7 @@
 package com.gfa.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfa.dtos.requestdtos.LoginRequestDto;
+import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class LoginControllerTest {
 
     @Test
     public void Login_Successful_And_JWT_Token_Is_Generated() throws Exception {
-        LoginRequestDto payload = new LoginRequestDto("John Doe", "1234");
+        LoginRequestDTO payload = new LoginRequestDTO("John Doe", "1234");
         mockMvc.perform(
                         post("/login")
                                 .content(objectMapper.writeValueAsString(payload))
@@ -53,7 +53,7 @@ public class LoginControllerTest {
 
     @Test
     public void Login_Failed_Due_To_Missing_Username_Or_Email() throws Exception {
-        LoginRequestDto payload = new LoginRequestDto("", "1234");
+        LoginRequestDTO payload = new LoginRequestDTO("", "1234");
         mockMvc.perform(
                         post("/login")
                                 .content(objectMapper.writeValueAsString(payload))
@@ -67,7 +67,7 @@ public class LoginControllerTest {
 
     @Test
     public void Login_Failed_Due_To_Missing_Password() throws Exception {
-        LoginRequestDto payload = new LoginRequestDto("John Doe", "");
+        LoginRequestDTO payload = new LoginRequestDTO("John Doe", "");
         mockMvc.perform(
                         post("/login")
                                 .content(objectMapper.writeValueAsString(payload))
@@ -81,7 +81,7 @@ public class LoginControllerTest {
 
     @Test
     public void Login_Failed_Due_To_User_Not_Existing_In_Database() throws Exception {
-        LoginRequestDto payload = new LoginRequestDto("John ", "1234");
+        LoginRequestDTO payload = new LoginRequestDTO("John ", "1234");
         mockMvc.perform(
                         post("/login")
                                 .content(objectMapper.writeValueAsString(payload))

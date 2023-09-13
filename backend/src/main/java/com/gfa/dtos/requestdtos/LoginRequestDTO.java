@@ -1,14 +1,14 @@
 package com.gfa.dtos.requestdtos;
 
-public class LoginRequestDto extends RequestDto {
+public class LoginRequestDTO extends RequestDTO {
 
     private String loginInput;
     private String password;
 
-    public LoginRequestDto() {
+    public LoginRequestDTO() {
     }
 
-    public LoginRequestDto(String loginInput, String password) {
+    public LoginRequestDTO(String loginInput, String password) {
         this.loginInput = loginInput;
         this.password = password;
     }

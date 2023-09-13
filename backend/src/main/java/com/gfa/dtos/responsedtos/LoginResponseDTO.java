@@ -1,13 +1,13 @@
 package com.gfa.dtos.responsedtos;
 
-public class LoginResponseDto extends ResponseDto {
+public class LoginResponseDTO extends ResponseDTO {
 
     private String jwtToken;
 
-    public LoginResponseDto() {
+    public LoginResponseDTO() {
     }
 
-    public LoginResponseDto(String jwtToken) {
+    public LoginResponseDTO(String jwtToken) {
         this.jwtToken = jwtToken;
     }
 

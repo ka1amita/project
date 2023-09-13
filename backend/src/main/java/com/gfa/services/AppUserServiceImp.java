@@ -1,7 +1,7 @@
 package com.gfa.services;
 
-import com.gfa.dtos.requestdtos.LoginRequestDto;
-import com.gfa.dtos.responsedtos.LoginResponseDto;
+import com.gfa.dtos.requestdtos.LoginRequestDTO;
+import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
@@ -54,8 +54,8 @@ public class AppUserServiceImp implements AppUserService {
     }
 
     @Override
-    public LoginResponseDto userLogin(Optional<LoginRequestDto> loginRequestDto) {
-        LoginRequestDto payload = loginRequestDto.orElseThrow(() -> new NullPointerException("Input body was not received."));
+    public LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto) {
+        LoginRequestDTO payload = loginRequestDto.orElseThrow(() -> new NullPointerException("Input body was not received."));
         if (payload.getLoginInput() == null || payload.getLoginInput().isEmpty()) {
             throw new IllegalArgumentException("Please provide a name or an email address.");
         }
@@ -66,7 +66,7 @@ public class AppUserServiceImp implements AppUserService {
                 .orElseThrow(() -> new NullPointerException("The user can not be found in the database."));
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
-        return new LoginResponseDto("Demo token");
+        return new LoginResponseDTO("Demo token");
     }
 }
 

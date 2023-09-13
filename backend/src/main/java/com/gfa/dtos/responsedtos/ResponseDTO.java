@@ -1,4 +1,4 @@
 package com.gfa.dtos.responsedtos;
 
-public abstract class ResponseDto {
+public abstract class ResponseDTO {
 }

@@ -1,7 +1,7 @@
 package com.gfa.services;
 
-import com.gfa.dtos.requestdtos.LoginRequestDto;
-import com.gfa.dtos.responsedtos.LoginResponseDto;
+import com.gfa.dtos.requestdtos.LoginRequestDTO;
+import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.AppUserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ public class AppUserServiceTest {
 
     @Test
     public void Login_Is_Successful() {
-        LoginRequestDto mockRequest = new LoginRequestDto();
+        LoginRequestDTO mockRequest = new LoginRequestDTO();
         mockRequest.setLoginInput("John Doe");
         mockRequest.setPassword("1234");
 
@@ -40,7 +40,7 @@ public class AppUserServiceTest {
 
         when(appUserRepository.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.of(mockUser));
 
-        LoginResponseDto mockResponse = appUserService.userLogin(Optional.of(mockRequest));
+        LoginResponseDTO mockResponse = appUserService.userLogin(Optional.of(mockRequest));
 
         assertEquals("Demo token", mockResponse.getJwtToken());
     }
@@ -54,7 +54,7 @@ public class AppUserServiceTest {
 
     @Test
     public void Login_Failed_Due_To_Empty_Username_Or_Email() {
-        LoginRequestDto mockRequest = new LoginRequestDto();
+        LoginRequestDTO mockRequest = new LoginRequestDTO();
         mockRequest.setLoginInput("");
         mockRequest.setPassword("1234");
 
@@ -64,7 +64,7 @@ public class AppUserServiceTest {
 
     @Test
     public void Login_Failed_Due_To_Empty_Password() {
-        LoginRequestDto mockRequest = new LoginRequestDto();
+        LoginRequestDTO mockRequest = new LoginRequestDTO();
         mockRequest.setLoginInput("John Doe");
         mockRequest.setPassword("");
 
@@ -74,7 +74,7 @@ public class AppUserServiceTest {
 
     @Test
     public void Login_Failed_Due_To_Username_Not_Found() {
-        LoginRequestDto mockRequest = new LoginRequestDto();
+        LoginRequestDTO mockRequest = new LoginRequestDTO();
         mockRequest.setLoginInput("John Doe");
         mockRequest.setPassword("1234");
 
@@ -87,7 +87,7 @@ public class AppUserServiceTest {
 
     @Test
     public void testUserLoginIncorrectPassword() {
-        LoginRequestDto mockRequest = new LoginRequestDto();
+        LoginRequestDTO mockRequest = new LoginRequestDTO();
         mockRequest.setLoginInput("John Doe");
         mockRequest.setPassword("12345");
 
