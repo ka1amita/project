@@ -1,6 +1,7 @@
 package com.gfa.models;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -9,11 +10,13 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
+    @Column(nullable = false)
     private String password;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
     private boolean active;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -22,19 +25,19 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private List<UserRole> userRoles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<ActivationCode> activationCodes;
+    private List<ActivationCode> activationCodes = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String username, String password, String email, List<Role> roles) {
+    public User(String username, String password, String email, List<UserRole> userRoles) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.roles = roles;
+        this.userRoles = userRoles;
         active = false;
     }
 
@@ -78,12 +81,12 @@ public class User {
         this.active = active;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public List<UserRole> getRoles() {
+        return userRoles;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     public List<ActivationCode> getActivationCodes() {
