@@ -1,7 +1,7 @@
 package com.gfa.services;
 
+import com.gfa.models.AppUser;
 import com.gfa.models.Role;
-import com.gfa.models.User;
 import com.gfa.repositories.RoleRepo;
 import com.gfa.repositories.UserRepo;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
-  public User saveUser(User user) {
+  public AppUser saveUser(AppUser user) {
     user.setPassword(passwordEncoder.encode(user.getUsername()));
     return userRepo.save(user);
   }
@@ -45,25 +45,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   @Override
   public void addRoleToUser(String username, String roleName) {
-    User user = userRepo.findByUsername(username);
+    AppUser user = userRepo.findByUsername(username);
     Role role = roleRepo.findByName(roleName);
     user.getRoles()
         .add(role);
   }
 
   @Override
-  public User getUser(String username) {
+  public AppUser getUser(String username) {
     return userRepo.findByUsername(username);
   }
 
   @Override
-  public List<User> getUsers() {
+  public List<AppUser> getUsers() {
     return userRepo.findAll();
   }
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = userRepo.findByUsername(username);
+    AppUser user = userRepo.findByUsername(username);
     if (user == null) {
       throw new UsernameNotFoundException("User not found in the database");
     }

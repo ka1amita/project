@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
@@ -26,9 +26,9 @@ public class User {
   @ManyToMany(fetch = FetchType.EAGER)
   Collection<Role> roles = new ArrayList<>();
 
-  public User() {}
+  public AppUser() {}
 
-  public User(Long id, String name, String username, String password, Collection<Role> roles) {
+  public AppUser(Long id, String name, String username, String password, Collection<Role> roles) {
     this.id = id;
     this.name = name;
     this.username = username;
