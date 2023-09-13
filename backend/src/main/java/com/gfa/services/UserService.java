@@ -2,11 +2,12 @@ package com.gfa.services;
 
 
 import com.gfa.dtos.responsedtos.RegisterRequestDTO;
-import com.gfa.models.User;
+import com.gfa.models.AppUser;
+
 
 public interface UserService {
 
-    User registerUser(RegisterRequestDTO request);
+    AppUser registerUser(RegisterRequestDTO request);
 
     boolean isUsernameUnique(String username);
 

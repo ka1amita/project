@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,10 +30,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
-    public User() {
+    public AppUser() {
     }
 
-    public User(String username, String password, String email, List<UserRole> userRoles) {
+    public AppUser(String username, String password, String email, List<UserRole> userRoles) {
         this.username = username;
         this.password = password;
         this.email = email;

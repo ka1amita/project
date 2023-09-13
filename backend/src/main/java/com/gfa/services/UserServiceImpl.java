@@ -5,7 +5,7 @@ import com.gfa.exceptions.EmailAlreadyExistsException;
 import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
-import com.gfa.models.User;
+import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(RegisterRequestDTO request) {
+    public AppUser registerUser(RegisterRequestDTO request) {
 
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty.");
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
         }
 
-        User newUser = new User();
+        AppUser newUser = new AppUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         //TODO:Wait for Matěj's spring security integration for password encoding.
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(request.getPassword());
         newUser.setActive(false);
 
-        User savedUser = userRepository.save(newUser);
+        AppUser savedUser = userRepository.save(newUser);
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code,savedUser);
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
         }
 
         ActivationCode activationCode = activationCodeOpt.get();
-        User user = activationCode.getUser();
+        AppUser user = activationCode.getUser();
         user.setActive(true);
         userRepository.save(user);
         activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
