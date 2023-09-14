@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -31,18 +31,18 @@ public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
     private final ActivationCodeRepository activationCodeRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
-                              @Lazy PasswordEncoder passwordEncoder) {
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -130,7 +130,17 @@ public class AppUserServiceImpl implements AppUserService {
                                                                         "DB"));
         appUser.getRoles()
                .add(role);
-        appUserRepository.save(appUser);
+    }
+
+    @Override
+    public void addRoleToAppUser(AppUser appUser, String roleName) {
+        Role role =
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
+        appUser.getRoles()
+               .add(role);
     }
 
     @Override
@@ -140,7 +150,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser saveUser(AppUser user) {
-        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getUsername()));
         return appUserRepository.save(user);
     }
 
@@ -163,8 +173,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser setAppUserActive(AppUser appUser) {
+    public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
-        return appUserRepository.save(appUser);
     }
 }

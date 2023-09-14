@@ -20,6 +20,8 @@ public interface AppUserService {
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
 
+    void addRoleToAppUser(AppUser appUser, String roleName);
+
     void addRoleToAppUser(String username, String roleName);
 
     Role saveRole(Role role);
@@ -32,5 +34,5 @@ public interface AppUserService {
 
     List<AppUser> getAllAppUsers();
 
-    AppUser setAppUserActive(AppUser user);
+    void setAppUserActive(AppUser user);
 }
