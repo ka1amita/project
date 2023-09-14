@@ -1,11 +1,14 @@
 package com.gfa.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "app_users")
 public class AppUser {
 
     @Id
@@ -21,13 +24,15 @@ public class AppUser {
     private boolean active;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "userRole_id")
+            name = "app_users_roles",
+            joinColumns = @JoinColumn(name = "app_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonManagedReference
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
     private List<ActivationCode> activationCodes = new ArrayList<>();
 
     public AppUser() {
