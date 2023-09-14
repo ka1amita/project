@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 public class RegistrationController {
 
@@ -22,45 +24,15 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO registerRequest) {
-
-        if (registerRequest.getUsername() == null || registerRequest.getUsername().isEmpty()) {
-            return ResponseEntity.badRequest().body("Username cannot be null or empty");
-        }
-
-        if (registerRequest.getEmail() == null || registerRequest.getEmail().isEmpty()){
-            return ResponseEntity.badRequest().body("Email cannot be null or empty");
-        }
-
-        if (registerRequest.getPassword() == null || registerRequest.getPassword().isEmpty()){
-            return ResponseEntity.badRequest().body("Password cannot be null or empty");
-        }
-
-        try {
-            appUserService.registerUser(registerRequest);
-            return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account!"));
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body("Username already exists.");
-        } catch (EmailAlreadyExistsException e) {
-            return ResponseEntity.badRequest().body("Email already exists.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred. Please try again.");
-        }
-
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) {
+        appUserService.registerUser(registerRequest);
+        return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account!"));
     }
 
     @GetMapping("/confirm/{activationCode}")
     public ResponseEntity<?> activateAccount(@PathVariable String activationCode) {
-        try {
-            appUserService.activateAccount(activationCode);
-            return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully!"));
-        } catch (InvalidActivationCodeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred. Please try again.");
-        }
+        appUserService.activateAccount(activationCode);
+        return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully!"));
     }
 
 }
