@@ -1,6 +1,5 @@
 package com.gfa.services;
 
-
 import com.gfa.dtos.responsedtos.RegisterRequestDTO;
 import com.gfa.models.AppUser;
 
@@ -17,10 +16,13 @@ import java.util.Optional;
 public interface AppUserService {
 
     AppUser registerUser(RegisterRequestDTO request);
+
     void activateAccount (String activationCode);
+
     ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO);
 
     ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode);
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
+
 }
