@@ -59,7 +59,9 @@ public class RegistrationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Username already exists."));
+                .andExpect(content().json("{\"errorMessage\":\"Username already exists.\"}"));
+
+
     }
 
     @Test
@@ -73,7 +75,8 @@ public class RegistrationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Email already exists."));
+                .andExpect(content().json("{\"errorMessage\":\"Email already exists.\"}"));
+
     }
 
     @Test
@@ -85,7 +88,8 @@ public class RegistrationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Username cannot be null or empty"));
+                .andExpect(content().json("{\"errorMessage\":\"Username cannot be null or empty\"}"));
+
     }
 
     @Test
@@ -97,7 +101,8 @@ public class RegistrationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Email cannot be null or empty"));
+                .andExpect(content().json("{\"errorMessage\":\"Email cannot be null or empty\"}"));
+
     }
 
     @Test
@@ -109,7 +114,7 @@ public class RegistrationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Password cannot be null or empty"));
+                .andExpect(content().json("{\"errorMessage\":\"Password cannot be null or empty\"}"));
     }
 
     @Test
@@ -129,7 +134,7 @@ public class RegistrationControllerTest {
 
         mockMvc.perform(get("/confirm/invalidActivationCode"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Invalid activation code."));
+                .andExpect(content().json("{\"errorMessage\":\"Invalid activation code.\"}"));
     }
 
     @Test
