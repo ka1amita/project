@@ -39,6 +39,7 @@ public class Role {
     public void setId(Long id) {
         this.id = id;
     }
+
     @NotNull
     public String getName() {
         return name;
@@ -53,8 +54,6 @@ public class Role {
     }
 
     public void setAppUsers(List<AppUser> appUsers) {
-        {
-            this.appUsers = appUsers;
-        }
+        this.appUsers = appUsers;
     }
 }
