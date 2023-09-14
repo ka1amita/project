@@ -1,11 +1,14 @@
 package com.gfa.dtos.responsedtos;
 
-public class RegisterRequestDTO extends RequestDTO{
+import javax.validation.constraints.NotEmpty;
 
+
+public class RegisterRequestDTO extends RequestDTO {
+    @NotEmpty(message = "Username cannot be null or empty")
     private String username;
-
+    @NotEmpty(message = "Email cannot be null or empty")
     private String email;
-
+    @NotEmpty(message = "Password cannot be null or empty")
     private String password;
 
     public RegisterRequestDTO() {
