@@ -1,6 +1,7 @@
 package com.gfa.security;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import com.gfa.filters.CustomAuthenticationFilter;
@@ -20,51 +21,57 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
-  @Autowired
-  public SecurityConfig(UserDetailsService userDetailsService) {
-    this.userDetailsService = userDetailsService;
-  }
+    @Autowired
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-  // TODO define Authorities for Roles
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService)
-        .passwordEncoder(passwordEncoder());
-  }
+    // TODO define Authorities for Roles
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf()
-        .disable();
-    http.sessionManagement()
-        .sessionCreationPolicy(STATELESS);
-    http.authorizeRequests()
-        .antMatchers("/login", "/api/token/refresh")
-        .permitAll();
-    http.authorizeRequests()
-        .antMatchers(GET, "/api/users/**")
-        .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER","ROLE_ADMIN");
-    http.authorizeRequests()
-        .antMatchers(GET,"/api/dashboard")
-        .hasAuthority("ROLE_ADMIN");
-    http.authorizeRequests()
-        .anyRequest()
-        .authenticated();
-    http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
-    http.addFilterBefore(new CustomAuthorizationFilter(),
-                         UsernamePasswordAuthenticationFilter.class);
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf()
+                .disable();
+        http.sessionManagement()
+                .sessionCreationPolicy(STATELESS);
+        http.authorizeRequests()
+                .antMatchers("/login", "/api/token/refresh")
+                .permitAll();
+        http.authorizeRequests()
+                .antMatchers(GET, "/api/users/**")
+                .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN");
+        http.authorizeRequests()
+                .antMatchers(GET, "/api/dashboard")
+                .hasAuthority("ROLE_ADMIN");
+        http.authorizeRequests()
+                .antMatchers(POST, "/reset")
+                .permitAll();
+        http.authorizeRequests()
+                .antMatchers(POST, "/reset/*")
+                .permitAll();
+        http.authorizeRequests()
+                .anyRequest()
+                .authenticated();
+        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilterBefore(new CustomAuthorizationFilter(),
+                UsernamePasswordAuthenticationFilter.class);
+    }
 }
