@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -65,27 +66,27 @@ public class AppUserServiceTest {
 
     @Test
     public void register_user_null_username() {
-        RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@mail.com", "S@ck4D");
+        RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@mail.com", "Valid@1234");
         Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
     }
 
     @Test
     public void register_user_existing_username() {
         when(appUserRepository.existsByUsername("testUser")).thenReturn(true);
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "S@ck4D");
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "Valid@1234");
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(request));
     }
 
     @Test
     public void register_user_null_email() {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "S@ck4D");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "Valid@1234");
+        Assertions.assertThrows(MethodArgumentNotValidException.class, () -> userService.registerUser(request));
     }
 
     @Test
     public void register_user_existing_email() {
         when(appUserRepository.existsByEmail("testEmail@example.com")).thenReturn(true);
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "S@ck4D");
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         Assertions.assertThrows(EmailAlreadyExistsException.class, () -> userService.registerUser(request));
     }
 
