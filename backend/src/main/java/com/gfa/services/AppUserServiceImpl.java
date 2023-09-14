@@ -34,29 +34,22 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) {
-        if (passwordResetRequestDTO == null) {
-            throw new IllegalArgumentException("You have to provide either the username or the email field!");
-        }
-        passwordResetRequestDTO.setEmail(Objects.toString(passwordResetRequestDTO.getEmail(), ""));
-        passwordResetRequestDTO.setUsername(Objects.toString(passwordResetRequestDTO.getUsername(), ""));
-        if (passwordResetRequestDTO.getEmail().isEmpty() && passwordResetRequestDTO.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("You have to provide either the username or the email field!");
-        }
-
-        Optional<AppUser> appUser;
-        if (!passwordResetRequestDTO.getEmail().isEmpty() && !passwordResetRequestDTO.getUsername().isEmpty()) {
+        Optional<AppUser> appUser = Optional.empty();
+        if (passwordResetRequestDTO != null) {
             appUser = appUserRepository.findByEmailContainsAndUsernameContains(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
-        } else if (!passwordResetRequestDTO.getEmail().isEmpty()) {
-            appUser = appUserRepository.findByEmailContains(passwordResetRequestDTO.getEmail());
-        } else {
-            appUser = appUserRepository.findByUsernameContains(passwordResetRequestDTO.getEmail());
+            if (!appUser.isPresent()) {
+                appUser = appUserRepository.findByEmailContains(passwordResetRequestDTO.getEmail());
+            }
+            if (!appUser.isPresent()) {
+                appUser = appUserRepository.findByUsernameContains(passwordResetRequestDTO.getUsername());
+            }
         }
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
-            throw new IllegalArgumentException("User doesn't exist!");
+            throw new IllegalArgumentException("User not found!");
         }
     }
 
