@@ -4,12 +4,27 @@ import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.EmailAlreadyExistsException;
 import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+
+import java.util.stream.Collectors;
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException e){
+        String errorMsg = e.getBindingResult()
+                .getAllErrors().stream()
+                .map(ObjectError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(errorMsg));
+    }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
