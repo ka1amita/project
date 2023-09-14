@@ -16,14 +16,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-public class AppAppUserServiceImpl implements AppUserService {
+public class AppUserServiceImp implements AppUserService {
 
     private final AppUserRepository appUserRepository;
     private final ActivationCodeRepository activationCodeRepository;
     //private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AppAppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
+    public AppUserServiceImp(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         // this.passwordEncoder = passwordEncoder;
