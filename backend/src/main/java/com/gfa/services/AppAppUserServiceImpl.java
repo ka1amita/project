@@ -32,16 +32,10 @@ public class AppAppUserServiceImpl implements AppUserService {
     @Override
     public AppUser registerUser(RegisterRequestDTO request) {
 
-        if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("Username cannot be null or empty.");
-        }
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists.");
         }
 
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be empty.");
-        }
         if (appUserRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists.");
         }
@@ -49,7 +43,6 @@ public class AppAppUserServiceImpl implements AppUserService {
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty.");
         }
-
         String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
         if (!request.getPassword().matches(passwordPattern)) {
             throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
@@ -79,7 +72,7 @@ public class AppAppUserServiceImpl implements AppUserService {
 
     @Override
     public void activateAccount(String code) {
-        Optional<ActivationCode> activationCodeOpt = activationCodeRepository.findByActivationCode(code);
+        Optional<ActivationCode> activationCodeOpt = activationCodeRepository.findByActivationCodeContains(code);
 
         if (!activationCodeOpt.isPresent()) {
             throw new InvalidActivationCodeException("Invalid activation code.");
@@ -119,13 +112,4 @@ public class AppAppUserServiceImpl implements AppUserService {
         return stringBuilder.toString();
     }
 
-    @Override
-    public boolean isUsernameUnique(String username) {
-        return !appUserRepository.existsByUsername(username);
-    }
-
-    @Override
-    public boolean isEmailUnique(String email) {
-        return !appUserRepository.existsByEmail(email);
-    }
 }
