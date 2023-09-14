@@ -32,7 +32,7 @@ import static org.mockito.Mockito.times;
 public class AppUserServiceTest {
 
     @Autowired
-    private AppAppUserServiceImpl userService;
+    private AppUserServiceImp userService;
 
     @MockBean
     private AppUserRepository appUserRepository;
