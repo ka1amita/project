@@ -1,12 +1,12 @@
 package com.gfa.dtos.responsedtos;
 
-public class helloMessageDTO {
+public class PasswordResetWithCodeResponseDTO extends ResponseDTO {
     String message;
 
-    public helloMessageDTO() {
+    public PasswordResetWithCodeResponseDTO() {
     }
 
-    public helloMessageDTO(String message) {
+    public PasswordResetWithCodeResponseDTO(String message) {
         this.message = message;
     }
 
