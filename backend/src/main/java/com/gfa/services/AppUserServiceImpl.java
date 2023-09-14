@@ -9,27 +9,39 @@ import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
+import com.gfa.models.Role;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
+import com.gfa.repositories.RoleRepository;
 import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
-    @Autowired
     private final AppUserRepository appUserRepository;
-    @Autowired
     private final ActivationCodeRepository activationCodeRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
+
+    @Autowired
+    public AppUserServiceImpl(AppUserRepository appUserRepository,
+                              ActivationCodeRepository activationCodeRepository,
+                              RoleRepository roleRepository,
+                              @Lazy PasswordEncoder passwordEncoder) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -102,5 +114,44 @@ public class AppUserServiceImpl implements AppUserService {
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
         return new LoginResponseDTO("Demo token");
+    }
+
+    @Override
+    public void addRoleToUser(String username, String roleName) {
+        AppUser appUser =
+            appUserRepository.findByUsername(username)
+                             .orElseThrow(() -> new UsernameNotFoundException(
+                                 "Username not found in the DB"));
+        Role role =
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
+        appUser.getRoles()
+            .add(role);
+    }
+
+    @Override
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
+    }
+
+    @Override
+    public AppUser saveUser(AppUser user) {
+        user.setPassword(passwordEncoder.encode(user.getUsername()));
+        return appUserRepository.save(user);
+    }
+
+    @Override
+    public ActivationCode saveActivationCode(ActivationCode activationCode) {
+        return activationCodeRepository.save(activationCode);
+    }
+
+    @Override
+    public AppUser getAppUser(String username) {
+        Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
+        AppUser appUser =
+            optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
+        return appUser;
     }
 }

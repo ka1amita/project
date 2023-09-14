@@ -5,8 +5,10 @@ import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
+import com.gfa.models.ActivationCode;
+import com.gfa.models.AppUser;
+import com.gfa.models.Role;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -17,4 +19,13 @@ public interface AppUserService {
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
 
+    void addRoleToUser(String username, String roleName);
+
+    Role saveRole(Role role);
+
+    AppUser saveUser(AppUser user);
+
+    ActivationCode saveActivationCode(ActivationCode code);
+
+    AppUser getAppUser(String username);
 }
