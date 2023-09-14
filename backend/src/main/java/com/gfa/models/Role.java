@@ -25,8 +25,7 @@ public class Role {
     public Role() {
     }
 
-    public Role(Long id, @NotNull String name) {
-        this.id = id;
+    public Role(@NotNull String name) {
         this.name = name;
     }
 

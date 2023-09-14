@@ -1,6 +1,7 @@
 package com.gfa.security;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 import com.gfa.filters.CustomAuthenticationFilter;
@@ -52,6 +53,12 @@ public class NewSecurityConfig {
     http.authorizeRequests()
         .antMatchers(GET, "/dashboard")
         .hasAuthority("ROLE_ADMIN");
+    http.authorizeRequests()
+        .antMatchers(POST, "/reset")
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(POST, "/reset/*")
+        .permitAll();
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires any Role
