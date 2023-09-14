@@ -1,5 +1,7 @@
 package com.gfa.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -15,6 +17,7 @@ public class ActivationCode {
     @Column(unique = true, nullable = false)
     private String activationCode;
     @ManyToOne
+    @JsonBackReference
     private AppUser appUser;
     @Column(nullable = false)
     private LocalDateTime createdAt;
