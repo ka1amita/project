@@ -14,6 +14,7 @@ import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -117,7 +118,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
+    public void addRoleToAppUser(String username, String roleName) {
         AppUser appUser =
             appUserRepository.findByUsername(username)
                              .orElseThrow(() -> new UsernameNotFoundException(
@@ -154,5 +155,16 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser appUser =
             optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
         return appUser;
+    }
+
+    @Override
+    public List<AppUser> getAllAppUsers() {
+        return appUserRepository.findAll();
+    }
+
+    @Override
+    public AppUser setAppUserActive(AppUser appUser) {
+        appUser.setActive(true);
+        return appUserRepository.save(appUser);
     }
 }

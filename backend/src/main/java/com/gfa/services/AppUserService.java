@@ -8,6 +8,7 @@ import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
@@ -19,7 +20,7 @@ public interface AppUserService {
 
     LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
 
-    void addRoleToUser(String username, String roleName);
+    void addRoleToAppUser(String username, String roleName);
 
     Role saveRole(Role role);
 
@@ -28,4 +29,8 @@ public interface AppUserService {
     ActivationCode saveActivationCode(ActivationCode code);
 
     AppUser getAppUser(String username);
+
+    List<AppUser> getAllAppUsers();
+
+    AppUser setAppUserActive(AppUser user);
 }
