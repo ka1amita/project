@@ -128,7 +128,8 @@ public class AppUserServiceImpl implements AppUserService {
                                                                         " name not found in the " +
                                                                         "DB"));
         appUser.getRoles()
-            .add(role);
+               .add(role);
+        appUserRepository.save(appUser);
     }
 
     @Override
