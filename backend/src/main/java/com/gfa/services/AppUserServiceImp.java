@@ -54,8 +54,7 @@ public class AppUserServiceImp implements AppUserService {
         //TODO:Wait for Matěj's spring security integration for password encoding.
         //Mocked encoding: For now just sets the password directly.
         newUser.setPassword(request.getPassword());
-        newUser.setActive(false);
-
+        
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
