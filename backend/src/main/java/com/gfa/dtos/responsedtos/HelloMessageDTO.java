@@ -1,12 +1,12 @@
 package com.gfa.dtos.responsedtos;
 
-public class helloMessageDTO {
+public class HelloMessageDTO {
     String message;
 
-    public helloMessageDTO() {
+    public HelloMessageDTO() {
     }
 
-    public helloMessageDTO(String message) {
+    public HelloMessageDTO(String message) {
         this.message = message;
     }
 
