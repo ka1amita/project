@@ -1,6 +1,6 @@
 package com.gfa.services;
 
-import com.gfa.dtos.responsedtos.RegisterRequestDTO;
+import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.exceptions.EmailAlreadyExistsException;
 import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
