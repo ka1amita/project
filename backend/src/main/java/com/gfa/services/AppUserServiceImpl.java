@@ -1,7 +1,9 @@
 package com.gfa.services;
 
+import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
+import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
@@ -84,5 +86,21 @@ public class AppUserServiceImpl implements AppUserService {
                 .limit(48)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+
+    @Override
+    public LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto) {
+        LoginRequestDTO payload = loginRequestDto.orElseThrow(() -> new NullPointerException("Input body was not received."));
+        if (payload.getLoginInput() == null || payload.getLoginInput().isEmpty()) {
+            throw new IllegalArgumentException("Please provide a name or an email address.");
+        }
+        if (payload.getPassword() == null || payload.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Please provide a password.");
+        }
+        AppUser appUser = appUserRepository.findByEmailContainsAndUsernameContains(payload.getLoginInput(), payload.getLoginInput())
+                .orElseThrow(() -> new NullPointerException("The user can not be found in the database."));
+        if (!appUser.getPassword().equals(payload.getPassword()))
+            throw new IllegalArgumentException("The password is incorrect.");
+        return new LoginResponseDTO("Demo token");
     }
 }
