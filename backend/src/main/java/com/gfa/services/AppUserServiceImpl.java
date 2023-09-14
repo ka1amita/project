@@ -3,10 +3,11 @@ package com.gfa.services;
 import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
-import com.gfa.dtos.responsedtos.LoginResponseDTO;
-import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
-import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
-import com.gfa.dtos.responsedtos.ResponseDTO;
+import com.gfa.dtos.requestdtos.RegisterRequestDTO;
+import com.gfa.dtos.responsedtos.*;
+import com.gfa.exceptions.EmailAlreadyExistsException;
+import com.gfa.exceptions.InvalidActivationCodeException;
+import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,5 +104,86 @@ public class AppUserServiceImpl implements AppUserService {
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
         return new LoginResponseDTO("Demo token");
+    }
+    @Override
+    public AppUser registerUser(RegisterRequestDTO request) {
+
+        if (appUserRepository.existsByUsername(request.getUsername())) {
+            throw new UserAlreadyExistsException("Username already exists.");
+        }
+
+        if (appUserRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists.");
+        }
+
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty.");
+        }
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        if (!request.getPassword().matches(passwordPattern)) {
+            throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+        }
+
+        AppUser newUser = new AppUser();
+        newUser.setUsername(request.getUsername());
+        newUser.setEmail(request.getEmail());
+        //TODO:Wait for Matěj's spring security integration for password encoding.
+        //Mocked encoding: For now just sets the password directly.
+        newUser.setPassword(request.getPassword());
+
+        String code = generateActivationCode();
+        ActivationCode activationCode = new ActivationCode(code, newUser);
+
+        AppUser savedUser = appUserRepository.save(newUser);
+        activationCodeRepository.save(activationCode);
+
+        activationCode.setAppUser(savedUser);
+
+        // TODO: Integrate Daniel's email utility here to send activation code to the user.
+        //Mock email sending
+        System.out.println("Email would be sent here with activation code. For now, retrieve the activation code from the database for testing.");
+        return savedUser;
+    }
+
+    @Override
+    public void activateAccount(String code) {
+        Optional<ActivationCode> activationCodeOpt = activationCodeRepository.findByActivationCodeContains(code);
+
+        if (!activationCodeOpt.isPresent()) {
+            throw new InvalidActivationCodeException("Invalid activation code.");
+        }
+
+        ActivationCode activationCode = activationCodeOpt.get();
+        AppUser appUser = activationCode.getAppUser();
+
+        if (appUser.isActive()) {
+            throw new IllegalStateException("User account is already active.");
+        }
+
+        LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expirationTime = activationCodeCreationTime.plusDays(1);
+
+        if (now.isAfter(expirationTime)) {
+            throw new IllegalStateException("Activation code has expired.");
+        }
+
+        appUser.setActive(true);
+        appUserRepository.save(appUser);
+
+        activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
+    }
+
+    private String generateActivationCode() {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        int length = 48;
+        SecureRandom secureRandom = new SecureRandom();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = secureRandom.nextInt(characters.length());
+            stringBuilder.append(characters.charAt(index));
+        }
+        return stringBuilder.toString();
     }
 }
