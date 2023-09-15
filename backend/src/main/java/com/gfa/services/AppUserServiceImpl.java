@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -28,14 +28,17 @@ public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
     @Autowired
     private final ActivationCodeRepository activationCodeRepository;
+    @Autowired
+    private final EmailService emailService;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
+    public AppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository, EmailService emailService) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
+        this.emailService = emailService;
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) {
+    public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         Optional<AppUser> appUser = Optional.empty();
         if (passwordResetRequestDTO != null) {
             appUser = appUserRepository.findByEmailContainsAndUsernameContains(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
@@ -49,6 +52,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
+            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(),activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
             throw new IllegalArgumentException("User not found!");
@@ -99,7 +103,7 @@ public class AppUserServiceImpl implements AppUserService {
         return new LoginResponseDTO("Demo token");
     }
     @Override
-    public AppUser registerUser(RegisterRequestDTO request) {
+    public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists.");
@@ -132,9 +136,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         activationCode.setAppUser(savedUser);
 
-        // TODO: Integrate Daniel's email utility here to send activation code to the user.
-        //Mock email sending
-        System.out.println("Email would be sent here with activation code. For now, retrieve the activation code from the database for testing.");
+        emailService.registerConfirmationEmail(savedUser.getEmail(),savedUser.getUsername(),activationCode.getActivationCode());
         return savedUser;
     }
 
