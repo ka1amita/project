@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.times;
 public class AppUserServiceTest {
 
     @Autowired
-    private AppUserServiceImp userService;
+    private AppUserServiceImpl userService;
 
     @MockBean
     private AppUserRepository appUserRepository;
@@ -41,7 +42,7 @@ public class AppUserServiceTest {
     private ActivationCodeRepository activationCodeRepository;
 
     @Test
-    public void register_user_successful() {
+    public void register_user_successful() throws MessagingException {
         String testUsername = "testUser";
         String testEmail = "testEmail@example.com";
         String testPassword = "S@ck4Dic";
@@ -111,7 +112,7 @@ public class AppUserServiceTest {
         mockActivationCode.setAppUser(mockUser);
         mockActivationCode.setCreatedAt(LocalDateTime.now().minusHours(10));
 
-        when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
+        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
 
         when(appUserRepository.save(any())).thenReturn(mockUser);
 
@@ -124,7 +125,7 @@ public class AppUserServiceTest {
 
     @Test
     public void activate_account_invalid_code() {
-        when(activationCodeRepository.findByActivationCode("invalidCode")).thenReturn(Optional.empty());
+        when(activationCodeRepository.findByActivationCodeContains("invalidCode")).thenReturn(Optional.empty());
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
 }
