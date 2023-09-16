@@ -38,7 +38,6 @@ public class AppUserServiceImpl implements AppUserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
 
-
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
@@ -120,27 +119,27 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void addRoleToAppUser(String username, String roleName) {
         AppUser appUser =
-                appUserRepository.findByUsername(username)
-                        .orElseThrow(() -> new UsernameNotFoundException(
-                                "Username not found in the DB"));
+            appUserRepository.findByUsername(username)
+                             .orElseThrow(() -> new UsernameNotFoundException(
+                                 "Username not found in the DB"));
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
-                                " name not found in the " +
-                                "DB"));
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
         appUser.getRoles()
-                .add(role);
+               .add(role);
     }
 
     @Override
     public void addRoleToAppUser(AppUser appUser, String roleName) {
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
-                                " name not found in the " +
-                                "DB"));
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
         appUser.getRoles()
-                .add(role);
+               .add(role);
     }
 
     @Override
@@ -163,7 +162,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUser getAppUser(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         AppUser appUser =
-                optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
+            optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
         return appUser;
     }
 

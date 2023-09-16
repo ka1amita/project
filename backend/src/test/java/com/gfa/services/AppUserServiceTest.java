@@ -197,6 +197,7 @@ public class AppUserServiceTest {
         when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
@@ -210,6 +211,7 @@ public class AppUserServiceTest {
         when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
