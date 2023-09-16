@@ -10,28 +10,41 @@ import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
+import com.gfa.models.Role;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
-    @Autowired
     private final AppUserRepository appUserRepository;
-    @Autowired
     private final ActivationCodeRepository activationCodeRepository;
+    private final RoleRepository roleRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository, ActivationCodeRepository activationCodeRepository) {
+
+    @Autowired
+    public AppUserServiceImpl(AppUserRepository appUserRepository,
+                              ActivationCodeRepository activationCodeRepository,
+                              RoleRepository roleRepository,
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -97,6 +110,66 @@ public class AppUserServiceImpl implements AppUserService {
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
         return new LoginResponseDTO("Demo token");
+    }
+
+    @Override
+    public void addRoleToAppUser(String username, String roleName) {
+        AppUser appUser =
+            appUserRepository.findByUsername(username)
+                             .orElseThrow(() -> new UsernameNotFoundException(
+                                 "Username not found in the DB"));
+        Role role =
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
+        appUser.getRoles()
+               .add(role);
+    }
+
+    @Override
+    public void addRoleToAppUser(AppUser appUser, String roleName) {
+        Role role =
+            roleRepository.findByName(roleName)
+                          .orElseThrow(() -> new NoSuchElementException("Role" +
+                                                                        " name not found in the " +
+                                                                        "DB"));
+        appUser.getRoles()
+               .add(role);
+    }
+
+    @Override
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
+    }
+
+    @Override
+    public AppUser saveUser(AppUser user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getUsername()));
+        return appUserRepository.save(user);
+    }
+
+    @Override
+    public ActivationCode saveActivationCode(ActivationCode activationCode) {
+        return activationCodeRepository.save(activationCode);
+    }
+
+    @Override
+    public AppUser getAppUser(String username) {
+        Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
+        AppUser appUser =
+            optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
+        return appUser;
+    }
+
+    @Override
+    public List<AppUser> getAllAppUsers() {
+        return appUserRepository.findAll();
+    }
+
+    @Override
+    public void setAppUserActive(AppUser appUser) {
+        appUser.setActive(true);
     }
     @Override
     public AppUser registerUser(RegisterRequestDTO request) {

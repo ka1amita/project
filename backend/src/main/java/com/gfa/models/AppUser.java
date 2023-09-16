@@ -36,7 +36,6 @@ public class AppUser {
 
     public AppUser() {
     }
-
     public AppUser(String username, String password, String email, List<Role> roles) {
         this.username = username;
         this.password = password;
