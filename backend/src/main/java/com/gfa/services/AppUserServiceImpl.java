@@ -200,7 +200,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser newUser = new AppUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        
+
         newUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
 
         String code = generateActivationCode();
@@ -210,6 +210,13 @@ public class AppUserServiceImpl implements AppUserService {
         activationCodeRepository.save(activationCode);
 
         activationCode.setAppUser(savedUser);
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(newUser.getUsername(), request.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // TODO: Integrate Daniel's email utility here to send activation code to the user.
         //Mock email sending
