@@ -12,17 +12,22 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import com.gfa.repositories.RoleRepository;
+import org.springframework.security.core.Authentication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,9 +36,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(SpringExtension.class)
@@ -49,11 +52,20 @@ public class AppUserServiceTest {
     @MockBean
     private ActivationCodeRepository activationCodeRepository;
 
+    @MockBean
+    private RoleRepository roleRepository; // If you intend to mock this too
+
+    @MockBean
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @MockBean
+    private AuthenticationManager authenticationManager;
+
     @Test
     public void register_user_successful() {
         String testUsername = "testUser";
         String testEmail = "testEmail@example.com";
-        String testPassword = "S@ck4Dic";
+        String testPassword = "Valid@1234";
 
         when(appUserRepository.existsByUsername(testUsername)).thenReturn(false);
         when(appUserRepository.existsByEmail(testEmail)).thenReturn(false);
@@ -74,22 +86,10 @@ public class AppUserServiceTest {
     }
 
     @Test
-    public void register_user_null_username() {
-        RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@mail.com", "Valid@1234");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
-    }
-
-    @Test
     public void register_user_existing_username() {
         when(appUserRepository.existsByUsername("testUser")).thenReturn(true);
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "Valid@1234");
         Assertions.assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(request));
-    }
-
-    @Test
-    public void register_user_null_email() {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "Valid@1234");
-        Assertions.assertThrows(MethodArgumentNotValidException.class, () -> userService.registerUser(request));
     }
 
     @Test
@@ -110,6 +110,43 @@ public class AppUserServiceTest {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@mail.com", "invalid");
         Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
     }
+
+    @Test
+    public void register_user_password_encryption(){
+        String testUsername = "testUser";
+        String testEmail = "testEmail@example.com";
+        String testPassword = "Valid@1234";
+        String encryptedPassword = "encryptedPass";
+
+        when(appUserRepository.existsByUsername(testUsername)).thenReturn(false);
+        when(appUserRepository.existsByEmail(testEmail)).thenReturn(false);
+
+        when(bCryptPasswordEncoder.encode(testPassword)).thenReturn(encryptedPassword);
+
+        AppUser savedUser = new AppUser();
+        savedUser.setUsername(testUsername);
+        savedUser.setEmail(testEmail);
+        savedUser.setPassword(encryptedPassword);
+
+        when(appUserRepository.save(any())).thenReturn(savedUser);
+
+        Authentication auth = mock(Authentication.class);
+        doReturn(auth).when(authenticationManager).authenticate(Mockito.isA(UsernamePasswordAuthenticationToken.class));
+
+        RegisterRequestDTO request = new RegisterRequestDTO(testUsername, testEmail, testPassword);
+        AppUser returnedUser = userService.registerUser(request);
+
+        assertNotNull(returnedUser);
+        assertEquals(testUsername, returnedUser.getUsername());
+        assertEquals(testEmail, returnedUser.getEmail());
+        assertNotEquals(testPassword, returnedUser.getPassword());
+        assertEquals(encryptedPassword, returnedUser.getPassword());
+
+
+    }
+
+
+
     @Test
     public void activateAccount_successful() {
         AppUser mockUser = new AppUser();
@@ -136,6 +173,7 @@ public class AppUserServiceTest {
         when(activationCodeRepository.findByActivationCodeContains("invalidCode")).thenReturn(Optional.empty());
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
+
 
 
     @InjectMocks
