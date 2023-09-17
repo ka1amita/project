@@ -53,9 +53,6 @@ public class AppUserServiceTest {
     private ActivationCodeRepository activationCodeRepository;
 
     @MockBean
-    private RoleRepository roleRepository; // If you intend to mock this too
-
-    @MockBean
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @MockBean
@@ -141,10 +138,7 @@ public class AppUserServiceTest {
         assertEquals(testEmail, returnedUser.getEmail());
         assertNotEquals(testPassword, returnedUser.getPassword());
         assertEquals(encryptedPassword, returnedUser.getPassword());
-
-
     }
-
 
 
     @Test
@@ -173,8 +167,6 @@ public class AppUserServiceTest {
         when(activationCodeRepository.findByActivationCodeContains("invalidCode")).thenReturn(Optional.empty());
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
-
-
 
     @InjectMocks
     private AppUserServiceImpl appUserService;
