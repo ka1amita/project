@@ -33,6 +33,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import javax.mail.MessagingException;
+
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
@@ -40,36 +42,39 @@ public class AppUserServiceImpl implements AppUserService {
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
-    //private final EmailService emailService;
-
+    private final EmailService emailService;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
     }
 
     @Override
-    public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) {
+    public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         Optional<AppUser> appUser = Optional.empty();
         if (passwordResetRequestDTO != null) {
-            appUser = appUserRepository.findByEmailContainsAndUsernameContains(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
+            appUser = appUserRepository.findByEmailAndUsername(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
             if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByEmailContains(passwordResetRequestDTO.getEmail());
+                appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getEmail());
             }
             if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByUsernameContains(passwordResetRequestDTO.getUsername());
+                appUser = appUserRepository.findByUsername(passwordResetRequestDTO.getUsername());
             }
         }
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
+            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(),activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
             throw new IllegalArgumentException("User not found!");
@@ -113,7 +118,7 @@ public class AppUserServiceImpl implements AppUserService {
         if (payload.getPassword() == null || payload.getPassword().isEmpty()) {
             throw new IllegalArgumentException("Please provide a password.");
         }
-        AppUser appUser = appUserRepository.findByEmailContainsAndUsernameContains(payload.getLoginInput(), payload.getLoginInput())
+        AppUser appUser = appUserRepository.findByEmailAndUsername(payload.getLoginInput(), payload.getLoginInput())
                 .orElseThrow(() -> new NullPointerException("The user can not be found in the database."));
         if (!appUser.getPassword().equals(payload.getPassword()))
             throw new IllegalArgumentException("The password is incorrect.");
@@ -181,7 +186,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser registerUser(RegisterRequestDTO request) {
+    public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists.");
@@ -212,7 +217,8 @@ public class AppUserServiceImpl implements AppUserService {
 
         activationCode.setAppUser(savedUser);
 
-        //emailService.registerConfirmationEmail(savedUser.getEmail(),savedUser.getUsername(),activationCode.getActivationCode());
+        emailService.registerConfirmationEmail(savedUser.getEmail(),savedUser.getUsername(),activationCode.getActivationCode());
+
         return savedUser;
     }
 

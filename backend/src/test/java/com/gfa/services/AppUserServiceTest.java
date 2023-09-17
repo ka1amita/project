@@ -29,6 +29,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class AppUserServiceTest {
     private AuthenticationManager authenticationManager;
 
     @Test
-    public void register_user_successful() {
+    public void register_user_successful() throws MessagingException {
         String testUsername = "testUser";
         String testEmail = "testEmail@example.com";
         String testPassword = "Valid@1234";
@@ -179,11 +180,11 @@ public class AppUserServiceTest {
     }
 
     @Test
-    void Password_Reset_Request_Is_Successful_With_Username() {
+    void Password_Reset_Request_Is_Successful_With_Username() throws MessagingException {
         PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("Will Doe", "");
-        when(appUserRepository.findByEmailContainsAndUsernameContains(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmailContains(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsernameContains(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
         when(activationCodeRepository.save(any())).thenReturn(activationCode);
         PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
 
@@ -193,11 +194,11 @@ public class AppUserServiceTest {
     }
 
     @Test
-    void Password_Reset_Request_Is_Successful_With_Email() {
+    void Password_Reset_Request_Is_Successful_With_Email() throws MessagingException {
         PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("", "example2@mail.com");
-        when(appUserRepository.findByEmailContainsAndUsernameContains(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmailContains(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsernameContains(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
         when(activationCodeRepository.save(any())).thenReturn(activationCode);
         PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
 
@@ -207,11 +208,11 @@ public class AppUserServiceTest {
     }
 
     @Test
-    void Password_Reset_Request_Is_Successful_With_Username_And_Email() {
+    void Password_Reset_Request_Is_Successful_With_Username_And_Email() throws MessagingException {
         PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("Will Doe", "example2@mail.com");
-        when(appUserRepository.findByEmailContainsAndUsernameContains(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmailContains(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsernameContains(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
+        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
         when(activationCodeRepository.save(any())).thenReturn(activationCode);
         PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
 
@@ -223,9 +224,10 @@ public class AppUserServiceTest {
     @Test
     void Password_Reset_Request_Is_Failed_With_Empty_Parameters() {
         PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("", "");
-        when(appUserRepository.findByEmailContainsAndUsernameContains(anyString(), anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByEmailContains(anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByUsernameContains(anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
@@ -236,9 +238,10 @@ public class AppUserServiceTest {
     @Test
     void Password_Reset_Request_Is_Failed_With_Null_Parameters() {
         PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO(null, null);
-        when(appUserRepository.findByEmailContainsAndUsernameContains(anyString(), anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByEmailContains(anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByUsernameContains(anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
+
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
