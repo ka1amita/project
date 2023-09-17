@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -20,7 +21,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
         appUserService.registerUser(registerRequest);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account!"));
     }

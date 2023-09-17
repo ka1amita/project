@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
+
 @RestController
 @RequestMapping("/reset")
 public class PasswordResetController {
@@ -18,7 +20,7 @@ public class PasswordResetController {
     }
 
     @PostMapping({"", "/"})
-    public ResponseEntity<?> index(@RequestBody(required = false) PasswordResetRequestDTO passwordResetRequestDTO) {
+    public ResponseEntity<?> index(@RequestBody(required = false) PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         return appUserService.reset(passwordResetRequestDTO);
     }
 

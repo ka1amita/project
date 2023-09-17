@@ -13,15 +13,16 @@ import com.gfa.models.Role;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
+import javax.mail.MessagingException;
 import java.util.Optional;
 
 public interface AppUserService {
 
-    AppUser registerUser(RegisterRequestDTO request);
+    AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 
     void activateAccount (String activationCode);
 
-    ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO);
+    ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException;
 
     ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode);
 
