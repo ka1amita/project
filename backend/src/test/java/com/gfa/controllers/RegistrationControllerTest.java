@@ -13,8 +13,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,21 +39,26 @@ public class RegistrationControllerTest {
         reset(appUserService);
     }
 
-    @Test
-    public void registerUser_successful() throws Exception {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "S@ck4Dic");
+    private ResultActions performPost(RegisterRequestDTO request) throws Exception {
         String requestBody = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/register")
+        return mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
+    public void registerUser_successful() throws Exception {
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
+        performPost(request)
                 .andExpect(status().isOk())
                 .andExpect(content().string("{\"message\":\"Registration successful, please activate your account!\"}"));
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_usernameExists() throws Exception {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "S@ck4Dic");
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         String requestBody = objectMapper.writeValueAsString(request);
 
         when(appUserService.registerUser(any())).thenThrow(new UserAlreadyExistsException("Username already exists."));
@@ -60,13 +68,12 @@ public class RegistrationControllerTest {
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorMessage\":\"Username already exists.\"}"));
-
-
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_emailExists() throws Exception {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "S@ck4Dic");
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         String requestBody = objectMapper.writeValueAsString(request);
 
         when(appUserService.registerUser(any())).thenThrow(new EmailAlreadyExistsException("Email already exists."));
@@ -76,48 +83,50 @@ public class RegistrationControllerTest {
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorMessage\":\"Email already exists.\"}"));
-
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingName() throws Exception {
-        RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@example.com", "S@ck4Dic");
-        String requestBody = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+        RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@example.com", "Valid@1234");
+        performPost(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorMessage\":\"Username cannot be null or empty\"}"));
 
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingEmail() throws Exception {
-        RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "S@ck4Dic");
-        String requestBody = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+        RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "Valid@1234");
+        performPost(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorMessage\":\"Email cannot be null or empty\"}"));
 
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingPassword() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", null);
-        String requestBody = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
+        performPost(request)
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"errorMessage\":\"Password cannot be null or empty\"}"));
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
+    public void registerUser_withAllFieldsMissing() throws Exception {
+        RegisterRequestDTO request = new RegisterRequestDTO(null, null, null);
+        performPost(request)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Email cannot be null or empty")))
+                .andExpect(content().string(containsString("Password cannot be null or empty")))
+                .andExpect(content().string(containsString("Username cannot be null or empty")));
+    }
+
+    @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_successful() throws Exception {
         String activationCode = "validCode";
         doNothing().when(appUserService).activateAccount(activationCode);
@@ -128,6 +137,7 @@ public class RegistrationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_invalidCode() throws Exception {
         doThrow(new InvalidActivationCodeException("Invalid activation code."))
                 .when(appUserService).activateAccount("invalidActivationCode");
@@ -138,6 +148,7 @@ public class RegistrationControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_withoutActivationCode() throws Exception {
         mockMvc.perform(get("/confirm/"))
                 .andExpect(status().isNotFound());
