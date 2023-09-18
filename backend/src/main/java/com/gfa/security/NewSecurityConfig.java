@@ -6,6 +6,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
+import com.gfa.services.TokenService;
+import com.gfa.services.TokenServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +20,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@Configuration
 public class NewSecurityConfig {
 
     @Bean
@@ -41,7 +42,9 @@ public class NewSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           AuthenticationManager authenticationManager,
+                                           TokenService tokenService) throws Exception {
         http
                 .csrf()
                 .disable()
@@ -68,9 +71,14 @@ public class NewSecurityConfig {
                 .loginProcessingUrl("/perform_login")
                 .defaultSuccessUrl("/index.html")
                 .failureUrl("/error.html");
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager));
-        http.addFilterBefore(new CustomAuthorizationFilter(),
-                UsernamePasswordAuthenticationFilter.class);
+      http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
+      http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
+                           UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+  @Bean
+  TokenService tokenService() {
+    return new TokenServiceImpl();
+  }
 }
