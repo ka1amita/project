@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -100,12 +101,21 @@ public class AppUserServiceIntegrationTest {
         assertThrows(IllegalArgumentException.class, () -> appUserService.registerUser(request));
     }
 
+    @Test
+    public void integrationTest_activate_account_with_expired_code() throws MessagingException {
+        request.setUsername("sampleUser");
+        request.setEmail("sample@email.com");
+        request.setPassword("Valid@1234");
 
+        AppUser savedUser = appUserService.registerUser(request);
 
+        Optional<ActivationCode> optionalActivationCode = activationCodeRepository.findByAppUser(savedUser);
+        assertTrue(optionalActivationCode.isPresent());
+        ActivationCode activationCode = optionalActivationCode.get();
 
+        activationCode.setCreatedAt(LocalDateTime.now().minusDays(2));
+        activationCodeRepository.save(activationCode);
 
-
-
-
-
+        assertThrows(IllegalStateException.class, () -> appUserService.activateAccount(activationCode.getActivationCode()));
+    }
 }

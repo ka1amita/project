@@ -264,6 +264,4 @@ public class AppUserServiceImpl implements AppUserService {
         }
         return stringBuilder.toString();
     }
-
-
 }
