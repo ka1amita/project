@@ -1,17 +1,16 @@
 package com.gfa.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.services.AppUserService;
+import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -40,7 +39,7 @@ public class LoginControllerTest {
     public void beforeEachTest() {
         objectMapper = new ObjectMapper();
         Role roleUser = new Role("ROLE_USER");
-        AppUser user = new AppUser(1L,"user", "user", "user2@gfa.com", new ArrayList<>());
+        AppUser user = new AppUser(1L,"user", "user", "user2@gfa.com", new HashSet<>());
         user.setActive(true);
         user.getRoles().add(roleUser);
         ActivationCode code = new ActivationCode("code", user);

@@ -41,7 +41,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
-                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+                              BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;

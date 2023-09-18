@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
 
-public interface AppUserService {
+public interface AppUserService{
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 

@@ -12,6 +12,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import java.util.HashSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -141,7 +142,7 @@ public class AppUserServiceTest {
 
     @InjectMocks
     private AppUserServiceImpl appUserService;
-    private AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new ArrayList<>());
+    private AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com");
     private ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
 
     @BeforeEach
