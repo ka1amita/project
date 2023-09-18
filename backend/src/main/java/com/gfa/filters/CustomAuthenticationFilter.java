@@ -41,10 +41,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
 
         if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
-            throw new InternalAuthenticationServiceException("Please provide a username or an email.");
+            throw new AuthenticationException("Please provide a username or an email.") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
         }
         if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
-            throw new InternalAuthenticationServiceException("Please provide a password.");
+            throw new AuthenticationException("Please provide a password.") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =
