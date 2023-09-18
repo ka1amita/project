@@ -48,8 +48,9 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
-                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, AuthenticationManager authenticationManager) {
-                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
+                              AuthenticationManager authenticationManager,
+                              EmailService emailService) {
 
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
@@ -74,7 +75,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
-            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(),activationCode.getActivationCode());
+            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
             throw new IllegalArgumentException("User not found!");
@@ -217,7 +218,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         activationCode.setAppUser(savedUser);
 
-        emailService.registerConfirmationEmail(savedUser.getEmail(),savedUser.getUsername(),activationCode.getActivationCode());
+        emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
 
         return savedUser;
     }
@@ -263,10 +264,6 @@ public class AppUserServiceImpl implements AppUserService {
         }
         return stringBuilder.toString();
     }
-
-
-
-
 
 
 }
