@@ -12,12 +12,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -32,6 +36,9 @@ public class AppUserServiceIntegrationTest {
 
     @Autowired
     private ActivationCodeRepository activationCodeRepository;
+
+    @MockBean
+    private EmailService emailService;
 
     private AppUser existingUser;
     private RegisterRequestDTO request;
@@ -50,10 +57,13 @@ public class AppUserServiceIntegrationTest {
     }
 
     @Test
-    public void registerUser_withValidInput_savesUser(){
+    public void registerUser_with_valid_input_saves_user() throws MessagingException {
         request.setUsername("testUser");
         request.setEmail("test@email.com");
         request.setPassword("Valid@1234");
+
+        doNothing().when(emailService).registerConfirmationEmail(anyString(), anyString(), anyString());
+
         AppUser savedUser = appUserService.registerUser(request);
 
         Optional<AppUser> retrievedUser = appUserRepository.findByUsername("testUser");
@@ -65,27 +75,27 @@ public class AppUserServiceIntegrationTest {
     }
 
     @Test
-    public void registerUser_withExistingUsername_throwsException(){
+    public void registerUser_with_existing_username_throws_exception(){
         saveSampleUser("existingUser", "existing@email.com", "Valid@1234");
         request.setUsername("existingUser");
         assertThrows(UserAlreadyExistsException.class, () -> appUserService.registerUser(request));
     }
 
     @Test
-    public void registerUser_withExistingEmail_throwsException() {
+    public void registerUser_with_existing_email_throws_exception() {
         saveSampleUser("existingUser", "existing@email.com", "Sample@1234");
         request.setEmail("existing@email.com");
         assertThrows(EmailAlreadyExistsException.class, () -> appUserService.registerUser(request));
     }
 
     @Test
-    public void registerUser_withNullOrEmptyPassword_throwsException() {
+    public void registerUser_with_null_or_empty_password_throwsException() {
         request.setPassword(null);
         assertThrows(IllegalArgumentException.class, () -> appUserService.registerUser(request));
     }
 
     @Test
-    public void registerUser_withInvalidPasswordFormat_throwsException() {
+    public void registerUser_with_invalid_password_format_throws_exception() {
         request.setPassword("invalidpassword");
         assertThrows(IllegalArgumentException.class, () -> appUserService.registerUser(request));
     }
