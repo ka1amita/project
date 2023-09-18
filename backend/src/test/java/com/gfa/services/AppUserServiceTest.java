@@ -187,7 +187,7 @@ public class AppUserServiceTest {
         ActivationCode mockActivationCode = new ActivationCode();
         mockActivationCode.setActivationCode("validCode");
         mockActivationCode.setAppUser(mockUser);
-        mockActivationCode.setCreatedAt(LocalDateTime.now().minusDays(2)); // set code creation time 2 days ago
+        mockActivationCode.setCreatedAt(LocalDateTime.now().minusDays(2));
 
         when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
 
