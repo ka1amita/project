@@ -45,7 +45,7 @@ public class NewSecurityConfig {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .antMatchers("/login", "/token/refresh", "/hello", "/user/activate")
+        .antMatchers("/login", "/token/refresh", "/hello", "/register", "/confirm/*")
         .permitAll(); // or anonymous() ??
     http.authorizeRequests()
         .antMatchers(GET, "/user/users/**")
