@@ -1,21 +1,18 @@
 package com.gfa.services;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import java.util.Calendar;
 import java.util.Collection;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 public interface TokenService {
-  long getAccessExp();
+  String getToken(String username, Calendar now, String issuer);
 
-  long getRefreshExp();
+  String getToken(String username, Calendar now, String issuer,
+                  Collection<GrantedAuthority> authorities);
 
-  String getSecret();
-
-  String getToken(String username, String issuer, long accessExpiration,
-                  Collection<GrantedAuthority> authorities, Algorithm algorithm);
-
-  String getToken(String issuer, String username, long refreshExpiration,
-                  Algorithm algorithm);
-
-  Algorithm getAlgorithm();
+  @NotNull
+  Authentication getAuthenticationToken(String token);
 }

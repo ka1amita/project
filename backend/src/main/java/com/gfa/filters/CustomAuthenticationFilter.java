@@ -2,10 +2,10 @@ package com.gfa.filters;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.services.TokenService;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,18 +52,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     User user = (User) authentication.getPrincipal();
     String username = user.getUsername();
     Collection<GrantedAuthority> authorities = user.getAuthorities();
-
-    Algorithm algorithm = tokenService.getAlgorithm();
+    Calendar now = Calendar.getInstance();
     String issuer = request.getRequestURL()
                            .toString();
 
-    String access_token = tokenService.getToken(username, issuer,
-                                                tokenService.getAccessExp(),
-                                                authorities,
-                                                algorithm);
-
-    String refresh_token =
-        tokenService.getToken(issuer, username, tokenService.getRefreshExp(), algorithm);
+    String access_token = tokenService.getToken(username, now, issuer, authorities);
+    String refresh_token = tokenService.getToken(username, now, issuer);
 
     Map<String, String> tokens = new HashMap<>();
     tokens.put("access_token", access_token);

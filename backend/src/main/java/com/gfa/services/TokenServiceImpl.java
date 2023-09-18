@@ -1,84 +1,84 @@
 package com.gfa.services;
 
+import static java.util.Arrays.stream;
+
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TokenServiceImpl implements TokenService {
 
   @Value("${token.expiration.access}")
-  private long ACCESS_EXP;
+  private long accessExp;
   @Value("${token.expiration.refresh}")
-  private long REFRESH_EXP;
+  private long refreshExp;
   @Value("${token.secret}")
-  private String SECRET;
+  private String secret;
+
+  @NotNull
+  private static Collection<? extends GrantedAuthority> getGrantedAuthorities(
+      DecodedJWT decodedJwt) {
+    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+    String[] roles = decodedJwt.getClaim("roles")
+                               .asArray(String.class);
+    stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
+    return authorities;
+  }
+
+  public Algorithm getAlgorithm() {
+    return Algorithm.HMAC256(secret);
+  }
 
   public TokenServiceImpl() {
   }
 
+  public JWTVerifier getVerifier() {
+    return JWT.require(getAlgorithm())
+              .build();
+  }
+
+  @NotNull
   @Override
-  public String getSecret() {
-    return SECRET;
-  }
-
-  @Override
-  public long getAccessExp() {
-    return ACCESS_EXP;
-  }
-
-  public void setAccessExp(long accessExp) {
-    ACCESS_EXP = accessExp;
-  }
-
-  @Override
-  public long getRefreshExp() {
-    return REFRESH_EXP;
-  }
-
-  public void setRefreshExp(long refreshExp) {
-    REFRESH_EXP = refreshExp;
-  }
-
-  public void setSECRET(String secret) {
-    SECRET = secret;
+  public UsernamePasswordAuthenticationToken getAuthenticationToken(String token) {
+    DecodedJWT decodedJwt = getVerifier().verify(token);
+    return new UsernamePasswordAuthenticationToken(decodedJwt.getSubject(),
+                                                   null,
+                                                   getGrantedAuthorities(decodedJwt));
   }
 
   @Override
-  public String getToken(String issuer, String username,
-                         long refreshExpiration,
-                         Algorithm algorithm) {
+  public String getToken(String username, Calendar now, String issuer) {
     return JWT.create()
               .withSubject(username)
-              .withExpiresAt(new Date(System.currentTimeMillis() +
-                                      refreshExpiration))
+              .withExpiresAt(new Date(now.getTimeInMillis() + refreshExp))
               .withIssuer(issuer)
-              .sign(algorithm);
+              .sign(getAlgorithm());
   }
 
   @Override
-  public Algorithm getAlgorithm() {
-    return Algorithm.HMAC256(SECRET.getBytes());
-  }
-
-  @Override
-  public String getToken(String username, String issuer, long accessExpiration,
-                         Collection<GrantedAuthority> authorities, Algorithm algorithm) {
-    long now = System.currentTimeMillis();
+  public String getToken(String username, Calendar now, String issuer,
+                         Collection<GrantedAuthority> authorities) {
     return JWT.create()
               .withSubject(username)
-              .withExpiresAt(new Date(now +
-                                      accessExpiration))
+              .withExpiresAt(new Date(now.getTimeInMillis() + accessExp))
               .withIssuer(issuer)
               .withClaim("roles", authorities
                   .stream()
                   .map(GrantedAuthority::getAuthority)
                   .collect(Collectors.toList()))
-              .sign(algorithm);
+              .sign(getAlgorithm());
   }
 }
