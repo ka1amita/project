@@ -1,10 +1,6 @@
 package com.gfa.services;
 
-import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
-import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
-import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
-import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
 import com.gfa.exceptions.EmailAlreadyExistsException;
 import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
@@ -12,15 +8,11 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +23,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -173,4 +164,33 @@ public class AppUserServiceTest {
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
 
+    @Test
+    public void activate_account_already_active(){
+        AppUser mockUser = new AppUser();
+        mockUser.setActive(true);
+
+        ActivationCode mockActivationCode = new ActivationCode();
+        mockActivationCode.setActivationCode("validCode");
+        mockActivationCode.setAppUser(mockUser);
+        mockActivationCode.setCreatedAt(LocalDateTime.now().minusHours(10));
+
+        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
+    }
+
+    @Test
+    public void activate_account_expired_code() {
+        AppUser mockUser = new AppUser();
+        mockUser.setActive(false);
+
+        ActivationCode mockActivationCode = new ActivationCode();
+        mockActivationCode.setActivationCode("validCode");
+        mockActivationCode.setAppUser(mockUser);
+        mockActivationCode.setCreatedAt(LocalDateTime.now().minusDays(2)); // set code creation time 2 days ago
+
+        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
+    }
 }
