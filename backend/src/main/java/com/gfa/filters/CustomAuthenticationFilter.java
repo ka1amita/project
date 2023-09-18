@@ -72,6 +72,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     tokens.put("access_token", access_token);
     tokens.put("refresh_token", refresh_token);
     response.setContentType(APPLICATION_JSON_VALUE);
-    new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+    new ObjectMapper().writeValue(response.getWriter(), tokens);
+  }
+
+  @Override
+  protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            AuthenticationException exception)
+      throws IOException, ServletException {
+
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    Map<String, String> errorDetails = new HashMap<>();
+    errorDetails.put("error", "Unauthorized");
+    errorDetails.put("message", exception.getMessage());
+    response.setContentType(APPLICATION_JSON_VALUE);
+    new ObjectMapper().writeValue(response.getWriter(), errorDetails);
   }
 }

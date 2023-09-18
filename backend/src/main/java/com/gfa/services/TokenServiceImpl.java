@@ -22,9 +22,9 @@ import org.springframework.stereotype.Service;
 public class TokenServiceImpl implements TokenService {
 
   @Value("${token.expiration.access}")
-  private long accessExp;
+  private Long accessExp;
   @Value("${token.expiration.refresh}")
-  private long refreshExp;
+  private Long refreshExp;
   @Value("${token.secret}")
   private String secret;
 
