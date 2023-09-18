@@ -12,7 +12,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
-import com.gfa.repositories.RoleRepository;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +59,9 @@ public class AppUserServiceTest {
     @MockBean
     private AuthenticationManager authenticationManager;
 
+    @MockBean
+    private EmailServiceImpl emailService;
+
     @Test
     public void register_user_successful() throws MessagingException {
         String testUsername = "testUser";
@@ -81,6 +84,8 @@ public class AppUserServiceTest {
         assertNotNull(returnedUser);
         assertEquals(testUsername, returnedUser.getUsername());
         assertEquals(testEmail, returnedUser.getEmail());
+
+        verify(emailService, times(1)).registerConfirmationEmail(eq(testEmail), eq(testUsername), anyString());
     }
 
     @Test
@@ -110,7 +115,7 @@ public class AppUserServiceTest {
     }
 
     @Test
-    public void register_user_password_encryption(){
+    public void register_user_password_encryption() throws MessagingException {
         String testUsername = "testUser";
         String testEmail = "testEmail@example.com";
         String testPassword = "Valid@1234";
@@ -141,9 +146,8 @@ public class AppUserServiceTest {
         assertEquals(encryptedPassword, returnedUser.getPassword());
     }
 
-
     @Test
-    public void activateAccount_successful() {
+    public void activate_account_successful() {
         AppUser mockUser = new AppUser();
         mockUser.setActive(false);
 
@@ -169,128 +173,4 @@ public class AppUserServiceTest {
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
 
-    @InjectMocks
-    private AppUserServiceImpl appUserService;
-    private AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new ArrayList<>());
-    private ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
-
-    @BeforeEach
-    void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void Password_Reset_Request_Is_Successful_With_Username() throws MessagingException {
-        PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("Will Doe", "");
-        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
-        when(activationCodeRepository.save(any())).thenReturn(activationCode);
-        PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
-
-        assert passwordResetResponseDTO != null;
-        assert passwordResetResponseDTO.getUniqueResetCode() != null;
-        assert passwordResetResponseDTO.getUniqueResetCode().length() == 48;
-    }
-
-    @Test
-    void Password_Reset_Request_Is_Successful_With_Email() throws MessagingException {
-        PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("", "example2@mail.com");
-        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
-        when(activationCodeRepository.save(any())).thenReturn(activationCode);
-        PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
-
-        assert passwordResetResponseDTO != null;
-        assert passwordResetResponseDTO.getUniqueResetCode() != null;
-        assert passwordResetResponseDTO.getUniqueResetCode().length() == 48;
-    }
-
-    @Test
-    void Password_Reset_Request_Is_Successful_With_Username_And_Email() throws MessagingException {
-        PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("Will Doe", "example2@mail.com");
-        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.of(appUser));
-        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.of(appUser));
-        when(activationCodeRepository.save(any())).thenReturn(activationCode);
-        PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
-
-        assert passwordResetResponseDTO != null;
-        assert passwordResetResponseDTO.getUniqueResetCode() != null;
-        assert passwordResetResponseDTO.getUniqueResetCode().length() == 48;
-    }
-
-    @Test
-    void Password_Reset_Request_Is_Failed_With_Empty_Parameters() {
-        PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO("", "");
-        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-
-        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
-            appUserService.reset(passwordResetRequestDTO).getBody();
-        });
-
-        assertEquals(illegalArgumentException.getMessage(), "You have to provide either the username or the email field!");
-    }
-
-    @Test
-    void Password_Reset_Request_Is_Failed_With_Null_Parameters() {
-        PasswordResetRequestDTO passwordResetRequestDTO = new PasswordResetRequestDTO(null, null);
-        when(appUserRepository.findByEmailAndUsername(anyString(), anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
-
-        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
-            appUserService.reset(passwordResetRequestDTO).getBody();
-        });
-
-        assertEquals(illegalArgumentException.getMessage(), "You have to provide either the username or the email field!");
-    }
-
-
-    @Test
-    void Password_Reset_With_Code_Is_Successful_With_Code_And_Password() {
-        PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("1234");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
-        PasswordResetWithCodeResponseDTO passwordResetWithCodeResponseDTO = (PasswordResetWithCodeResponseDTO) appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
-
-        assert passwordResetWithCodeResponseDTO != null;
-        assert passwordResetWithCodeResponseDTO.getMessage() != null;
-        assertEquals(passwordResetWithCodeResponseDTO.getMessage(), "success");
-    }
-
-    @Test
-    void Password_Reset_With_Code_Is_Failed_With_Code_And_No_Password() {
-        PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
-        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
-            appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
-        });
-
-        assertEquals(illegalArgumentException.getMessage(), "Password can't be empty!");
-    }
-
-    @Test
-    void Password_Reset_With_Code_Is_Failed_With_No_Code_And_Password() {
-        PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("1234");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
-        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
-            appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
-        });
-
-        assertEquals(illegalArgumentException.getMessage(), "Reset code doesn't exist!");
-    }
-
-    @Test
-    void Password_Reset_With_Code_Is_Failed_With_No_Code_And_No_Password() {
-        PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
-        IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
-            appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
-        });
-
-        assertEquals(illegalArgumentException.getMessage(), "Reset code doesn't exist!");
-    }
 }

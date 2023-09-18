@@ -6,6 +6,7 @@ import com.gfa.exceptions.InvalidActivationCodeException;
 import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.services.AppUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -32,6 +32,9 @@ public class RegistrationControllerTest {
     @MockBean
     private AppUserService appUserService;
 
+    @MockBean
+    private EmailService emailService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -42,21 +45,20 @@ public class RegistrationControllerTest {
     private ResultActions performPost(RegisterRequestDTO request) throws Exception {
         String requestBody = objectMapper.writeValueAsString(request);
         return mockMvc.perform(post("/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody));
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_successful() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         performPost(request)
                 .andExpect(status().isOk())
                 .andExpect(content().string("{\"message\":\"Registration successful, please activate your account!\"}"));
+        verify(appUserService, times(1)).registerUser(any());
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_usernameExists() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         String requestBody = objectMapper.writeValueAsString(request);
@@ -71,7 +73,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_emailExists() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", "Valid@1234");
         String requestBody = objectMapper.writeValueAsString(request);
@@ -86,7 +87,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingName() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO(null, "testEmail@example.com", "Valid@1234");
         performPost(request)
@@ -96,7 +96,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingEmail() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", null, "Valid@1234");
         performPost(request)
@@ -106,7 +105,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withMissingPassword() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO("testUser", "testEmail@example.com", null);
         performPost(request)
@@ -115,7 +113,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void registerUser_withAllFieldsMissing() throws Exception {
         RegisterRequestDTO request = new RegisterRequestDTO(null, null, null);
         performPost(request)
@@ -126,7 +123,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_successful() throws Exception {
         String activationCode = "validCode";
         doNothing().when(appUserService).activateAccount(activationCode);
@@ -137,7 +133,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_invalidCode() throws Exception {
         doThrow(new InvalidActivationCodeException("Invalid activation code."))
                 .when(appUserService).activateAccount("invalidActivationCode");
@@ -148,7 +143,6 @@ public class RegistrationControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
     public void activateAccount_withoutActivationCode() throws Exception {
         mockMvc.perform(get("/confirm/"))
                 .andExpect(status().isNotFound());
