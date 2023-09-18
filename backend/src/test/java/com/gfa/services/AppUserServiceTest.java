@@ -8,6 +8,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.security.core.Authentication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -53,21 +54,30 @@ public class AppUserServiceTest {
     @MockBean
     private EmailServiceImpl emailService;
 
+    private AppUser mockUser;
+    private ActivationCode mockActivationCode;
+    private final String testUsername = "testUser";
+    private final String testEmail = "testEmail@example.com";
+    private final String testPassword = "Valid@1234";
+
+    @BeforeEach
+    public void setUp() {
+        mockUser = new AppUser();
+        mockUser.setUsername(testUsername);
+        mockUser.setEmail(testEmail);
+        mockUser.setPassword(testPassword);
+        mockUser.setActive(false);
+
+        mockActivationCode = new ActivationCode();
+        mockActivationCode.setActivationCode("validCode");
+        mockActivationCode.setAppUser(mockUser);
+        mockActivationCode.setCreatedAt(LocalDateTime.now().minusHours(10));
+    }
     @Test
     public void register_user_successful() throws MessagingException {
-        String testUsername = "testUser";
-        String testEmail = "testEmail@example.com";
-        String testPassword = "Valid@1234";
-
         when(appUserRepository.existsByUsername(testUsername)).thenReturn(false);
         when(appUserRepository.existsByEmail(testEmail)).thenReturn(false);
-
-        AppUser savedUser = new AppUser();
-        savedUser.setUsername(testUsername);
-        savedUser.setEmail(testEmail);
-        savedUser.setPassword(testPassword);
-
-        when(appUserRepository.save(any())).thenReturn(savedUser);
+        when(appUserRepository.save(any())).thenReturn(mockUser);
 
         RegisterRequestDTO request = new RegisterRequestDTO(testUsername, testEmail, testPassword);
         AppUser returnedUser = userService.registerUser(request);
@@ -107,22 +117,14 @@ public class AppUserServiceTest {
 
     @Test
     public void register_user_password_encryption() throws MessagingException {
-        String testUsername = "testUser";
-        String testEmail = "testEmail@example.com";
-        String testPassword = "Valid@1234";
         String encryptedPassword = "encryptedPass";
 
         when(appUserRepository.existsByUsername(testUsername)).thenReturn(false);
         when(appUserRepository.existsByEmail(testEmail)).thenReturn(false);
-
         when(bCryptPasswordEncoder.encode(testPassword)).thenReturn(encryptedPassword);
 
-        AppUser savedUser = new AppUser();
-        savedUser.setUsername(testUsername);
-        savedUser.setEmail(testEmail);
-        savedUser.setPassword(encryptedPassword);
-
-        when(appUserRepository.save(any())).thenReturn(savedUser);
+        mockUser.setPassword(encryptedPassword);
+        when(appUserRepository.save(any())).thenReturn(mockUser);
 
         Authentication auth = mock(Authentication.class);
         doReturn(auth).when(authenticationManager).authenticate(Mockito.isA(UsernamePasswordAuthenticationToken.class));
@@ -139,22 +141,12 @@ public class AppUserServiceTest {
 
     @Test
     public void activate_account_successful() {
-        AppUser mockUser = new AppUser();
-        mockUser.setActive(false);
-
-        ActivationCode mockActivationCode = new ActivationCode();
-        mockActivationCode.setActivationCode("validCode");
-        mockActivationCode.setAppUser(mockUser);
-        mockActivationCode.setCreatedAt(LocalDateTime.now().minusHours(10));
-
         when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
-
         when(appUserRepository.save(any())).thenReturn(mockUser);
 
         userService.activateAccount("validCode");
 
         assertTrue(mockUser.isActive());
-
         verify(activationCodeRepository, times(1)).delete(mockActivationCode);
     }
 
@@ -166,31 +158,15 @@ public class AppUserServiceTest {
 
     @Test
     public void activate_account_already_active(){
-        AppUser mockUser = new AppUser();
         mockUser.setActive(true);
-
-        ActivationCode mockActivationCode = new ActivationCode();
-        mockActivationCode.setActivationCode("validCode");
-        mockActivationCode.setAppUser(mockUser);
-        mockActivationCode.setCreatedAt(LocalDateTime.now().minusHours(10));
-
         when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
-
         Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
     }
 
     @Test
     public void activate_account_expired_code() {
-        AppUser mockUser = new AppUser();
-        mockUser.setActive(false);
-
-        ActivationCode mockActivationCode = new ActivationCode();
-        mockActivationCode.setActivationCode("validCode");
-        mockActivationCode.setAppUser(mockUser);
         mockActivationCode.setCreatedAt(LocalDateTime.now().minusDays(2));
-
         when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
-
         Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
     }
 }
