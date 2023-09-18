@@ -3,10 +3,8 @@ package com.gfa.services;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.models.AppUser;
 
-import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
-import com.gfa.dtos.responsedtos.LoginResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.Role;
@@ -14,7 +12,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
-import java.util.Optional;
 
 public interface AppUserService {
 
@@ -25,8 +22,6 @@ public interface AppUserService {
     ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException;
 
     ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode);
-
-    LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto);
 
     void addRoleToAppUser(AppUser appUser, String roleName);
 
