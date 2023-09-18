@@ -1,6 +1,5 @@
 package com.gfa.services;
 
-import com.gfa.dtos.requestdtos.LoginRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
@@ -111,22 +110,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public LoginResponseDTO userLogin(Optional<LoginRequestDTO> loginRequestDto) {
-        LoginRequestDTO payload = loginRequestDto.orElseThrow(() -> new NullPointerException("Input body was not received."));
-        if (payload.getLoginInput() == null || payload.getLoginInput().isEmpty()) {
-            throw new IllegalArgumentException("Please provide a name or an email address.");
-        }
-        if (payload.getPassword() == null || payload.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Please provide a password.");
-        }
-        AppUser appUser = appUserRepository.findByEmailAndUsername(payload.getLoginInput(), payload.getLoginInput())
-                .orElseThrow(() -> new NullPointerException("The user can not be found in the database."));
-        if (!appUser.getPassword().equals(payload.getPassword()))
-            throw new IllegalArgumentException("The password is incorrect.");
-        return new LoginResponseDTO("Demo token");
-    }
-
-    @Override
     public void addRoleToAppUser(String username, String roleName) {
         AppUser appUser =
                 appUserRepository.findByUsername(username)
@@ -219,7 +202,7 @@ public class AppUserServiceImpl implements AppUserService {
         activationCode.setAppUser(savedUser);
 
         emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
-
+      
         return savedUser;
     }
 

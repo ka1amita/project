@@ -2,19 +2,19 @@ package com.gfa.filters;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.services.TokenService;
 import java.io.IOException;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,49 +25,77 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
+  private final TokenService tokenService;
 
-  public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+  public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
+                                    TokenService tokenService) {
     this.authenticationManager = authenticationManager;
+    this.tokenService = tokenService;
   }
 
-  @Override
-  public Authentication attemptAuthentication(HttpServletRequest request,
-                                              HttpServletResponse response)
-      throws AuthenticationException {
-    String username = request.getParameter("username");
-    String password = request.getParameter("password");
-    UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(username, password);
-    return authenticationManager.authenticate(authenticationToken);
-  }
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request,
+                                                HttpServletResponse response)
+            throws AuthenticationException {
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
+            throw new AuthenticationException("Please provide a username or an email.") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
+        }
+        if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
+            throw new AuthenticationException("Please provide a password.") {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
+        }
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(username, password);
+        return authenticationManager.authenticate(authenticationToken);
+    }
 
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                           FilterChain chain, Authentication authentication)
       throws IOException, ServletException {
+
     User user = (User) authentication.getPrincipal();
-    Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-    String access_token = JWT.create()
-                             .withSubject(user.getUsername())
-                             .withExpiresAt(new Date(System.currentTimeMillis() + 365 * 24 * 3600000))
-                             .withIssuer(request.getRequestURL()
-                                                .toString())
-                             .withClaim("roles", user.getAuthorities()
-                                                     .stream()
-                                                     .map(GrantedAuthority::getAuthority)
-                                                     .collect(
-                                                         Collectors.toList()))
-                             .sign(algorithm);
-    String refresh_token = JWT.create()
-                              .withSubject(user.getUsername())
-                              .withExpiresAt(new Date(System.currentTimeMillis() + 365 * 24 * 3600000))
-                              .withIssuer(request.getRequestURL()
-                                                 .toString())
-                              .sign(algorithm);
+    String username = user.getUsername();
+    Collection<GrantedAuthority> authorities = user.getAuthorities();
+    Calendar now = Calendar.getInstance();
+    String issuer = request.getRequestURL()
+                           .toString();
+
+    String access_token = tokenService.getToken(username, now, issuer, authorities);
+    String refresh_token = tokenService.getToken(username, now, issuer);
+
     Map<String, String> tokens = new HashMap<>();
     tokens.put("access_token", access_token);
     tokens.put("refresh_token", refresh_token);
     response.setContentType(APPLICATION_JSON_VALUE);
-    new ObjectMapper().writeValue(response.getOutputStream(),tokens);
+    new ObjectMapper().writeValue(response.getWriter(), tokens);
+  }
+
+  @Override
+  protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            AuthenticationException exception)
+      throws IOException, ServletException {
+
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    Map<String, String> errorDetails = new HashMap<>();
+    errorDetails.put("error", "Unauthorized");
+    errorDetails.put("message", exception.getMessage());
+    response.setContentType(APPLICATION_JSON_VALUE);
+    new ObjectMapper().writeValue(response.getWriter(), errorDetails);
   }
 }

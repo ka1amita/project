@@ -10,6 +10,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.services.TokenService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,12 +20,17 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+private TokenService tokenService;
+
+  public CustomAuthorizationFilter(TokenService tokenService) {
+    this.tokenService = tokenService;
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                   FilterChain filterChain) throws ServletException, IOException {
@@ -50,24 +56,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       if (authorizationHeader != null && authorizationHeader.startsWith(prefix)) {
         try {
           String token = authorizationHeader.substring(prefix.length());
-          // TODO Refactor the algorithm to some class in utility but must match the secret in the
-          //  other Filter
-          Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-          JWTVerifier verifier = JWT.require(algorithm)
-                                    .build();
-          DecodedJWT decodedJwt = verifier.verify(token);
 
-          String username = decodedJwt.getSubject();
-
-          String[] roles = decodedJwt.getClaim("roles")
-                                     .asArray(String.class);
-          Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-          stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
-
-          UsernamePasswordAuthenticationToken authenticationToken =
-              new UsernamePasswordAuthenticationToken(username, null, authorities);
           SecurityContextHolder.getContext()
-                               .setAuthentication(authenticationToken);
+                               .setAuthentication(tokenService.getAuthenticationToken(token));
 
           filterChain.doFilter(request, response);
         } catch (Exception e) {

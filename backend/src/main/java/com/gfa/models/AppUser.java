@@ -44,6 +44,14 @@ public class AppUser {
         active = false;
     }
 
+    public AppUser(Long id,String username, String password, String email, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.roles = roles;
+        active = false;
+    }
+
     public Long getId() {
         return id;
     }
