@@ -15,10 +15,6 @@ import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -40,23 +36,22 @@ public class AppUserServiceImpl implements AppUserService {
     private final ActivationCodeRepository activationCodeRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final ActivationCodeService activationCodeService;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              AuthenticationManager authenticationManager,
-                              EmailService emailService) {
+                              EmailService emailService, ActivationCodeService activationCodeService) {
 
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
         this.emailService = emailService;
+        this.activationCodeService = activationCodeService;
     }
 
     @Override
@@ -90,15 +85,15 @@ public class AppUserServiceImpl implements AppUserService {
                 // TODO: Some more advanced password validation (maybe in a Util class)...
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
-                appUserRepository.save(appUser);
-                activationCodeRepository.delete(activationCode.get());
+                saveUser(appUser);
+                activationCodeService.deleteActivationCode(activationCode.get());
             } else {
                 throw new IllegalArgumentException("Password can't be empty!");
             }
         } else {
             throw new IllegalArgumentException("Reset code doesn't exist!");
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("success"));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
     }
 
     private String generateResetCode() {
@@ -147,11 +142,6 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public ActivationCode saveActivationCode(ActivationCode activationCode) {
-        return activationCodeRepository.save(activationCode);
-    }
-
-    @Override
     public AppUser getAppUser(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         AppUser appUser =
@@ -197,12 +187,12 @@ public class AppUserServiceImpl implements AppUserService {
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
         AppUser savedUser = saveUser(newUser);
-        activationCodeRepository.save(activationCode);
+        activationCodeService.saveActivationCode(activationCode);
 
         activationCode.setAppUser(savedUser);
 
         emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
-      
+
         return savedUser;
     }
 
