@@ -197,7 +197,7 @@ public class AppUserServiceImpl implements AppUserService {
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
         AppUser savedUser = saveUser(newUser);
-        activationCodeRepository.save(activationCode);
+        saveActivationCode(activationCode);
 
         activationCode.setAppUser(savedUser);
 
