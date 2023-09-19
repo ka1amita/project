@@ -7,7 +7,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
 import com.gfa.services.TokenService;
-import com.gfa.services.TokenServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,58 +20,52 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class NewSecurityConfig {
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                                                       UserDetailsService userDetailsService)
-            throws Exception {
-        AuthenticationManager authenticationManager =
-                http.getSharedObject(AuthenticationManagerBuilder.class)
-                        .userDetailsService(userDetailsService)
-                        .passwordEncoder(bCryptPasswordEncoder)
-                        .and()
-                        .build();
-        return authenticationManager;
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                     BCryptPasswordEncoder bCryptPasswordEncoder,
+                                                     UserDetailsService userDetailsService)
+      throws Exception {
+    AuthenticationManager authenticationManager =
+        http.getSharedObject(AuthenticationManagerBuilder.class)
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(bCryptPasswordEncoder)
+            .and()
+            .build();
+    return authenticationManager;
+  }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-                                           AuthenticationManager authenticationManager,
-                                           TokenService tokenService) throws Exception {
-        http
-                .csrf()
-                .disable()
-                .sessionManagement()
-                .sessionCreationPolicy(STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/login", "/token/refresh", "/hello", "/user/activate")
-                .permitAll()
-                .antMatchers(GET, "/user/users/**")
-                .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN")
-                .antMatchers(GET, "/dashboard")
-                .hasAuthority("ROLE_ADMIN")
-                .antMatchers(POST, "/reset")
-                .permitAll()
-                .antMatchers(POST, "/reset/*")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login.html")
-                .permitAll()
-                .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/index.html")
-                .failureUrl("/error.html");
-      http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
-      http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
-                           UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
+    http.csrf()
+        .disable();
+    http.sessionManagement()
+        .sessionCreationPolicy(STATELESS);
+    http.authorizeRequests()
+        .antMatchers("/login", "/token/refresh", "/hello", "/register", "/confirm/*")
+        .permitAll(); // or anonymous() ??
+    http.authorizeRequests()
+        .antMatchers(GET, "/user/users/**")
+        .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN");
+    http.authorizeRequests()
+        .antMatchers(GET, "/dashboard")
+        .hasAuthority("ROLE_ADMIN");
+    http.authorizeRequests()
+        .antMatchers(POST, "/reset")
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(POST, "/reset/*")
+        .permitAll();
+    http.authorizeRequests()
+        .anyRequest()
+        .authenticated(); // the rest requires any Role
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
+    http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
+                         UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+  }
 }

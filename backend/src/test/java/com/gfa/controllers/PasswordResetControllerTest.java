@@ -7,6 +7,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import java.util.HashSet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PasswordResetControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -34,7 +35,22 @@ class PasswordResetControllerTest {
     @Autowired
     private ActivationCodeRepository activationCodeRepository;
 
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
+
+    private final AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new HashSet<>());
+    private final ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
+
+    @BeforeAll
+    void init() {
+        appUserRepository.save(appUser);
+        activationCodeRepository.save(activationCode);
+    }
+
+//    @AfterAll
+//    void deInit() {
+//        activationCodeRepository.delete(activationCode);
+//        appUserRepository.delete(appUser);
+//    }
 
     @BeforeEach
     void setUp() {

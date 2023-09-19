@@ -1,12 +1,9 @@
 package com.gfa.services;
 
 import com.gfa.models.AppUser;
-import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,8 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     AppUser appUser = appUserRepository.findByUsernameOrEmail(username, username)
                                        .orElseThrow(() -> new UsernameNotFoundException(
                                            "User not found in the DB"));
-
-    return new org.springframework.security.core.userdetails.User(
+    return new User(
         appUser.getUsername(),
         appUser.getPassword(),
         appUser.isEnabled(),
