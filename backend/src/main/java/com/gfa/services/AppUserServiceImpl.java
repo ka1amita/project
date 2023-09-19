@@ -90,7 +90,7 @@ public class AppUserServiceImpl implements AppUserService {
                 // TODO: Some more advanced password validation (maybe in a Util class)...
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
-                appUserRepository.save(appUser);
+                saveUser(appUser);
                 activationCodeRepository.delete(activationCode.get());
             } else {
                 throw new IllegalArgumentException("Password can't be empty!");
@@ -98,7 +98,7 @@ public class AppUserServiceImpl implements AppUserService {
         } else {
             throw new IllegalArgumentException("Reset code doesn't exist!");
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("success"));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
     }
 
     private String generateResetCode() {
@@ -142,7 +142,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser saveUser(AppUser user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getUsername()));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return appUserRepository.save(user);
     }
 
@@ -191,18 +191,18 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser newUser = new AppUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        newUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+        newUser.setPassword(request.getPassword());
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        AppUser savedUser = appUserRepository.save(newUser);
+        AppUser savedUser = saveUser(newUser);
         activationCodeRepository.save(activationCode);
 
         activationCode.setAppUser(savedUser);
 
         emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
-      
+
         return savedUser;
     }
 
