@@ -6,6 +6,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
+import com.gfa.services.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -39,7 +40,7 @@ public class NewSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
     http.csrf()
         .disable();
     http.sessionManagement()
@@ -62,8 +63,8 @@ public class NewSecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires any Role
-    http.addFilter(new CustomAuthenticationFilter(authenticationManager));
-    http.addFilterBefore(new CustomAuthorizationFilter(),
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
+    http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
