@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,17 +37,21 @@ public class AppUserServiceImpl implements AppUserService {
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
+    private final ActivationCodeService activationCodeService;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
-                              BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
+                              EmailService emailService, ActivationCodeService activationCodeService) {
+
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
+        this.activationCodeService = activationCodeService;
     }
 
     @Override
@@ -80,15 +85,15 @@ public class AppUserServiceImpl implements AppUserService {
                 // TODO: Some more advanced password validation (maybe in a Util class)...
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
-                appUserRepository.save(appUser);
-                activationCodeRepository.delete(activationCode.get());
+                saveUser(appUser);
+                activationCodeService.deleteActivationCode(activationCode.get());
             } else {
                 throw new IllegalArgumentException("Password can't be empty!");
             }
         } else {
             throw new IllegalArgumentException("Reset code doesn't exist!");
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("success"));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
     }
 
     private String generateResetCode() {
@@ -131,14 +136,9 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser saveUser(AppUser user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getUsername()));
-        return appUserRepository.save(user);
-    }
-
-    @Override
-    public ActivationCode saveActivationCode(ActivationCode activationCode) {
-        return activationCodeRepository.save(activationCode);
+    public AppUser saveUser(AppUser appUser) {
+        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+        return appUserRepository.save(appUser);
     }
 
     @Override
@@ -158,6 +158,7 @@ public class AppUserServiceImpl implements AppUserService {
     public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
     }
+
     @Override
     public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
@@ -180,19 +181,18 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser newUser = new AppUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        //TODO:Wait for Matěj's spring security integration for password encoding.
-        //Mocked encoding: For now just sets the password directly.
         newUser.setPassword(request.getPassword());
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        AppUser savedUser = appUserRepository.save(newUser);
-        activationCodeRepository.save(activationCode);
+        AppUser savedUser = saveUser(newUser);
+        activationCodeService.saveActivationCode(activationCode);
 
         activationCode.setAppUser(savedUser);
 
         emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+
         return savedUser;
     }
 

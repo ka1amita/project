@@ -31,5 +31,4 @@ public class RegistrationController {
         appUserService.activateAccount(activationCode);
         return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully!"));
     }
-
 }

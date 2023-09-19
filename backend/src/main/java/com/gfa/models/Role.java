@@ -1,11 +1,11 @@
 package com.gfa.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.HashSet;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -21,7 +21,7 @@ public class Role implements GrantedAuthority {
     private String name;
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     @JsonBackReference
-    private List<AppUser> appUsers = new ArrayList<>();
+    private Set<AppUser> appUsers = new HashSet<>();
 
     public Role() {
     }
@@ -47,11 +47,11 @@ public class Role implements GrantedAuthority {
         this.name = name;
     }
 
-    public List<AppUser> getAppUsers() {
+    public Set<AppUser> getAppUsers() {
         return appUsers;
     }
 
-    public void setAppUsers(List<AppUser> appUsers) {
+    public void setAppUsers(Set<AppUser> appUsers) {
         this.appUsers = appUsers;
     }
 

@@ -2,11 +2,9 @@ package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.models.AppUser;
-
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
-import com.gfa.models.ActivationCode;
 import com.gfa.models.Role;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,7 @@ public interface AppUserService{
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 
-    void activateAccount (String activationCode);
+    void activateAccount(String activationCode);
 
     ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException;
 
@@ -30,8 +28,6 @@ public interface AppUserService{
     Role saveRole(Role role);
 
     AppUser saveUser(AppUser user);
-
-    ActivationCode saveActivationCode(ActivationCode code);
 
     AppUser getAppUser(String username);
 

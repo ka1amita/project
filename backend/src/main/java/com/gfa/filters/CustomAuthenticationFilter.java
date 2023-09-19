@@ -13,9 +13,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,10 +43,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
 
         if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
-            throw new InternalAuthenticationServiceException("Please provide a username or an email.");
+          throw new BadCredentialsException("Please provide a username or an email.");
         }
         if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
-            throw new InternalAuthenticationServiceException("Please provide a password.");
+          throw new BadCredentialsException("Please provide a password.");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =
