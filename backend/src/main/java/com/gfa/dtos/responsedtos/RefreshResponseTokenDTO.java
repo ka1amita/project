@@ -1,6 +1,6 @@
 package com.gfa.dtos.responsedtos;
 
-public class RefreshResponseTokenDTO extends ResponseTokenDTO {
+public class RefreshResponseTokenDTO extends ResponseDTO {
   private String refresh_token;
 
   public RefreshResponseTokenDTO(String token) {

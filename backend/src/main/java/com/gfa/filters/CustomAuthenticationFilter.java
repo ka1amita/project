@@ -66,8 +66,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     String issuer = request.getRequestURL()
                            .toString();
 
-    String access_token = tokenService.createToken(username, now, issuer, authorities);
-    String refresh_token = tokenService.createToken(username, now, issuer);
+    String access_token = tokenService.createAccessToken(username, now, issuer, authorities);
+    String refresh_token = tokenService.createRefreshToken(username, now, issuer);
 
     Map<String, String> tokens = new HashMap<>();
     tokens.put("access_token", access_token);

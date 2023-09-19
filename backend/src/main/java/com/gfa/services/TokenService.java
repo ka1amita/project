@@ -4,7 +4,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.gfa.dtos.requestdtos.RequestTokenDTO;
-import com.gfa.dtos.responsedtos.ResponseTokenDTO;
+import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
@@ -15,29 +15,31 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public interface TokenService {
-  DecodedJWT decodeJwt(String jwt);
+  DecodedJWT decodeToken(String token);
 
-  String createToken(String username, Calendar now, String issuer);
+  String createRefreshToken(String username, Calendar now, String issuer);
+
+  @NotNull
+  Set<SimpleGrantedAuthority> getGrantedAuthorities(String token);
 
   Algorithm getAlgorithm();
 
   JWTVerifier getVerifier();
 
-  @NotNull
-  Authentication getAuthenticationToken(String token);
-
   String getPrefix();
 
-  Set<SimpleGrantedAuthority> getGrantedAuthorities(DecodedJWT decodedJwt);
+  String getSubject(String token);
 
-  String getSubject(String jwt);
+  <T extends GrantedAuthority> String createAccessToken(String username, Calendar now, String issuer,
+                                                        Collection<T> authorities);
 
-  <T extends GrantedAuthority> String createToken(String username, Calendar now, String issuer,
-                                                  Collection<T> authorities);
+  RequestTokenDTO mapToDto(HttpServletRequest request);
 
-  RequestTokenDTO parse(HttpServletRequest request);
+  ResponseTokensDTO refreshTokens(RequestTokenDTO tokenDto);
 
-  Set<ResponseTokenDTO> refreshTokens(RequestTokenDTO tokenDto);
+  Authentication getAuthenticationToken(RequestTokenDTO requestTokenDTO);
+
+  ResponseTokensDTO mapToDto(String accessToken, String refresh_token);
 }
 
 

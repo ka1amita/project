@@ -1,10 +1,10 @@
 package com.gfa.filters;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.exceptions.MissingBearerTokenException;
 import com.gfa.services.TokenService;
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +23,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-  private static final String BEARER = "Bearer ";
   private final TokenService tokenService;
 
   @Autowired
@@ -48,28 +48,27 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                .equals("/reset") ||
         request.getServletPath()
                .startsWith("/reset/")) {
+
       filterChain.doFilter(request, response);
     } else {
-      String authorizationHeader = request.getHeader(AUTHORIZATION);
+      try {
+        Authentication authenticationToken =
+            tokenService.getAuthenticationToken(tokenService.mapToDto(request));
+        SecurityContextHolder.getContext()
+                             .setAuthentication(authenticationToken);
 
-      if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-        try {
-          String token = authorizationHeader.substring(BEARER.length());
-
-          SecurityContextHolder.getContext()
-                               .setAuthentication(tokenService.getAuthenticationToken(token));
-
-          filterChain.doFilter(request, response);
-        } catch (Exception e) {
-          response.setHeader("error", e.getMessage());
-          response.setStatus(FORBIDDEN.value());
-          Map<String, String> error = new HashMap<>();
-          error.put("error_message", e.getMessage());
-          response.setContentType(APPLICATION_JSON_VALUE);
-          new ObjectMapper().writeValue(response.getOutputStream(), error);
-        }
-      } else {
         filterChain.doFilter(request, response);
+
+      } catch (MissingBearerTokenException ok) {
+        filterChain.doFilter(request, response);
+      } catch (Exception e) {
+        //     TODO ask Lan about the Exception
+        response.setHeader("error", e.getMessage());
+        response.setStatus(FORBIDDEN.value());
+        Map<String, String> error = new HashMap<>();
+        error.put("error_message", e.getMessage());
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), error);
       }
     }
   }
