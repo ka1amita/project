@@ -5,6 +5,8 @@ import com.gfa.repositories.ActivationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class ActivationCodeServiceImp implements ActivationCodeService {
 
@@ -23,5 +25,10 @@ public class ActivationCodeServiceImp implements ActivationCodeService {
     @Override
     public void deleteActivationCode(ActivationCode activationCode) {
         activationCodeRepository.delete(activationCode);
+    }
+
+    @Override
+    public Optional<ActivationCode> findByActivationCodeContains(String activationCode) {
+        return activationCodeRepository.findByActivationCodeContains(activationCode);
     }
 }
