@@ -13,7 +13,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -67,8 +66,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     String issuer = request.getRequestURL()
                            .toString();
 
-    String access_token = tokenService.getToken(username, now, issuer, authorities);
-    String refresh_token = tokenService.getToken(username, now, issuer);
+    String access_token = tokenService.createToken(username, now, issuer, authorities);
+    String refresh_token = tokenService.createToken(username, now, issuer);
 
     Map<String, String> tokens = new HashMap<>();
     tokens.put("access_token", access_token);

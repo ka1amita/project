@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -24,7 +25,6 @@ public class AppUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
@@ -63,7 +63,7 @@ public class AppUser implements UserDetails {
         active = false;
     }
 
-    public AppUser(Long id,String username, String password, String email, Set<Role> roles) {
+    public AppUser(Long id, String username, String password, String email, Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -114,7 +114,7 @@ public class AppUser implements UserDetails {
         return active;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(@NotNull String username) {
         this.username = username;
     }
 
@@ -127,7 +127,7 @@ public class AppUser implements UserDetails {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@NotNull String password) {
         this.password = password;
     }
 
@@ -135,7 +135,7 @@ public class AppUser implements UserDetails {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@NotNull String email) {
         this.email = email;
     }
 
@@ -143,7 +143,7 @@ public class AppUser implements UserDetails {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(@NotNull boolean active) {
         this.active = active;
     }
 
@@ -151,7 +151,7 @@ public class AppUser implements UserDetails {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(@NotNull Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -159,7 +159,7 @@ public class AppUser implements UserDetails {
         return activationCodes;
     }
 
-    public void setActivationCodes(Set<ActivationCode> activationCodes) {
+    public void setActivationCodes(@NotNull Set<ActivationCode> activationCodes) {
         this.activationCodes = activationCodes;
     }
 

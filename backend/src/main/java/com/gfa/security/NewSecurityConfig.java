@@ -75,9 +75,4 @@ public class NewSecurityConfig {
                            UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-  @Bean
-  TokenService tokenService() {
-    return new TokenServiceImpl();
-  }
 }
