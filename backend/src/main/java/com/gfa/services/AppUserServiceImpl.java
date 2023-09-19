@@ -15,6 +15,10 @@ import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -23,6 +27,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,17 +40,22 @@ public class AppUserServiceImpl implements AppUserService {
     private final ActivationCodeRepository activationCodeRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
-                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder, EmailService emailService) {
+                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
+                              AuthenticationManager authenticationManager,
+                              EmailService emailService) {
+
         this.appUserRepository = appUserRepository;
         this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.authenticationManager = authenticationManager;
         this.emailService = emailService;
     }
 
@@ -158,6 +168,7 @@ public class AppUserServiceImpl implements AppUserService {
     public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
     }
+
     @Override
     public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
@@ -180,9 +191,7 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser newUser = new AppUser();
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
-        //TODO:Wait for Matěj's spring security integration for password encoding.
-        //Mocked encoding: For now just sets the password directly.
-        newUser.setPassword(request.getPassword());
+        newUser.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
@@ -193,6 +202,7 @@ public class AppUserServiceImpl implements AppUserService {
         activationCode.setAppUser(savedUser);
 
         emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+      
         return savedUser;
     }
 
