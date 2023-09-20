@@ -23,16 +23,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final AuthenticationManager authenticationManager;
   private final TokenService tokenService;
+  private final AuthenticationManager authenticationManager;
 
-  public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
-                                    TokenService tokenService) {
-    this.authenticationManager = authenticationManager;
+
+  public CustomAuthenticationFilter(TokenService tokenService,
+                                    AuthenticationManager authenticationManager) {
     this.tokenService = tokenService;
+    this.authenticationManager = authenticationManager;
   }
 
     @Override
@@ -56,8 +56,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         throw new BadCredentialsException("Please provide a password.");
       }
 
-      UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
-                                                                                                            password);
+      UsernamePasswordAuthenticationToken
+          authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
+                                                                            password);
       setDetails(request, authRequest);
       return authenticationManager.authenticate(authRequest);
     }

@@ -9,11 +9,14 @@ import com.gfa.filters.CustomAuthorizationFilter;
 import com.gfa.services.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,22 +24,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class NewSecurityConfig {
 
   @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+  public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                     BCryptPasswordEncoder bCryptPasswordEncoder,
-                                                     UserDetailsService userDetailsService)
+  public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService,
+                                                       PasswordEncoder passwordEncoder) {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    authProvider.setUserDetailsService(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder);
+    return authProvider;
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider)
       throws Exception {
-    AuthenticationManager authenticationManager =
-        http.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(bCryptPasswordEncoder)
-            .and()
-            .build();
-    return authenticationManager;
+    //  optionally add parent as second argument from HttpSecurity
+     return new ProviderManager(authenticationProvider);
   }
 
   @Bean
@@ -63,7 +68,7 @@ public class NewSecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires any Role
-    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
+    http.addFilter(new CustomAuthenticationFilter(tokenService, authenticationManager));
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();
