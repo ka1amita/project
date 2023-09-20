@@ -51,7 +51,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
       filterChain.doFilter(request, response);
     } else {
-      try {
+      // try {
         Authentication authenticationToken =
             tokenService.getAuthenticationToken(tokenService.mapToDto(request));
         SecurityContextHolder.getContext()
@@ -59,17 +59,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 
-      } catch (MissingBearerTokenException ok) {
-        filterChain.doFilter(request, response);
-      } catch (Exception e) {
-        //     TODO ask Lan about the Exception
-        response.setHeader("error", e.getMessage());
-        response.setStatus(FORBIDDEN.value());
-        Map<String, String> error = new HashMap<>();
-        error.put("error_message", e.getMessage());
-        response.setContentType(APPLICATION_JSON_VALUE);
-        new ObjectMapper().writeValue(response.getOutputStream(), error);
-      }
+      // } catch (MissingBearerTokenException ok) {
+      //   filterChain.doFilter(request, response);
+      // } catch (Exception e) {
+      //   //     TODO ask Lan about the Exception
+      //   response.setHeader("error", e.getMessage());
+      //   response.setStatus(FORBIDDEN.value());
+      //   Map<String, String> error = new HashMap<>();
+      //   error.put("error_message", e.getMessage());
+      //   response.setContentType(APPLICATION_JSON_VALUE);
+      //   new ObjectMapper().writeValue(response.getOutputStream(), error);
+      // }
     }
   }
 }

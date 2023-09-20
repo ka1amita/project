@@ -31,17 +31,17 @@ public class TokenController {
   public void refreshTokens(HttpServletRequest request,
                            HttpServletResponse response) throws IOException {
       ResponseTokensDTO tokens = null;
-    try {
+    // try {
         tokens = tokenService.refreshTokens(tokenService.mapToDto(request));
     //     TODO ask Lan about the Exception
-    } catch (Exception e) {
-        response.setHeader("error", e.getMessage());
-        response.setStatus(FORBIDDEN.value());
-        response.setContentType(APPLICATION_JSON_VALUE);
-        Map<String, String> error = new HashMap<>();
-        error.put("error_message", e.getMessage());
-        new ObjectMapper().writeValue(response.getOutputStream(), error);
-      }
+    // } catch (Exception e) {
+    //     response.setHeader("error", e.getMessage());
+    //     response.setStatus(FORBIDDEN.value());
+    //     response.setContentType(APPLICATION_JSON_VALUE);
+    //     Map<String, String> error = new HashMap<>();
+    //     error.put("error_message", e.getMessage());
+    //     new ObjectMapper().writeValue(response.getOutputStream(), error);
+    //   }
 
     response.setContentType(APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getOutputStream(), tokens);
