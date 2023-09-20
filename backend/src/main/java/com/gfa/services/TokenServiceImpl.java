@@ -9,6 +9,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.gfa.dtos.requestdtos.RequestTokenDTO;
 import com.gfa.dtos.responsedtos.ResponseTokensDTO;
+import com.gfa.exceptions.InvalidTokenException;
 import com.gfa.exceptions.MissingBearerTokenException;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
@@ -111,7 +112,7 @@ public class TokenServiceImpl implements TokenService {
     String authorizationHeader = request.getHeader(AUTHORIZATION);
 
     if (authorizationHeader == null || !authorizationHeader.startsWith(PREFIX)) {
-      throw new MissingBearerTokenException("Bearer token is missing");
+      throw new MissingBearerTokenException();
     }
 
     String token = authorizationHeader.substring(PREFIX.length());
@@ -137,11 +138,15 @@ public class TokenServiceImpl implements TokenService {
   }
 
   @Override
-  public Authentication getAuthenticationToken(RequestTokenDTO requestTokenDTO) {
+  public Authentication getAuthentication(RequestTokenDTO requestTokenDTO) {
     String token = requestTokenDTO.getToken();
-    return new UsernamePasswordAuthenticationToken(getSubject(token),
-                                                   null,
-                                                   getGrantedAuthorities(token));
+    try {
+      return new UsernamePasswordAuthenticationToken(getSubject(token),
+                                                     null,
+                                                     getGrantedAuthorities(token));
+    } catch (Exception e) {
+      throw new InvalidTokenException();
+    }
   }
 
   @Override

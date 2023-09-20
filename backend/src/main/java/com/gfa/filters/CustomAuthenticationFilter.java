@@ -77,7 +77,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     String access_token = tokenService.createAccessToken(username, now, issuer, authorities);
     String refresh_token = tokenService.createRefreshToken(username, now, issuer);
-
+    // TODO use ResponseTokensDTO
     Map<String, String> tokens = new HashMap<>();
     tokens.put("access_token", access_token);
     tokens.put("refresh_token", refresh_token);

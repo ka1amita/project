@@ -37,7 +37,7 @@ public interface TokenService {
 
   ResponseTokensDTO refreshTokens(RequestTokenDTO tokenDto);
 
-  Authentication getAuthenticationToken(RequestTokenDTO requestTokenDTO);
+  Authentication getAuthentication(RequestTokenDTO requestTokenDTO);
 
   ResponseTokensDTO mapToDto(String accessToken, String refresh_token);
 }

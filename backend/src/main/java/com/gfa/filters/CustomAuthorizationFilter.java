@@ -1,5 +1,10 @@
 package com.gfa.filters;
 
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.security.NewSecurityConfig;
 import com.gfa.services.TokenService;
 import java.io.IOException;
@@ -24,6 +29,17 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     this.tokenService = tokenService;
   }
 
+  // TODO ask Lan about the Exception
+  private static void handleException(HttpServletResponse response, Exception e)
+      throws IOException {
+    String message = e.getMessage();
+    response.setHeader("Error", message);
+    response.setStatus(UNAUTHORIZED.value());
+    response.setContentType(APPLICATION_JSON_VALUE);
+    new ObjectMapper().writeValue(response.getOutputStream(),
+                                  new ErrorResponseDTO(message));
+  }
+
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
                                   @NonNull FilterChain filterChain) throws ServletException,
@@ -44,25 +60,20 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
       filterChain.doFilter(request, response);
     } else {
-      // try {
-        Authentication authenticationToken =
-            tokenService.getAuthenticationToken(tokenService.mapToDto(request));
+      try {
+        Authentication authentication =
+            tokenService.getAuthentication(tokenService.mapToDto(request));
+
         SecurityContextHolder.getContext()
-                             .setAuthentication(authenticationToken);
+                             .setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
 
-      // } catch (MissingBearerTokenException ok) {
-      //   filterChain.doFilter(request, response);
-      // } catch (Exception e) {
-      //   //     TODO ask Lan about the Exception
-      //   response.setHeader("error", e.getMessage());
-      //   response.setStatus(FORBIDDEN.value());
-      //   Map<String, String> error = new HashMap<>();
-      //   error.put("error_message", e.getMessage());
-      //   response.setContentType(APPLICATION_JSON_VALUE);
-      //   new ObjectMapper().writeValue(response.getOutputStream(), error);
-      // }
+      } catch (Exception e) {
+        handleException(response, e);
+      } finally {
+        filterChain.doFilter(request, response);
+      }
     }
   }
 }
