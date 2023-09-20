@@ -13,7 +13,9 @@ import com.gfa.models.Role;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
+import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Random;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,21 +34,23 @@ import javax.mail.MessagingException;
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final ActivationCodeRepository activationCodeRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
 
+    @Value("${ACTIVATION_CODE_EXPIRE_MINUTES:30}")
+    private final Integer ActivationCodeExpireMinutes = 30;
+    @Value("${ACTIVATION_CODE_MAX_SIZE:48}")
+    private final Integer ActivationCodeMaxSize = 48;
+
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
                               EmailService emailService, ActivationCodeService activationCodeService) {
 
         this.appUserRepository = appUserRepository;
-        this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
@@ -68,7 +71,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         if (appUser.isPresent()) {
-            ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
+            ActivationCode activationCode = activationCodeService.saveActivationCode(new ActivationCode(Utils.GenerateActivationCode(ActivationCodeMaxSize), appUser.get()));
             emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
@@ -78,11 +81,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode) {
-        Optional<ActivationCode> activationCode = activationCodeRepository.findByActivationCodeContains(resetCode);
-        // TODO: The 10 minute expire check shouldn't be here OR at least the 10 minutes shouldn't be here!
-        if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(10).isAfter(LocalDateTime.now())) {
-            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty()) {
-                // TODO: Some more advanced password validation (maybe in a Util class)...
+        Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
+        if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(ActivationCodeExpireMinutes).isAfter(LocalDateTime.now())) {
+            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty() && Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
                 saveUser(appUser);
@@ -96,13 +97,6 @@ public class AppUserServiceImpl implements AppUserService {
         return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
     }
 
-    private String generateResetCode() {
-        Random random = new Random();
-        return random.ints('a', 'z' + 1)
-                .limit(48)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
 
     @Override
     public void addRoleToAppUser(String username, String roleName) {
@@ -198,7 +192,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void activateAccount(String code) {
-        Optional<ActivationCode> activationCodeOpt = activationCodeRepository.findByActivationCodeContains(code);
+        Optional<ActivationCode> activationCodeOpt = activationCodeService.findByActivationCodeContains(code);
 
         if (!activationCodeOpt.isPresent()) {
             throw new InvalidActivationCodeException("Invalid activation code.");
@@ -222,7 +216,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setActive(true);
         appUserRepository.save(appUser);
 
-        activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
+        activationCodeService.deleteActivationCode(activationCode);
     }
 
     private String generateActivationCode() {
