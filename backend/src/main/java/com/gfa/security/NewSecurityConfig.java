@@ -10,8 +10,8 @@ import com.gfa.services.TokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,10 +38,19 @@ public class NewSecurityConfig {
   }
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationProvider authenticationProvider)
+  public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                     PasswordEncoder passwordEncoder,
+                                                     UserDetailsService userDetailsService)
       throws Exception {
-    //  optionally add parent as second argument from HttpSecurity
-     return new ProviderManager(authenticationProvider);
+
+    AuthenticationManager authenticationManager =
+        http.getSharedObject(AuthenticationManagerBuilder.class)
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder)
+            .and()
+            .build();
+    http.authenticationManager(authenticationManager);
+    return authenticationManager;
   }
 
   @Bean
@@ -67,7 +76,7 @@ public class NewSecurityConfig {
         .permitAll();
     http.authorizeRequests()
         .anyRequest()
-        .authenticated(); // the rest requires any Role
+        .authenticated(); // the rest requires some Role
     http.addFilter(new CustomAuthenticationFilter(tokenService, authenticationManager));
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
