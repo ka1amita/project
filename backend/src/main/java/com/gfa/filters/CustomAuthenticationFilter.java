@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,20 +39,27 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
             throws AuthenticationException {
+      if (!request.getMethod().equals("POST")) {
+        throw new AuthenticationServiceException(
+            "Authentication method not supported: " + request.getMethod());
+      }
 
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
+      String username = obtainUsername(request);
+      username = (username != null) ? username.trim() : "";
+      String password = obtainPassword(request);
+      password = (password != null) ? password : "";
 
-        if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
-          throw new BadCredentialsException("Please provide a username or an email.");
-        }
-        if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
-          throw new BadCredentialsException("Please provide a password.");
-        }
+      if (username.isEmpty()) {
+        throw new BadCredentialsException("Please provide a username or an email.");
+      }
+      if (password.isEmpty()) {
+        throw new BadCredentialsException("Please provide a password.");
+      }
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username, password);
-        return authenticationManager.authenticate(authenticationToken);
+      UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
+                                                                                                            password);
+      setDetails(request, authRequest);
+      return authenticationManager.authenticate(authRequest);
     }
 
   @Override
