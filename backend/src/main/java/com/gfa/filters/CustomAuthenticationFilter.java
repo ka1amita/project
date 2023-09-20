@@ -14,13 +14,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -42,20 +43,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String password = request.getParameter("password");
 
         if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
-            throw new AuthenticationException("Please provide a username or an email.") {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
+          throw new BadCredentialsException("Please provide a username or an email.");
         }
         if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
-            throw new AuthenticationException("Please provide a password.") {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
+          throw new BadCredentialsException("Please provide a password.");
         }
 
         UsernamePasswordAuthenticationToken authenticationToken =

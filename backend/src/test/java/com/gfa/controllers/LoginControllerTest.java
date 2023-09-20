@@ -5,6 +5,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.services.AppUserService;
+import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class LoginControllerTest {
     public void beforeEachTest() {
         objectMapper = new ObjectMapper();
         Role roleUser = new Role("ROLE_USER");
-        AppUser user = new AppUser(1L,"user", "user", "user2@gfa.com", new ArrayList<>());
+        AppUser user = new AppUser(1L,"user", "user", "user2@gfa.com", new HashSet<>());
         user.setActive(true);
         user.getRoles().add(roleUser);
         ActivationCode code = new ActivationCode("code", user);

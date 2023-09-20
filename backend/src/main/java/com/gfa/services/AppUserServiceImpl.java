@@ -133,9 +133,9 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser saveUser(AppUser user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return appUserRepository.save(user);
+    public AppUser saveUser(AppUser appUser) {
+        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+        return appUserRepository.save(appUser);
     }
 
     @Override
