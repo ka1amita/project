@@ -83,7 +83,7 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode) {
         Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(ActivationCodeExpireMinutes).isAfter(LocalDateTime.now())) {
-            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty() && Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword()) {
+            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty() && Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
                 saveUser(appUser);
