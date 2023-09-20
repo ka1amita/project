@@ -7,6 +7,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import java.util.HashSet;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ class PasswordResetControllerTest {
 
     private ObjectMapper objectMapper;
 
-    private final AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new ArrayList<>());
+    private final AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new HashSet<>());
     private final ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
 
     @BeforeAll

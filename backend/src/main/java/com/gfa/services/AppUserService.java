@@ -2,20 +2,16 @@ package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.models.AppUser;
-
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
-import com.gfa.models.ActivationCode;
 import com.gfa.models.Role;
-
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
 
-public interface AppUserService {
+public interface AppUserService{
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 

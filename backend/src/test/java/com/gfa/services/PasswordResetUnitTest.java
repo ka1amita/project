@@ -8,6 +8,7 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
+import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.mail.MessagingException;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +36,7 @@ public class PasswordResetUnitTest {
     @Mock
     private EmailServiceImpl emailService;
 
-    private AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new ArrayList<>());
+    private AppUser appUser = new AppUser("Will Doe", "1234", "example2@mail.com", new HashSet<>());
     private ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
 
     @BeforeEach
