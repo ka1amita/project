@@ -33,7 +33,6 @@ import javax.mail.MessagingException;
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final ActivationCodeRepository activationCodeRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
@@ -41,13 +40,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              ActivationCodeRepository activationCodeRepository,
                               RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
                               EmailService emailService, ActivationCodeService activationCodeService) {
 
         this.appUserRepository = appUserRepository;
-        this.activationCodeRepository = activationCodeRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
@@ -68,7 +65,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         if (appUser.isPresent()) {
-            ActivationCode activationCode = activationCodeRepository.save(new ActivationCode(generateResetCode(), appUser.get()));
+            ActivationCode activationCode = activationCodeService.saveActivationCode(new ActivationCode(generateActivationCode(), appUser.get()));
             emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
@@ -78,7 +75,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode) {
-        Optional<ActivationCode> activationCode = activationCodeRepository.findByActivationCodeContains(resetCode);
+        Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
         // TODO: The 10 minute expire check shouldn't be here OR at least the 10 minutes shouldn't be here!
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(10).isAfter(LocalDateTime.now())) {
             if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty()) {
@@ -198,7 +195,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void activateAccount(String code) {
-        Optional<ActivationCode> activationCodeOpt = activationCodeRepository.findByActivationCodeContains(code);
+        Optional<ActivationCode> activationCodeOpt = activationCodeService.findByActivationCodeContains(code);
 
         if (!activationCodeOpt.isPresent()) {
             throw new InvalidActivationCodeException("Invalid activation code.");
@@ -222,7 +219,7 @@ public class AppUserServiceImpl implements AppUserService {
         appUser.setActive(true);
         appUserRepository.save(appUser);
 
-        activationCodeRepository.delete(activationCode); // Do we want to delete the activation code after using it?
+        activationCodeService.deleteActivationCode(activationCode);
     }
 
     private String generateActivationCode() {
