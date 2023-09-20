@@ -39,8 +39,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                                 HttpServletResponse response)
             throws AuthenticationException {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
 
         if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
           throw new BadCredentialsException("Please provide a username or an email.");
