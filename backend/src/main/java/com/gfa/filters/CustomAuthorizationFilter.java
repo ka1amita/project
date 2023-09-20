@@ -1,14 +1,8 @@
 package com.gfa.filters;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfa.exceptions.MissingBearerTokenException;
+import com.gfa.security.NewSecurityConfig;
 import com.gfa.services.TokenService;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,19 +29,18 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                   @NonNull FilterChain filterChain) throws ServletException,
                                                                             IOException {
     if (request.getServletPath()
-               .equals("/login") ||
+               .equals(NewSecurityConfig.REGISTER) ||
         request.getServletPath()
-               .equals("/token/refresh") ||
+               .equals(NewSecurityConfig.LOGIN) ||
         request.getServletPath()
-               .equals("/user/activate") ||
+               .equals(NewSecurityConfig.RESET_PASSWORD) ||
         request.getServletPath()
-               .equals("/hello") ||
+               .equals(NewSecurityConfig.RESET_PASSWORD_WITH_TOKEN) ||
         request.getServletPath()
-               .equals("/api/user/activate") ||
+               .equals(NewSecurityConfig.VERIFY_EMAIL_WITH_TOKEN) ||
         request.getServletPath()
-               .equals("/reset") ||
-        request.getServletPath()
-               .startsWith("/reset/")) {
+               .equals(NewSecurityConfig.RESEND_VERIFICATION_EMAIL)
+    ) {
 
       filterChain.doFilter(request, response);
     } else {
