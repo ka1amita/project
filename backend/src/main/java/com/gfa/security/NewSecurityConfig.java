@@ -23,6 +23,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class NewSecurityConfig {
 
+  public static final String REGISTER = "/register";
+  public static final String LOGIN = "/login";
+  public static final String RESET_PASSWORD = "/reset-password";
+  public static final String RESET_PASSWORD_WITH_TOKEN = "/reset-password/*";
+  public static final String VERIFY_EMAIL_WITH_TOKEN = "/email/verify/*";
+  public static final String RESEND_VERIFICATION_EMAIL = "/email/verify/resend";
+  public static final String DASHBOARD = "/dashboard";
+
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -60,20 +68,19 @@ public class NewSecurityConfig {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .antMatchers("/login", "/token/refresh", "/hello", "/register", "/confirm/*")
+        .antMatchers(POST,
+                     REGISTER,
+                     LOGIN,
+                     RESET_PASSWORD,
+                     RESET_PASSWORD_WITH_TOKEN,
+                     RESEND_VERIFICATION_EMAIL)
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(GET, VERIFY_EMAIL_WITH_TOKEN)
         .permitAll(); // or anonymous() ??
     http.authorizeRequests()
-        .antMatchers(GET, "/user/users/**")
-        .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN");
-    http.authorizeRequests()
-        .antMatchers(GET, "/dashboard")
+        .antMatchers(GET, DASHBOARD)
         .hasAuthority("ROLE_ADMIN");
-    http.authorizeRequests()
-        .antMatchers(POST, "/reset")
-        .permitAll();
-    http.authorizeRequests()
-        .antMatchers(POST, "/reset/*")
-        .permitAll();
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires some Role
