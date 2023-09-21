@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +72,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     User user = (User) authentication.getPrincipal();
     String username = user.getUsername();
     Collection<GrantedAuthority> authorities = user.getAuthorities();
-    Calendar now = Calendar.getInstance();
     String issuer = request.getRequestURL()
                            .toString();
     ResponseTokensDTO tokens = tokenService.createTokens(username, issuer, authorities);
