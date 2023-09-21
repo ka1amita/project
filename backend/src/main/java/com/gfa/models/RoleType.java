@@ -1,9 +1,9 @@
 package com.gfa.models;
 
 public enum RoleType {
-    ADMIN("ROLE_ADMIN"),
-    USER("ROLE_USER"),
-    GUEST("ROLE_GUEST");
+    ADMIN("ADMIN"),
+    USER("USER"),
+    GUEST("GUEST");
 
     private final String name;
 

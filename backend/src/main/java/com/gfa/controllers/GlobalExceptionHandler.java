@@ -1,22 +1,16 @@
 package com.gfa.controllers;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
-import com.gfa.exceptions.EmailAlreadyExistsException;
-import com.gfa.exceptions.InvalidActivationCodeException;
-import com.gfa.exceptions.UserAlreadyExistsException;
+import com.gfa.exceptions.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
 
 import java.util.stream.Collectors;
 
@@ -48,14 +42,17 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> usernameNotFound(UsernameNotFoundException e) {
+    public ResponseEntity<ErrorResponseDTO> handleUsernameNotFoundException(UsernameNotFoundException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 
-    @ExceptionHandler(InternalAuthenticationServiceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e) {
-        return e.getMessage();
+    @ExceptionHandler(InvalidIdException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidIdException(InvalidIdException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
     }
 }

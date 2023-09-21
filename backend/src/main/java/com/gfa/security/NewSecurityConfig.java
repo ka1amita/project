@@ -49,7 +49,7 @@ public class NewSecurityConfig {
         .antMatchers("/login", "/token/refresh", "/hello", "/register", "/confirm/*")
         .permitAll(); // or anonymous() ??
     http.authorizeRequests()
-        .antMatchers(GET, "/user/users/**")
+        .antMatchers(GET, "/users/**")
         .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN");
     http.authorizeRequests()
         .antMatchers(GET, "/dashboard")
