@@ -140,7 +140,7 @@ public class AppUserServiceImpl implements AppUserService {
         if (id < 0) throw new InvalidIdException("Please provide a valid ID");
         AppUser user =
                 appUserRepository.findById(id).orElseThrow(()
-                        -> new UserNotFoundException("Couldn't find the user in the database.")
+                        -> new UserNotFoundException("User not found")
                 );
         if (softDeleteConfig.isEnabled()) {
             user.setDeleted(true);
