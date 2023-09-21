@@ -1,4 +1,4 @@
-package com.gfa.security;
+package com.gfa.config;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-public class NewSecurityConfig {
+public class SecurityConfig {
 
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
