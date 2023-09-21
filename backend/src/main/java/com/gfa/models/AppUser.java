@@ -27,7 +27,7 @@ public class AppUser implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
     private boolean active;
-    @ManyToMany(fetch = EAGER, cascade = {PERSIST, MERGE})
+    @ManyToMany(fetch = EAGER, cascade = {MERGE})
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
