@@ -1,7 +1,6 @@
 package com.gfa.models;
 
 import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.EAGER;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,10 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "app_users")
+@Where(clause = "deleted=false")
 public class AppUser implements UserDetails {
 
     @Id
@@ -26,7 +28,8 @@ public class AppUser implements UserDetails {
     private String password;
     @Column(unique = true, nullable = false)
     private String email;
-    private boolean active;
+    private boolean active = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
     @ManyToMany(fetch = EAGER, cascade = {MERGE})
     @JoinTable(
             name = "app_users_roles",
@@ -54,7 +57,6 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        active = false;
     }
 
     public AppUser(Long id, String username, String password, String email, Set<Role> roles) {
@@ -62,16 +64,14 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        active = false;
     }
 
-    public AppUser(Long id, String username, String password, String email, boolean active,
+    public AppUser(Long id, String username, String password, String email,
                    Set<Role> roles, Set<ActivationCode> activationCodes) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.active = active;
         this.roles = roles;
         this.activationCodes = activationCodes;
     }
@@ -139,6 +139,14 @@ public class AppUser implements UserDetails {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Set<Role> getRoles() {
