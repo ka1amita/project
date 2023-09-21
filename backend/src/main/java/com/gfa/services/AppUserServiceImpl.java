@@ -144,6 +144,7 @@ public class AppUserServiceImpl implements AppUserService {
                 );
         if (softDeleteConfig.isEnabled()) {
             user.setDeleted(true);
+            user.setActive(false);
             appUserRepository.save(user);
         } else {
             appUserRepository.deleteById(id);
