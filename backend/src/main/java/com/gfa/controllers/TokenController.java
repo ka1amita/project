@@ -9,6 +9,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.exceptions.token.RefreshTokenMissingException;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.services.AppUserService;
@@ -81,7 +82,7 @@ public class TokenController {
         new ObjectMapper().writeValue(response.getOutputStream(), error);
       }
     } else {
-      throw new RuntimeException("Refresh token is missing");
+      throw new RefreshTokenMissingException("Refresh token is missing");
     }
   }
 }
