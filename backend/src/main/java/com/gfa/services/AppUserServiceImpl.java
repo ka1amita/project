@@ -4,25 +4,28 @@ import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.*;
-import com.gfa.exceptions.EmailAlreadyExistsException;
-import com.gfa.exceptions.InvalidActivationCodeException;
-import com.gfa.exceptions.UserAlreadyExistsException;
+import com.gfa.exceptions.activation.AccountAlreadyActiveException;
+import com.gfa.exceptions.activation.ActivationCodeExpiredException;
+import com.gfa.exceptions.activation.InvalidActivationCodeException;
+import com.gfa.exceptions.user.InvalidResetCodeException;
+import com.gfa.exceptions.email.EmailAlreadyExistsException;
+import com.gfa.exceptions.email.EmailSendingFailedException;
+import com.gfa.exceptions.role.RoleNotFoundException;
+import com.gfa.exceptions.user.*;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
-import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Lazy;
@@ -48,7 +51,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService) {
+                              EmailService emailService, ActivationCodeService activationCodeService, MessageSource messageSource) {
 
         this.appUserRepository = appUserRepository;
         this.roleRepository = roleRepository;
@@ -75,7 +78,7 @@ public class AppUserServiceImpl implements AppUserService {
             emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
-            throw new IllegalArgumentException("User not found!");
+            throw new UserNotFoundException("User not found");
         }
     }
 
@@ -89,12 +92,12 @@ public class AppUserServiceImpl implements AppUserService {
                 saveUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
-                throw new IllegalArgumentException("Password can't be empty!");
+                throw new InvalidPasswordFormatException("Password can't be empty");
             }
         } else {
-            throw new IllegalArgumentException("Reset code doesn't exist!");
+            throw new InvalidResetCodeException("Reset code doesn't exist");
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed"));
     }
 
 
@@ -106,7 +109,7 @@ public class AppUserServiceImpl implements AppUserService {
                                 "Username not found in the DB"));
         Role role =
                 roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
+                        .orElseThrow(() -> new RoleNotFoundException("Role" +
                                 " name not found in the " +
                                 "DB"));
         appUser.getRoles()
@@ -117,7 +120,7 @@ public class AppUserServiceImpl implements AppUserService {
     public void addRoleToAppUser(AppUser appUser, String roleName) {
         Role role =
                 roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
+                        .orElseThrow(() -> new RoleNotFoundException("Role" +
                                 " name not found in the " +
                                 "DB"));
         appUser.getRoles()
@@ -157,19 +160,19 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
-            throw new UserAlreadyExistsException("Username already exists.");
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
         if (appUserRepository.existsByEmail(request.getEmail())) {
-            throw new EmailAlreadyExistsException("Email already exists.");
+            throw new EmailAlreadyExistsException("Email already exists");
         }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be null or empty.");
+            throw new InvalidPasswordFormatException("Password cannot be null or empty");
         }
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-        if (!request.getPassword().matches(passwordPattern)) {
-            throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+
+        if (!Utils.IsUserPasswordFormatValid(request.getPassword())) {
+            throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character");
         }
 
         AppUser newUser = new AppUser();
@@ -177,7 +180,7 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
 
-        String code = generateActivationCode();
+        String code = Utils.GenerateActivationCode(ActivationCodeMaxSize);
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
         AppUser savedUser = saveUser(newUser);
@@ -185,7 +188,11 @@ public class AppUserServiceImpl implements AppUserService {
 
         activationCode.setAppUser(savedUser);
 
-        emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+        try {
+            emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+        } catch (MessagingException e) {
+            throw new EmailSendingFailedException("Unable to send the activation email");
+        }
 
         return savedUser;
     }
@@ -202,15 +209,15 @@ public class AppUserServiceImpl implements AppUserService {
         AppUser appUser = activationCode.getAppUser();
 
         if (appUser.isActive()) {
-            throw new IllegalStateException("User account is already active.");
+            throw new AccountAlreadyActiveException("User account is already active.");
         }
 
         LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = activationCodeCreationTime.plusDays(1);
+        LocalDateTime expirationTime = activationCodeCreationTime.plusMinutes(ActivationCodeExpireMinutes);
 
         if (now.isAfter(expirationTime)) {
-            throw new IllegalStateException("Activation code has expired.");
+            throw new ActivationCodeExpiredException("Activation code has expired.");
         }
 
         appUser.setActive(true);
@@ -219,16 +226,4 @@ public class AppUserServiceImpl implements AppUserService {
         activationCodeService.deleteActivationCode(activationCode);
     }
 
-    private String generateActivationCode() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        int length = 48;
-        SecureRandom secureRandom = new SecureRandom();
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            int index = secureRandom.nextInt(characters.length());
-            stringBuilder.append(characters.charAt(index));
-        }
-        return stringBuilder.toString();
-    }
 }
