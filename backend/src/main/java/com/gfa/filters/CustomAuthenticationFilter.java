@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,18 +40,23 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                                 HttpServletResponse response)
             throws AuthenticationException {
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+      String loginInput, password;
 
-        if (request.getParameter("username") == null || request.getParameter("username").isEmpty()) {
-          throw new BadCredentialsException("Please provide a username or an email.");
+      try {
+        Map<String, String> requestMap = new ObjectMapper().readValue(request.getInputStream(), Map.class);
+        if(requestMap.get("loginInput") == null || requestMap.get("loginInput").isEmpty()) {
+            throw new BadCredentialsException("Please provide a username or an email.");
         }
-        if (request.getParameterMap().get("password") == null || request.getParameter("password").isEmpty()) {
-          throw new BadCredentialsException("Please provide a password.");
-        }
-
+          if(requestMap.get("password") == null || requestMap.get("password").isEmpty()) {
+              throw new BadCredentialsException("Please provide a password.");
+          }
+        loginInput = requestMap.get("loginInput");
+        password = requestMap.get("password");
+      } catch (IOException e) {
+        throw new AuthenticationServiceException("Please provide the login credentials in JSON format.");
+      }
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username, password);
+                new UsernamePasswordAuthenticationToken(loginInput, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -82,7 +88,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                             AuthenticationException exception)
       throws IOException, ServletException {
 
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     Map<String, String> errorDetails = new HashMap<>();
     errorDetails.put("error", "Unauthorized");
     errorDetails.put("message", exception.getMessage());
