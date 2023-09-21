@@ -45,9 +45,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                   @NonNull FilterChain filterChain) throws ServletException,
                                                                             IOException {
     if (request.getServletPath()
+               .equals(NewSecurityConfig.HELLO_WORLD) ||
+        request.getServletPath()
                .equals(NewSecurityConfig.REGISTER) ||
         request.getServletPath()
+               .equals(NewSecurityConfig.CONFIRM_WITH_CODE) ||
+        request.getServletPath()
                .equals(NewSecurityConfig.LOGIN) ||
+        request.getServletPath()
+               .equals(NewSecurityConfig.REFRESH_TOKEN) ||
         request.getServletPath()
                .equals(NewSecurityConfig.RESET_PASSWORD) ||
         request.getServletPath()
