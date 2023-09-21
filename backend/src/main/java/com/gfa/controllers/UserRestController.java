@@ -1,14 +1,15 @@
 package com.gfa.controllers;
 
-import com.gfa.models.AppUser;
+import static com.gfa.utils.Endpoint.USERS;
+import static org.springframework.http.HttpStatus.OK;
+
 import com.gfa.services.AppUserService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(USERS)
 public class UserRestController {
 
   public final AppUserService appUserService;
@@ -23,4 +24,12 @@ public class UserRestController {
     appUserService.removeAppUser(id);
     return ResponseEntity.status(201).build();
   }
+  // Pagination Example, check https://www.baeldung.com/spring-data-jpa-pagination-sorting
+  @DeleteMapping("/list?page=1")
+  public ResponseEntity<?> destroy(@RequestParam Integer page, @RequestParam Integer entries) {
+
+    return ResponseEntity.status(OK).build();
+  }
+
+
 }

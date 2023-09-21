@@ -1,5 +1,8 @@
 package com.gfa.controllers;
 
+import static com.gfa.utils.Endpoint.REGISTER;
+import static com.gfa.utils.Endpoint.CONFIRM_WITH_CODE;
+
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.RegisterResponseDTO;
 import com.gfa.services.AppUserService;
@@ -8,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.validation.Valid;
 
 @RestController
 public class RegistrationController {
@@ -20,13 +22,13 @@ public class RegistrationController {
         this.appUserService = appUserService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
+    @PostMapping(REGISTER)
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
         appUserService.registerUser(registerRequest);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account!"));
     }
 
-    @GetMapping("/confirm/{activationCode}")
+    @GetMapping(CONFIRM_WITH_CODE + "/{activationCode}")
     public ResponseEntity<?> activateAccount(@PathVariable String activationCode) {
         appUserService.activateAccount(activationCode);
         return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully!"));
