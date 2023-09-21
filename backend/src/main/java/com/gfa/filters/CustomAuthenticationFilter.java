@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,16 +24,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final TokenService tokenService;
   private final AuthenticationManager authenticationManager;
+  private final TokenService tokenService;
 
-
-  public CustomAuthenticationFilter(TokenService tokenService,
-                                    AuthenticationManager authenticationManager) {
-    this.tokenService = tokenService;
+  public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
+                                    TokenService tokenService) {
     this.authenticationManager = authenticationManager;
+    this.tokenService = tokenService;
   }
 
     @Override
@@ -44,23 +45,24 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             "Authentication method not supported: " + request.getMethod());
       }
 
-      String username = obtainUsername(request);
-      username = (username != null) ? username.trim() : "";
-      String password = obtainPassword(request);
-      password = (password != null) ? password : "";
+      String loginInput, password;
 
-      if (username.isEmpty()) {
-        throw new BadCredentialsException("Please provide a username or an email.");
+      try {
+        Map<String, String> requestMap = new ObjectMapper().readValue(request.getInputStream(), Map.class);
+        if(requestMap.get("loginInput") == null || requestMap.get("loginInput").isEmpty()) {
+            throw new BadCredentialsException("Please provide a username or an email.");
+        }
+          if(requestMap.get("password") == null || requestMap.get("password").isEmpty()) {
+              throw new BadCredentialsException("Please provide a password.");
+          }
+        loginInput = requestMap.get("loginInput");
+        password = requestMap.get("password");
+      } catch (IOException e) {
+        throw new AuthenticationServiceException("Please provide the login credentials in JSON format.");
       }
-      if (password.isEmpty()) {
-        throw new BadCredentialsException("Please provide a password.");
-      }
-
-      UsernamePasswordAuthenticationToken
-          authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username,
-                                                                            password);
-      setDetails(request, authRequest);
-      return authenticationManager.authenticate(authRequest);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginInput, password);
+        return authenticationManager.authenticate(authenticationToken);
     }
 
   @Override
@@ -71,6 +73,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     User user = (User) authentication.getPrincipal();
     String username = user.getUsername();
     Collection<GrantedAuthority> authorities = user.getAuthorities();
+    Calendar now = Calendar.getInstance();
     String issuer = request.getRequestURL()
                            .toString();
     ResponseTokensDTO tokens = tokenService.createTokens(username, issuer, authorities);

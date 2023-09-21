@@ -50,26 +50,26 @@ public class NewSecurityConfig {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .antMatchers(Endpoint.HELLO_WORLD.getValue())
+        .antMatchers(Endpoint.HELLO_WORLD)
         .permitAll();
     http.authorizeRequests()
         .antMatchers(GET,
-                     Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()+"/*",
-                     Endpoint.CONFIRM_WITH_CODE.getValue() + "/*")
+                     Endpoint.VERIFY_EMAIL_WITH_TOKEN +"/*",
+                     Endpoint.CONFIRM_WITH_CODE + "/*")
         .permitAll();
     http.authorizeRequests()
         .antMatchers(POST,
-                     Endpoint.REGISTER.getValue(),
-                     Endpoint.LOGIN.getValue(),
-                     Endpoint.REFRESH_TOKEN.getValue(),
-                     Endpoint.RESET_PASSWORD.getValue(),
-                     Endpoint.RESET_PASSWORD.getValue() + "/*",
-                     Endpoint.RESEND_VERIFICATION_EMAIL.getValue())
+                     Endpoint.REGISTER,
+                     Endpoint.LOGIN,
+                     Endpoint.REFRESH_TOKEN,
+                     Endpoint.RESET_PASSWORD,
+                     Endpoint.RESET_PASSWORD + "/*",
+                     Endpoint.RESEND_VERIFICATION_EMAIL)
         .permitAll();
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires some Role
-    http.addFilter(new CustomAuthenticationFilter(tokenService, authenticationManager));
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();

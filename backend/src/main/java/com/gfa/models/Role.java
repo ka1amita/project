@@ -57,4 +57,13 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
+
+    public boolean isValidRole() {
+        for (RoleType roleType : RoleType.values()) {
+            if (roleType.getName().equals(this.name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
