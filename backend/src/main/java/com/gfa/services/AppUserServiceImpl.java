@@ -180,18 +180,19 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
         newUser.assignRole(roleService.findByName("USER"));
+        newUser.setCreated_at(LocalDateTime.now());
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        AppUser savedUser = saveUser(newUser);
+        saveUser(newUser);
         activationCodeService.saveActivationCode(activationCode);
 
-        activationCode.setAppUser(savedUser);
+        activationCode.setAppUser(newUser);
 
-        emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+        emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
 
-        return savedUser;
+        return newUser;
     }
 
     @Override
@@ -218,6 +219,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         appUser.setActive(true);
+        appUser.setVerified_at(LocalDateTime.now());
         appUserRepository.save(appUser);
 
         activationCodeService.deleteActivationCode(activationCode);
