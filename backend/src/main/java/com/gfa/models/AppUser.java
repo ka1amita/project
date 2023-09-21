@@ -1,8 +1,11 @@
 package com.gfa.models;
 
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.EAGER;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -24,7 +27,7 @@ public class AppUser implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
     private boolean active;
-    @ManyToMany(fetch = EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @ManyToMany(fetch = EAGER, cascade = {PERSIST, MERGE})
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
@@ -170,6 +173,7 @@ public class AppUser implements UserDetails {
             throw new IllegalArgumentException("Invalid role");
         }
     }
+
     public void removeRole(Role role) {
         if (role.isValidRole()) {
             this.roles.remove(role);
