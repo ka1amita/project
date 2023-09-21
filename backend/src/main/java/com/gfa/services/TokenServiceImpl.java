@@ -129,12 +129,8 @@ public class TokenServiceImpl implements TokenService {
     String username = appUser.getUsername();
     String issuer = tokenDto.getIssuer();
     Set<Role> authorities = appUser.getRoles();
-    Calendar now = Calendar.getInstance();
 
-    String accessToken = createAccessToken(username, now, issuer, authorities);
-    String refresh_token = createRefreshToken(username, now, issuer);
-
-    return mapToDto(accessToken, refresh_token);
+    return createTokens(username, issuer, authorities);
   }
 
   @Override
@@ -153,4 +149,15 @@ public class TokenServiceImpl implements TokenService {
   public ResponseTokensDTO mapToDto(String accessToken, String refresh_token) {
     return new ResponseTokensDTO(accessToken, refresh_token);
   }
+
+    @Override
+    public <T extends GrantedAuthority> ResponseTokensDTO createTokens(String username,
+                                                                       String issuer,
+                                                                       Collection<T> authorities) {
+      Calendar now = Calendar.getInstance();
+
+      String accessToken = createAccessToken(username, now, issuer, authorities);
+      String refresh_token = createRefreshToken(username, now, issuer);
+      return mapToDto(accessToken, refresh_token);
+    }
 }

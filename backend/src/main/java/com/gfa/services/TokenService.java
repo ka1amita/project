@@ -40,6 +40,9 @@ public interface TokenService {
   Authentication getAuthentication(RequestTokenDTO requestTokenDTO);
 
   ResponseTokensDTO mapToDto(String accessToken, String refresh_token);
+
+  <T extends GrantedAuthority> ResponseTokensDTO createTokens(String username, String issuer,
+                                 Collection<T> authorities);
 }
 
 

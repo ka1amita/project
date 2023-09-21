@@ -3,9 +3,9 @@ package com.gfa.filters;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,16 +71,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     User user = (User) authentication.getPrincipal();
     String username = user.getUsername();
     Collection<GrantedAuthority> authorities = user.getAuthorities();
-    Calendar now = Calendar.getInstance();
     String issuer = request.getRequestURL()
                            .toString();
+    ResponseTokensDTO tokens = tokenService.createTokens(username, issuer, authorities);
 
-    String access_token = tokenService.createAccessToken(username, now, issuer, authorities);
-    String refresh_token = tokenService.createRefreshToken(username, now, issuer);
-    // TODO use ResponseTokensDTO
-    Map<String, String> tokens = new HashMap<>();
-    tokens.put("access_token", access_token);
-    tokens.put("refresh_token", refresh_token);
     response.setContentType(APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getWriter(), tokens);
   }
