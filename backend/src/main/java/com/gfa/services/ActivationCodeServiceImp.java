@@ -29,6 +29,6 @@ public class ActivationCodeServiceImp implements ActivationCodeService {
 
     @Override
     public Optional<ActivationCode> findByActivationCodeContains(String activationCode) {
-        return activationCodeRepository.findByActivationCodeContains(activationCode);
+        return activationCodeRepository.findByActivationCode(activationCode);
     }
 }
