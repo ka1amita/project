@@ -16,8 +16,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Autowired
     public JavaMailSender javaMailSender;
-
-
     @Autowired
     private SpringTemplateEngine templateEngine;
 
