@@ -5,7 +5,6 @@ import com.gfa.models.AppUser;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
-import com.gfa.models.Role;
 
 import java.util.List;
 
@@ -27,13 +26,15 @@ public interface AppUserService {
 
     void addRoleToAppUser(String username, String roleName);
 
-    AppUser saveUser(AppUser user);
+    AppUser encodePasswordAndSaveAppUser(AppUser user);
 
-    AppUser getAppUser(String username);
+    AppUser findUserByUsername(String username);
 
     List<AppUser> getAllAppUsers();
 
     void removeAppUser(Long id);
 
     void setAppUserActive(AppUser user);
+
+    AppUser findByUsernameOrEmail(String username);
 }

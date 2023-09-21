@@ -4,34 +4,35 @@ import com.gfa.configurations.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
-import com.gfa.dtos.responsedtos.*;
-import com.gfa.exceptions.*;
+import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
+import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
+import com.gfa.dtos.responsedtos.ResponseDTO;
+import com.gfa.exceptions.EmailAlreadyExistsException;
+import com.gfa.exceptions.InvalidActivationCodeException;
+import com.gfa.exceptions.InvalidIdException;
+import com.gfa.exceptions.UserAlreadyExistsException;
+import com.gfa.exceptions.UserNotFoundException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import javax.mail.MessagingException;
-import javax.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
     private final RoleService roleService;
@@ -44,11 +45,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
+                              PasswordEncoder passwordEncoder,
                               EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService, SoftDeleteConfig softDeleteConfig) {
 
         this.appUserRepository = appUserRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
@@ -81,7 +82,7 @@ public class AppUserServiceImpl implements AppUserService {
             if (Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
-                saveUser(appUser);
+                encodePasswordAndSaveAppUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
                 throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
@@ -114,17 +115,19 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser saveUser(AppUser appUser) {
-        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+    public AppUser encodePasswordAndSaveAppUser(AppUser appUser) {
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         return appUserRepository.save(appUser);
     }
 
+    /**
+     * use findByUsernameOrEmail
+     */
     @Override
-    public AppUser getAppUser(String username) {
+    public AppUser findUserByUsername(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
-        AppUser appUser =
-                optAppUser.orElseThrow(() -> new UsernameNotFoundException("User not found in the DB"));
-        return appUser;
+        return optAppUser.orElseThrow(
+            () -> new UsernameNotFoundException("User not found in the DB"));
     }
 
     @Override
@@ -151,6 +154,13 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
+    }
+
+    @Override
+    public AppUser findByUsernameOrEmail(String username) {
+        return appUserRepository.findByUsernameOrEmail(username, username)
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                    "User not found in the DB"));
     }
 
     @Override
@@ -182,7 +192,7 @@ public class AppUserServiceImpl implements AppUserService {
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        saveUser(newUser);
+        encodePasswordAndSaveAppUser(newUser);
         activationCodeService.saveActivationCode(activationCode);
 
         activationCode.setAppUser(newUser);

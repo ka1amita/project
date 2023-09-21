@@ -39,11 +39,11 @@ public class TokenServiceImpl implements TokenService {
   @Value("${token.secret}")
   private String secret;
   private static final String PREFIX = "Bearer ";
-  private final UserDetailsServiceImpl userDetailsServiceImpl;
+  private final AppUserService appUserService;
 
   @Autowired
-  public TokenServiceImpl(UserDetailsServiceImpl userDetailsServiceImpl) {
-    this.userDetailsServiceImpl = userDetailsServiceImpl;
+  public TokenServiceImpl(AppUserService appUserService) {
+    this.appUserService = appUserService;
   }
 
   @Override
@@ -124,8 +124,8 @@ public class TokenServiceImpl implements TokenService {
 
   @Override
   public ResponseTokensDTO refreshTokens(RequestTokenDTO tokenDto) {
-
-    AppUser appUser = (AppUser) userDetailsServiceImpl.loadUserByUsername(getSubject(tokenDto.getToken()));
+    // username is stored in JWT
+    AppUser appUser = appUserService.findUserByUsername(getSubject(tokenDto.getToken()));
     String username = appUser.getUsername();
     String issuer = tokenDto.getIssuer();
     Set<Role> authorities = appUser.getRoles();
