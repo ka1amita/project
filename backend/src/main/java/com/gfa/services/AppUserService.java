@@ -6,12 +6,14 @@ import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.models.Role;
+
 import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
 
-public interface AppUserService{
+public interface AppUserService {
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 
@@ -25,13 +27,13 @@ public interface AppUserService{
 
     void addRoleToAppUser(String username, String roleName);
 
-    Role saveRole(Role role);
-
     AppUser saveUser(AppUser user);
 
     AppUser getAppUser(String username);
 
     List<AppUser> getAllAppUsers();
+
+    void removeAppUser(Long id);
 
     void setAppUserActive(AppUser user);
 }

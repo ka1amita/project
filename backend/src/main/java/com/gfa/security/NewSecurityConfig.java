@@ -69,7 +69,7 @@ public class NewSecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires some Role
-    http.addFilter(new CustomAuthenticationFilter(tokenService, authenticationManager));
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();

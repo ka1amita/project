@@ -1,30 +1,27 @@
 package com.gfa.models;
 
-import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.EAGER;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import org.jetbrains.annotations.NotNull;
+import javax.persistence.*;
+
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "app_users")
+@Where(clause = "deleted=false")
 public class AppUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(updatable = false)
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
@@ -32,8 +29,15 @@ public class AppUser implements UserDetails {
     private String password;
     @Column(unique = true, nullable = false)
     private String email;
-    private boolean active;
-    @ManyToMany(fetch = EAGER, cascade = ALL)
+    @Column(nullable = false, columnDefinition = "TIMESTAMP")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime created_at;
+    @Column(columnDefinition = "TIMESTAMP")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime verified_at = null;
+    private boolean active = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
+    @ManyToMany(fetch = EAGER, cascade = {MERGE})
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
@@ -53,6 +57,7 @@ public class AppUser implements UserDetails {
         this.username = username;
         this.password = password;
         this.email = email;
+        created_at = LocalDateTime.now();
     }
 
     public AppUser(String username, String password, String email, Set<Role> roles) {
@@ -60,7 +65,7 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        active = false;
+        created_at = LocalDateTime.now();
     }
 
     public AppUser(Long id, String username, String password, String email, Set<Role> roles) {
@@ -68,18 +73,18 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        active = false;
+        created_at = LocalDateTime.now();
     }
 
-    public AppUser(Long id, String username, String password, String email, boolean active,
+    public AppUser(Long id, String username, String password, String email,
                    Set<Role> roles, Set<ActivationCode> activationCodes) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.active = active;
         this.roles = roles;
         this.activationCodes = activationCodes;
+        created_at = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -114,7 +119,7 @@ public class AppUser implements UserDetails {
         return active;
     }
 
-    public void setUsername(@NotNull String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -127,7 +132,7 @@ public class AppUser implements UserDetails {
         return password;
     }
 
-    public void setPassword(@NotNull String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -135,7 +140,7 @@ public class AppUser implements UserDetails {
         return email;
     }
 
-    public void setEmail(@NotNull String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -143,15 +148,23 @@ public class AppUser implements UserDetails {
         return active;
     }
 
-    public void setActive(@NotNull boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(@NotNull Set<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
@@ -159,9 +172,49 @@ public class AppUser implements UserDetails {
         return activationCodes;
     }
 
-    public void setActivationCodes(@NotNull Set<ActivationCode> activationCodes) {
+    public void setActivationCodes(Set<ActivationCode> activationCodes) {
         this.activationCodes = activationCodes;
     }
 
+    public LocalDateTime getCreated_at() {
+        return created_at;
+    }
 
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    public LocalDateTime getVerified_at() {
+        return verified_at;
+    }
+
+    public void setVerified_at(LocalDateTime verified_at) {
+        this.verified_at = verified_at;
+    }
+
+    public boolean hasValidRoles() {
+        for (Role role : roles) {
+            if (!role.isValidRole()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void assignRole(Role role) {
+        if (role.isValidRole()) {
+            this.roles.add(role);
+        } else {
+            throw new IllegalArgumentException("Invalid role");
+        }
+    }
+
+    public void removeRole(Role role) {
+        if (role.isValidRole()) {
+            this.roles.remove(role);
+        } else {
+            throw new IllegalArgumentException("Invalid role");
+        }
+    }
 }
+
