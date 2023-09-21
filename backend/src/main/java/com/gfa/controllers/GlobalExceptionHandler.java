@@ -1,5 +1,6 @@
 package com.gfa.controllers;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.EmailAlreadyExistsException;
 import com.gfa.exceptions.InvalidActivationCodeException;
@@ -57,5 +58,11 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public String handleInternalAuthenticationServiceException(InternalAuthenticationServiceException e) {
         return e.getMessage();
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserMissingBearerTokenException(
+        JWTVerificationException e) {
+        return ResponseEntity.status(401).body(new ErrorResponseDTO(e.getMessage()));
     }
 }
