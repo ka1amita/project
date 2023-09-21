@@ -1,6 +1,7 @@
 package com.gfa.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -18,10 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-public class UserDetailsServiceImplTests {
+public class UserDetailsServiceUnitTests {
 
   @Mock // necessary!
-  private AppUserRepository appUserRepository;
+  AppUserRepository appUserRepository;
   @InjectMocks // necessary!
   UserDetailsServiceImpl userDetailsService;
 
@@ -36,6 +37,12 @@ public class UserDetailsServiceImplTests {
   // static void setup() {
   //   MockitoAnnotations.openMocks(this);
   // }
+
+  @Test
+  public void check_setup() {
+    assertNotNull(appUserRepository);
+    assertNotNull(userDetailsService);
+  }
   @Test
   public void matching_user_details_are_returned_when_finds_a_user() {
 
@@ -54,7 +61,6 @@ public class UserDetailsServiceImplTests {
 
     assertEquals(appUser.isEnabled(), userDetailsService.loadUserByUsername("any")
                                                         .isEnabled());
-
   }
 
   @Test
