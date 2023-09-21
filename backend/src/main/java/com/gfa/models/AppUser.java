@@ -1,21 +1,12 @@
 package com.gfa.models;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -33,7 +24,7 @@ public class AppUser implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
     private boolean active;
-    @ManyToMany(fetch = EAGER, cascade = ALL)
+    @ManyToMany(fetch = EAGER, cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
@@ -63,7 +54,7 @@ public class AppUser implements UserDetails {
         active = false;
     }
 
-    public AppUser(Long id,String username, String password, String email, Set<Role> roles) {
+    public AppUser(Long id, String username, String password, String email, Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -163,5 +154,28 @@ public class AppUser implements UserDetails {
         this.activationCodes = activationCodes;
     }
 
+    public boolean hasValidRoles() {
+        for (Role role : roles) {
+            if (!role.isValidRole()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    public void assignRole(Role role) {
+        if (role.isValidRole()) {
+            this.roles.add(role);
+        } else {
+            throw new IllegalArgumentException("Invalid role");
+        }
+    }
+    public void removeRole(Role role) {
+        if (role.isValidRole()) {
+            this.roles.remove(role);
+        } else {
+            throw new IllegalArgumentException("Invalid role");
+        }
+    }
 }
+
