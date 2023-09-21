@@ -10,9 +10,7 @@ import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
-import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
-import com.gfa.repositories.RoleRepository;
 import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Lazy;
@@ -34,10 +31,10 @@ import javax.mail.MessagingException;
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
+    private final RoleService roleService;
 
     @Value("${ACTIVATION_CODE_EXPIRE_MINUTES:30}")
     private final Integer ActivationCodeExpireMinutes = 30;
@@ -46,15 +43,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService) {
+                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService) {
 
         this.appUserRepository = appUserRepository;
-        this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -105,10 +101,7 @@ public class AppUserServiceImpl implements AppUserService {
                         .orElseThrow(() -> new UsernameNotFoundException(
                                 "Username not found in the DB"));
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
-                                " name not found in the " +
-                                "DB"));
+                roleService.findByName(roleName);
         appUser.getRoles()
                 .add(role);
     }
@@ -116,17 +109,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void addRoleToAppUser(AppUser appUser, String roleName) {
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new NoSuchElementException("Role" +
-                                " name not found in the " +
-                                "DB"));
+                roleService.findByName(roleName);
         appUser.getRoles()
                 .add(role);
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        return roleRepository.save(role);
     }
 
     @Override
@@ -176,6 +161,7 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
+        newUser.assignRole(roleService.findByName("ROLE_USER"));
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
