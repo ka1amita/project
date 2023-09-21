@@ -1,12 +1,11 @@
 package com.gfa.services;
 
+import com.gfa.configurations.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.*;
-import com.gfa.exceptions.EmailAlreadyExistsException;
-import com.gfa.exceptions.InvalidActivationCodeException;
-import com.gfa.exceptions.UserAlreadyExistsException;
+import com.gfa.exceptions.*;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
@@ -27,6 +26,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -40,17 +40,19 @@ public class AppUserServiceImpl implements AppUserService {
     private final Integer ActivationCodeExpireMinutes = 30;
     @Value("${ACTIVATION_CODE_MAX_SIZE:48}")
     private final Integer ActivationCodeMaxSize = 48;
+    private final SoftDeleteConfig softDeleteConfig;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService) {
+                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService, SoftDeleteConfig softDeleteConfig) {
 
         this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
+        this.softDeleteConfig = softDeleteConfig;
     }
 
     @Override
@@ -134,6 +136,21 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public void removeAppUser(Long id) {
+        if (id < 0) throw new InvalidIdException("Please provide a valid ID");
+        AppUser user =
+                appUserRepository.findById(id).orElseThrow(()
+                        -> new UserNotFoundException("Couldn't find the user in the database.")
+                );
+        if (softDeleteConfig.isEnabled()) {
+            user.setDeleted(true);
+            appUserRepository.save(user);
+        } else {
+            appUserRepository.deleteById(id);
+        }
+    }
+
+    @Override
     public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
     }
@@ -161,7 +178,7 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
-        newUser.assignRole(roleService.findByName("ROLE_USER"));
+        newUser.assignRole(roleService.findByName("USER"));
 
         String code = generateActivationCode();
         ActivationCode activationCode = new ActivationCode(code, newUser);
