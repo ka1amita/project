@@ -5,8 +5,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
-import com.gfa.security.NewSecurityConfig;
 import com.gfa.services.TokenService;
+import com.gfa.utils.Endpoint;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,7 +29,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     this.tokenService = tokenService;
   }
 
-  // TODO ask Lan about the Exception
   private static void handleException(HttpServletResponse response, Exception e)
       throws IOException {
     String message = e.getMessage();
@@ -45,23 +44,21 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                   @NonNull FilterChain filterChain) throws ServletException,
                                                                             IOException {
     if (request.getServletPath()
-               .equals(NewSecurityConfig.HELLO_WORLD) ||
+               .equals(Endpoint.HELLO_WORLD.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.REGISTER) ||
+               .equals(Endpoint.REGISTER.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.CONFIRM_WITH_CODE) ||
+               .equals(Endpoint.LOGIN.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.LOGIN) ||
+               .equals(Endpoint.REFRESH_TOKEN.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.REFRESH_TOKEN) ||
+               .startsWith(Endpoint.RESET_PASSWORD.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.RESET_PASSWORD) ||
+               .equals(Endpoint.RESEND_VERIFICATION_EMAIL.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.RESET_PASSWORD_WITH_TOKEN) ||
+               .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()) ||
         request.getServletPath()
-               .equals(NewSecurityConfig.VERIFY_EMAIL_WITH_TOKEN) ||
-        request.getServletPath()
-               .equals(NewSecurityConfig.RESEND_VERIFICATION_EMAIL)
+               .startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())
     ) {
 
       filterChain.doFilter(request, response);
@@ -72,8 +69,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext()
                              .setAuthentication(authentication);
-
-        filterChain.doFilter(request, response);
 
       } catch (Exception e) {
         handleException(response, e);

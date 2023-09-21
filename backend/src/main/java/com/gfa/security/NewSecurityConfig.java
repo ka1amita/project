@@ -7,10 +7,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
 import com.gfa.services.TokenService;
+import com.gfa.utils.Endpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,17 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 public class NewSecurityConfig {
-
-  public static final String REGISTER = "/register";
-  public static final String CONFIRM_WITH_CODE = "/confirm/*";
-  public static final String LOGIN = "/login";
-  public static final String RESET_PASSWORD = "/reset";
-  public static final String RESET_PASSWORD_WITH_TOKEN = "/reset/*";
-  public static final String VERIFY_EMAIL_WITH_TOKEN = "/email/verify/*";
-  public static final String RESEND_VERIFICATION_EMAIL = "/email/verify/resend";
-  public static final String DASHBOARD = "/dashboard";
-  public static final String REFRESH_TOKEN = "/token/refresh";
-  public static final String HELLO_WORLD = "/hello";
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -62,23 +50,22 @@ public class NewSecurityConfig {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
+        .antMatchers(Endpoint.HELLO_WORLD.getValue())
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(GET,
+                     Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()+"/*",
+                     Endpoint.CONFIRM_WITH_CODE.getValue() + "/*")
+        .permitAll();
+    http.authorizeRequests()
         .antMatchers(POST,
-                     HELLO_WORLD,
-                     REGISTER,
-                     CONFIRM_WITH_CODE,
-                     LOGIN,
-                     REFRESH_TOKEN,
-                     RESET_PASSWORD,
-                     RESET_PASSWORD_WITH_TOKEN,
-                     RESEND_VERIFICATION_EMAIL)
-
+                     Endpoint.REGISTER.getValue(),
+                     Endpoint.LOGIN.getValue(),
+                     Endpoint.REFRESH_TOKEN.getValue(),
+                     Endpoint.RESET_PASSWORD.getValue(),
+                     Endpoint.RESET_PASSWORD.getValue() + "/*",
+                     Endpoint.RESEND_VERIFICATION_EMAIL.getValue())
         .permitAll();
-    http.authorizeRequests()
-        .antMatchers(GET, VERIFY_EMAIL_WITH_TOKEN)
-        .permitAll();
-    http.authorizeRequests()
-        .antMatchers(GET, DASHBOARD)
-        .hasAuthority("ROLE_ADMIN");
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires some Role
