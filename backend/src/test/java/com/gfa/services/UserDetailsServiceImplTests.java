@@ -29,13 +29,11 @@ public class UserDetailsServiceImplTests {
                                         "username",
                                         new BCryptPasswordEncoder().encode("password"),
                                         "email",
-                                        true,
                                         new HashSet<>(),
                                         new HashSet<>());
   // not necessary necessary any more with @ExtendWith(MockitoExtension.class)!
   // @BeforeEanch
   // static void setup() {
-  //
   //   MockitoAnnotations.openMocks(this);
   // }
   @Test
@@ -50,6 +48,13 @@ public class UserDetailsServiceImplTests {
                                                           .getPassword());
     assertEquals(appUser.getAuthorities(), userDetailsService.loadUserByUsername("any")
                                                              .getAuthorities());
+    assertEquals(appUser.isEnabled(), userDetailsService.loadUserByUsername("any")
+                                                             .isEnabled());
+    appUser.setActive(true);
+
+    assertEquals(appUser.isEnabled(), userDetailsService.loadUserByUsername("any")
+                                                        .isEnabled());
+
   }
 
   @Test
