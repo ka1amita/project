@@ -10,7 +10,6 @@ import com.gfa.exceptions.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
-import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.repositories.RoleRepository;
 import com.gfa.utils.Utils;
@@ -61,12 +60,9 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         Optional<AppUser> appUser = Optional.empty();
         if (passwordResetRequestDTO != null) {
-            appUser = appUserRepository.findByEmailAndUsername(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
+            appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getUsernameOrEmail());
             if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getEmail());
-            }
-            if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByUsername(passwordResetRequestDTO.getUsername());
+                appUser = appUserRepository.findByUsername(passwordResetRequestDTO.getUsernameOrEmail());
             }
         }
 
@@ -83,13 +79,13 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode) {
         Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(ActivationCodeExpireMinutes).isAfter(LocalDateTime.now())) {
-            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty() && Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
+            if (Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
                 saveUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
-                throw new IllegalArgumentException("Password can't be empty!");
+                throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
             }
         } else {
             throw new IllegalArgumentException("Reset code doesn't exist!");
