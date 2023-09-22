@@ -1,5 +1,6 @@
 package com.gfa.services;
 
+import com.gfa.configurations.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
@@ -13,11 +14,9 @@ import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
-import com.gfa.repositories.RoleRepository;
 import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -30,42 +29,42 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.MessagingException;
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
-    private final RoleService roleService;
     private final AppUserRepository appUserRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
+    private final RoleService roleService;
 
     @Value("${ACTIVATION_CODE_EXPIRE_MINUTES:30}")
     private final Integer ActivationCodeExpireMinutes = 30;
     @Value("${ACTIVATION_CODE_MAX_SIZE:48}")
     private final Integer ActivationCodeMaxSize = 48;
+    private final SoftDeleteConfig softDeleteConfig;
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService) {
+                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService, SoftDeleteConfig softDeleteConfig) {
 
         this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
+        this.softDeleteConfig = softDeleteConfig;
     }
 
     @Override
     public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         Optional<AppUser> appUser = Optional.empty();
         if (passwordResetRequestDTO != null) {
-            appUser = appUserRepository.findByEmailAndUsername(passwordResetRequestDTO.getEmail(), passwordResetRequestDTO.getUsername());
+            appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getUsernameOrEmail());
             if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getEmail());
-            }
-            if (!appUser.isPresent()) {
-                appUser = appUserRepository.findByUsername(passwordResetRequestDTO.getUsername());
+                appUser = appUserRepository.findByUsername(passwordResetRequestDTO.getUsernameOrEmail());
             }
         }
 
@@ -136,17 +135,28 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public void removeAppUser(Long id) {
+        if (id < 0) throw new InvalidIdException("Please provide a valid ID");
+        AppUser user =
+                appUserRepository.findById(id).orElseThrow(()
+                        -> new UserNotFoundException("User not found")
+                );
+        if (softDeleteConfig.isEnabled()) {
+            user.setDeleted(true);
+            user.setActive(false);
+            appUserRepository.save(user);
+        } else {
+            appUserRepository.deleteById(id);
+        }
+    }
+
+    @Override
     public void setAppUserActive(AppUser appUser) {
         appUser.setActive(true);
     }
 
     @Override
-    public void removeAppUser(Long id) {
-        
-    }
-
-    @Override
-    public AppUser registerUser(RegisterRequestDTO request) {
+    public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists");
@@ -168,14 +178,16 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setUsername(request.getUsername());
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
+        newUser.assignRole(roleService.findByName("USER"));
+        newUser.setCreated_at(LocalDateTime.now());
 
         String code = Utils.GenerateActivationCode(ActivationCodeMaxSize);
         ActivationCode activationCode = new ActivationCode(code, newUser);
 
-        AppUser savedUser = saveUser(newUser);
+        saveUser(newUser);
         activationCodeService.saveActivationCode(activationCode);
 
-        activationCode.setAppUser(savedUser);
+        activationCode.setAppUser(newUser);
 
         try {
             emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
@@ -183,7 +195,7 @@ public class AppUserServiceImpl implements AppUserService {
             throw new EmailSendingFailedException("Unable to send the activation email");
         }
 
-        return savedUser;
+        return newUser;
     }
 
     @Override
@@ -206,6 +218,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         appUser.setActive(true);
+        appUser.setVerified_at(LocalDateTime.now());
         appUserRepository.save(appUser);
 
         activationCodeService.deleteActivationCode(activationCode);

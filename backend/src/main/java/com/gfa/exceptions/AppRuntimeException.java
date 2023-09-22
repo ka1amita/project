@@ -1,6 +1,6 @@
 package com.gfa.exceptions;
 
-public class AppRuntimeException extends RuntimeException{
+public class AppRuntimeException extends RuntimeException {
 
     public AppRuntimeException() {
     }
@@ -12,5 +12,4 @@ public class AppRuntimeException extends RuntimeException{
     public AppRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

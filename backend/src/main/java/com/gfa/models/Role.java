@@ -14,11 +14,10 @@ public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
     private Long id;
-    @Column(unique = true)
-    @NotNull
+    @Column(unique = true, nullable = false)
     private String name;
+
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     @JsonBackReference
     private Set<AppUser> appUsers = new HashSet<>();
@@ -38,7 +37,6 @@ public class Role implements GrantedAuthority {
         this.id = id;
     }
 
-    @NotNull
     public String getName() {
         return name;
     }
@@ -58,5 +56,14 @@ public class Role implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return name;
+    }
+
+    public boolean isValidRole() {
+        for (RoleType roleType : RoleType.values()) {
+            if (roleType.getName().equals(this.name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

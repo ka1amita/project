@@ -1,20 +1,20 @@
 package com.gfa.filters;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.services.TokenService;
+import com.gfa.utils.Endpoint;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-  private static final String BEARER = "Bearer ";
   private final TokenService tokenService;
 
   @Autowired
@@ -30,45 +29,50 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     this.tokenService = tokenService;
   }
 
+  private static void handleException(HttpServletResponse response, Exception e)
+      throws IOException {
+    String message = e.getMessage();
+    response.setHeader("Error", message);
+    response.setStatus(UNAUTHORIZED.value());
+    response.setContentType(APPLICATION_JSON_VALUE);
+    new ObjectMapper().writeValue(response.getOutputStream(),
+                                  new ErrorResponseDTO(message));
+  }
+
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
                                   @NonNull FilterChain filterChain) throws ServletException,
                                                                             IOException {
     if (request.getServletPath()
-               .equals("/login") ||
+               .equals(Endpoint.HELLO_WORLD.getValue()) ||
         request.getServletPath()
-               .equals("/token/refresh") ||
+               .equals(Endpoint.REGISTER.getValue()) ||
         request.getServletPath()
-               .equals("/user/activate") ||
+               .equals(Endpoint.LOGIN.getValue()) ||
         request.getServletPath()
-               .equals("/hello") ||
+               .equals(Endpoint.REFRESH_TOKEN.getValue()) ||
         request.getServletPath()
-               .equals("/api/user/activate") ||
+               .startsWith(Endpoint.RESET_PASSWORD.getValue()) ||
         request.getServletPath()
-               .equals("/reset") ||
+               .equals(Endpoint.RESEND_VERIFICATION_EMAIL.getValue()) ||
         request.getServletPath()
-               .startsWith("/reset/")) {
+               .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()) ||
+        request.getServletPath()
+               .startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())
+    ) {
+
       filterChain.doFilter(request, response);
     } else {
-      String authorizationHeader = request.getHeader(AUTHORIZATION);
+      try {
+        Authentication authentication =
+            tokenService.getAuthentication(tokenService.mapToDto(request));
 
-      if (authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-        try {
-          String token = authorizationHeader.substring(BEARER.length());
+        SecurityContextHolder.getContext()
+                             .setAuthentication(authentication);
 
-          SecurityContextHolder.getContext()
-                               .setAuthentication(tokenService.getAuthenticationToken(token));
-
-          filterChain.doFilter(request, response);
-        } catch (Exception e) {
-          response.setHeader("error", e.getMessage());
-          response.setStatus(FORBIDDEN.value());
-          Map<String, String> error = new HashMap<>();
-          error.put("error_message", e.getMessage());
-          response.setContentType(APPLICATION_JSON_VALUE);
-          new ObjectMapper().writeValue(response.getOutputStream(), error);
-        }
-      } else {
+      } catch (Exception e) {
+        handleException(response, e);
+      } finally {
         filterChain.doFilter(request, response);
       }
     }

@@ -143,7 +143,7 @@ public class AppUserServiceTest {
 
     @Test
     public void activate_account_successful() {
-        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
+        when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
         when(appUserRepository.save(any())).thenReturn(mockUser);
 
         userService.activateAccount("validCode");
@@ -154,21 +154,21 @@ public class AppUserServiceTest {
 
     @Test
     public void activate_account_invalid_code() {
-        when(activationCodeRepository.findByActivationCodeContains("invalidCode")).thenReturn(Optional.empty());
+        when(activationCodeRepository.findByActivationCode("invalidCode")).thenReturn(Optional.empty());
         Assertions.assertThrows(InvalidActivationCodeException.class, () -> userService.activateAccount("invalidCode"));
     }
 
     @Test
     public void activate_account_already_active(){
         mockUser.setActive(true);
-        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
+        when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
         Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
     }
 
     @Test
     public void activate_account_expired_code() {
         mockActivationCode.setCreatedAt(LocalDateTime.now().minusDays(2));
-        when(activationCodeRepository.findByActivationCodeContains("validCode")).thenReturn(Optional.of(mockActivationCode));
+        when(activationCodeRepository.findByActivationCode("validCode")).thenReturn(Optional.of(mockActivationCode));
         Assertions.assertThrows(IllegalStateException.class, () -> userService.activateAccount("validCode"));
     }
 }

@@ -118,7 +118,7 @@ public class PasswordResetUnitTest {
     @Test
     void Password_Reset_With_Code_Is_Successful_With_Code_And_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("1234");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
+        when(activationCodeRepository.findByActivationCode(anyString())).thenReturn(Optional.of(activationCode));
         PasswordResetWithCodeResponseDTO passwordResetWithCodeResponseDTO = (PasswordResetWithCodeResponseDTO) appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
 
         assert passwordResetWithCodeResponseDTO != null;
@@ -129,7 +129,7 @@ public class PasswordResetUnitTest {
     @Test
     void Password_Reset_With_Code_Is_Failed_With_Code_And_No_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
+        when(activationCodeRepository.findByActivationCode(anyString())).thenReturn(Optional.of(activationCode));
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
         });
@@ -140,7 +140,7 @@ public class PasswordResetUnitTest {
     @Test
     void Password_Reset_With_Code_Is_Failed_With_No_Code_And_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("1234");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
+        when(activationCodeRepository.findByActivationCode(anyString())).thenReturn(Optional.empty());
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
         });
@@ -151,7 +151,7 @@ public class PasswordResetUnitTest {
     @Test
     void Password_Reset_With_Code_Is_Failed_With_No_Code_And_No_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
-        when(activationCodeRepository.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
+        when(activationCodeRepository.findByActivationCode(anyString())).thenReturn(Optional.empty());
         IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
         });

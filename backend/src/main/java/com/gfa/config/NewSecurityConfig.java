@@ -7,6 +7,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
 import com.gfa.services.TokenService;
+import com.gfa.utils.Endpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,21 +23,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class NewSecurityConfig {
 
   @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+  public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
   @Bean
   public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                     BCryptPasswordEncoder bCryptPasswordEncoder,
+                                                     PasswordEncoder passwordEncoder,
                                                      UserDetailsService userDetailsService)
       throws Exception {
+
     AuthenticationManager authenticationManager =
         http.getSharedObject(AuthenticationManagerBuilder.class)
             .userDetailsService(userDetailsService)
-            .passwordEncoder(bCryptPasswordEncoder)
+            .passwordEncoder(passwordEncoder)
             .and()
             .build();
+    http.authenticationManager(authenticationManager);
     return authenticationManager;
   }
 
@@ -46,23 +50,25 @@ public class NewSecurityConfig {
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
-        .antMatchers("/login", "/token/refresh", "/hello", "/register", "/confirm/*")
-        .permitAll(); // or anonymous() ??
-    http.authorizeRequests()
-        .antMatchers(GET, "/user/users/**")
-        .hasAnyAuthority("ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN");
-    http.authorizeRequests()
-        .antMatchers(GET, "/dashboard")
-        .hasAuthority("ROLE_ADMIN");
-    http.authorizeRequests()
-        .antMatchers(POST, "/reset")
+        .antMatchers(Endpoint.HELLO_WORLD.getValue())
         .permitAll();
     http.authorizeRequests()
-        .antMatchers(POST, "/reset/*")
+        .antMatchers(GET,
+                     Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()+"/*",
+                     Endpoint.CONFIRM_WITH_CODE.getValue() + "/*")
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(POST,
+                     Endpoint.REGISTER.getValue(),
+                     Endpoint.LOGIN.getValue(),
+                     Endpoint.REFRESH_TOKEN.getValue(),
+                     Endpoint.RESET_PASSWORD.getValue(),
+                     Endpoint.RESET_PASSWORD.getValue() + "/*",
+                     Endpoint.RESEND_VERIFICATION_EMAIL.getValue())
         .permitAll();
     http.authorizeRequests()
         .anyRequest()
-        .authenticated(); // the rest requires any Role
+        .authenticated(); // the rest requires some Role
     http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);

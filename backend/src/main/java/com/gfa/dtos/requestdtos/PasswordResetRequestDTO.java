@@ -1,30 +1,28 @@
 package com.gfa.dtos.requestdtos;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.NotEmpty;
+
 public class PasswordResetRequestDTO extends RequestDTO {
-    String username;
-    String email;
+    @NotEmpty(message = "Username or Email cannot be null or empty")
+    @JsonProperty("email")
+    @JsonAlias("username")
+    String usernameOrEmail;
 
     public PasswordResetRequestDTO() {
     }
 
-    public PasswordResetRequestDTO(String username, String email) {
-        this.username = username;
-        this.email = email;
+    public PasswordResetRequestDTO(String usernameOrEmail, String email) {
+        this.usernameOrEmail = usernameOrEmail;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsernameOrEmail() {
+        return usernameOrEmail;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsernameOrEmail(String usernameOrEmail) {
+        this.usernameOrEmail = usernameOrEmail;
     }
 }
