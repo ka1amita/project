@@ -11,10 +11,12 @@ import org.springframework.validation.annotation.Validated;
 @Validated // must be present for the field validations to work!
 @Component // but not @Configuration!
 @ConfigurationProperties(prefix = "pagination")
-public class PaginationConfig {
+public class PaginationProperties {
     @Min(1)
+    @NotNull
     private Integer pageSizeDefault = 20;
     @Min(1)
+    @NotNull
     private Integer pageSizeMax = 100;
     @NotEmpty
     private String sortBy = "id";
