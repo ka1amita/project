@@ -2,7 +2,7 @@ package com.gfa.controllers;
 
 import static com.gfa.utils.Endpoint.USERS;
 
-import com.gfa.configurations.PaginationConfig;
+import com.gfa.configurations.PaginationProperties;
 import com.gfa.services.AppUserService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(USERS)
 public class UserRestController {
-  private final PaginationConfig paginationConfig;
+  private final PaginationProperties paginationProperties;
   private final AppUserService appUserService;
 
   @Autowired
-  public UserRestController(PaginationConfig paginationConfig, AppUserService appUserService) {
-    this.paginationConfig = paginationConfig;
+  public UserRestController(PaginationProperties paginationProperties, AppUserService appUserService) {
+    this.paginationProperties = paginationProperties;
     this.appUserService = appUserService;
   }
 
@@ -40,11 +40,11 @@ public class UserRestController {
                                                            Optional<Sort.Direction> optSortDirection) {
 
     Integer page = optPage.orElse(1) - 1; // converts to a zero-based page index
-    Integer size = optSize.orElse(paginationConfig.getPageSizeDefault());
-    String sortBy = optSortBy.orElse(paginationConfig.getSortBy());
-    Sort.Direction sortDirection = optSortDirection.orElse(paginationConfig.getSortOrder());
+    Integer size = optSize.orElse(paginationProperties.getPageSizeDefault());
+    String sortBy = optSortBy.orElse(paginationProperties.getSortBy());
+    Sort.Direction sortDirection = optSortDirection.orElse(paginationProperties.getSortOrder());
 
-    Assert.isTrue(size <= paginationConfig.getPageSizeMax(), "Page size must not exceed limit of " + paginationConfig.getPageSizeMax());
+    Assert.isTrue(size <= paginationProperties.getPageSizeMax(), "Page size must not exceed limit of " + paginationProperties.getPageSizeMax());
     // other cases covered by the Pageable class
 
     Sort sort = Sort.by(sortDirection,sortBy);
