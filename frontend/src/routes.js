@@ -35,6 +35,8 @@
  10. The `component` key is used to store the component of its route.
  */
 
+import {Navigate} from 'react-router-dom';
+
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
@@ -44,8 +46,13 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
+
 // @mui icons
 import Icon from "@mui/material/Icon";
+
+// TODO: This should be changed according to authentication.js
+localStorage.setItem('userRoles', JSON.stringify(['USER', '']));
+const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
 
 const routes = [
     {
@@ -59,7 +66,9 @@ const routes = [
         key: "dashboard",
         icon: <Icon fontSize="small">dashboard</Icon>,
         route: "/dashboard",
-        component: <Dashboard/>,
+        component: /*<Dashboard/>,*/{
+            ...(userRoles.includes('ADMIN') ? <Dashboard/> : <Navigate to="/tables"/>)
+        },
     },
     {
         type: "collapse",
