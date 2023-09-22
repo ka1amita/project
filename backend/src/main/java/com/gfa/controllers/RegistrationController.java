@@ -24,12 +24,12 @@ public class RegistrationController {
     @PostMapping("/register")
     public ResponseEntity<? extends ResponseDTO> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
         appUserService.registerUser(registerRequest);
-        return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account!"));
+        return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
     }
 
     @GetMapping("/confirm/{activationCode}")
     public ResponseEntity<? extends ResponseDTO> activateAccount(@PathVariable String activationCode) {
         appUserService.activateAccount(activationCode);
-        return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully!"));
+        return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully"));
     }
 }

@@ -1,5 +1,6 @@
 package com.gfa.services;
 
+import com.gfa.exceptions.role.RoleNotFoundException;
 import com.gfa.models.Role;
 import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;

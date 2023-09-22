@@ -1,4 +1,4 @@
-package com.gfa.exceptions;
+package com.gfa.exceptions.token;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
