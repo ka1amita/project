@@ -1,6 +1,6 @@
 package com.gfa.services;
 
-import com.gfa.configurations.SoftDeleteConfig;
+import com.gfa.config.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
@@ -29,7 +29,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.MessagingException;
-import javax.persistence.EntityNotFoundException;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -190,7 +189,7 @@ public class AppUserServiceImpl implements AppUserService {
         activationCode.setAppUser(newUser);
 
         try {
-            emailService.registerConfirmationEmail(savedUser.getEmail(), savedUser.getUsername(), activationCode.getActivationCode());
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
         } catch (MessagingException e) {
             throw new EmailSendingFailedException("Unable to send the activation email");
         }
@@ -223,5 +222,4 @@ public class AppUserServiceImpl implements AppUserService {
 
         activationCodeService.deleteActivationCode(activationCode);
     }
-
 }

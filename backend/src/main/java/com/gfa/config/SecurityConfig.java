@@ -20,23 +20,23 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-public class NewSecurityConfig {
+public class SecurityConfig {
 
   @Bean
-  public PasswordEncoder passwordEncoder() {
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
   @Bean
   public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                     PasswordEncoder passwordEncoder,
+                                                     BCryptPasswordEncoder bCryptPasswordEncoder,
                                                      UserDetailsService userDetailsService)
       throws Exception {
 
     AuthenticationManager authenticationManager =
         http.getSharedObject(AuthenticationManagerBuilder.class)
             .userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder)
+            .passwordEncoder(bCryptPasswordEncoder)
             .and()
             .build();
     http.authenticationManager(authenticationManager);

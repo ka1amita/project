@@ -3,10 +3,6 @@ package com.gfa.controllers;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfa.exceptions.token.RefreshTokenMissingException;
-import com.gfa.models.AppUser;
-import com.gfa.models.Role;
-import com.gfa.services.AppUserService;
 import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
 import java.io.IOException;
