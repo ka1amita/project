@@ -4,13 +4,10 @@ import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.*;
-import com.gfa.exceptions.activation.AccountAlreadyActiveException;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
-import com.gfa.exceptions.user.InvalidResetCodeException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
 import com.gfa.exceptions.email.EmailSendingFailedException;
-import com.gfa.exceptions.role.RoleNotFoundException;
 import com.gfa.exceptions.user.*;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
@@ -36,8 +33,8 @@ import javax.mail.MessagingException;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
+    private final RoleService roleService;
     private final AppUserRepository appUserRepository;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
@@ -49,15 +46,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              RoleRepository roleRepository,
                               @Lazy BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService, MessageSource messageSource) {
+                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService) {
 
         this.appUserRepository = appUserRepository;
-        this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -86,20 +82,19 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, String resetCode) {
         Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(ActivationCodeExpireMinutes).isAfter(LocalDateTime.now())) {
-            if (passwordResetWithCodeRequestDTO.getPassword() != null && !passwordResetWithCodeRequestDTO.getPassword().isEmpty() && Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
+            if (Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
                 saveUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
-                throw new InvalidPasswordFormatException("Password can't be empty");
+                throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
             }
         } else {
-            throw new InvalidResetCodeException("Reset code doesn't exist");
+            throw new InvalidActivationCodeException("Reset code doesn't exist!");
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed"));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO("Password has been successfully changed."));
     }
-
 
     @Override
     public void addRoleToAppUser(String username, String roleName) {
@@ -108,10 +103,7 @@ public class AppUserServiceImpl implements AppUserService {
                         .orElseThrow(() -> new UsernameNotFoundException(
                                 "Username not found in the DB"));
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RoleNotFoundException("Role" +
-                                " name not found in the " +
-                                "DB"));
+                roleService.findByName(roleName);
         appUser.getRoles()
                 .add(role);
     }
@@ -119,17 +111,9 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public void addRoleToAppUser(AppUser appUser, String roleName) {
         Role role =
-                roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new RoleNotFoundException("Role" +
-                                " name not found in the " +
-                                "DB"));
+                roleService.findByName(roleName);
         appUser.getRoles()
                 .add(role);
-    }
-
-    @Override
-    public Role saveRole(Role role) {
-        return roleRepository.save(role);
     }
 
     @Override
@@ -157,7 +141,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
+    public AppUser registerUser(RegisterRequestDTO request) {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException("Username already exists");
@@ -202,22 +186,18 @@ public class AppUserServiceImpl implements AppUserService {
         Optional<ActivationCode> activationCodeOpt = activationCodeService.findByActivationCodeContains(code);
 
         if (!activationCodeOpt.isPresent()) {
-            throw new InvalidActivationCodeException("Invalid activation code.");
+            throw new InvalidActivationCodeException("Invalid activation code");
         }
 
         ActivationCode activationCode = activationCodeOpt.get();
         AppUser appUser = activationCode.getAppUser();
-
-        if (appUser.isActive()) {
-            throw new AccountAlreadyActiveException("User account is already active.");
-        }
 
         LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = activationCodeCreationTime.plusMinutes(ActivationCodeExpireMinutes);
 
         if (now.isAfter(expirationTime)) {
-            throw new ActivationCodeExpiredException("Activation code has expired.");
+            throw new ActivationCodeExpiredException("Activation code has expired");
         }
 
         appUser.setActive(true);
