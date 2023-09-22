@@ -4,11 +4,10 @@ import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
 import com.gfa.exceptions.role.RoleNotFoundException;
-import com.gfa.exceptions.user.InvalidPasswordFormatException;
-import com.gfa.exceptions.user.UserAlreadyExistsException;
-import com.gfa.exceptions.user.UserNotFoundException;
+import com.gfa.exceptions.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -44,5 +43,18 @@ public class UserExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(MissingJSONBodyException.class)
+    public ResponseEntity<String> handleMissingJSONBodyException(MissingJSONBodyException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 
+    @ExceptionHandler(InvalidPatchDataException.class)
+    public ResponseEntity<String> handleInvalidPatchDataException(InvalidPatchDataException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
