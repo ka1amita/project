@@ -1,5 +1,6 @@
 package com.gfa.controllers;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.*;
 import org.springframework.core.Ordered;
@@ -54,5 +55,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserMissingBearerTokenException(
+        JWTVerificationException e) {
+        return ResponseEntity.status(401).body(new ErrorResponseDTO(e.getMessage()));
     }
 }

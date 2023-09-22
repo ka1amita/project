@@ -3,6 +3,7 @@ package com.gfa.filters;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
 import java.io.IOException;
 import java.util.Calendar;
@@ -39,6 +40,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response)
             throws AuthenticationException {
+      if (!request.getMethod().equals("POST")) {
+        throw new AuthenticationServiceException(
+            "Authentication method not supported: " + request.getMethod());
+      }
 
       String loginInput, password;
 
@@ -71,13 +76,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     Calendar now = Calendar.getInstance();
     String issuer = request.getRequestURL()
                            .toString();
+    ResponseTokensDTO tokens = tokenService.createTokens(username, issuer, authorities);
 
-    String access_token = tokenService.getToken(username, now, issuer, authorities);
-    String refresh_token = tokenService.getToken(username, now, issuer);
-
-    Map<String, String> tokens = new HashMap<>();
-    tokens.put("access_token", access_token);
-    tokens.put("refresh_token", refresh_token);
     response.setContentType(APPLICATION_JSON_VALUE);
     new ObjectMapper().writeValue(response.getWriter(), tokens);
   }
@@ -88,7 +88,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                                             AuthenticationException exception)
       throws IOException, ServletException {
 
-    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     Map<String, String> errorDetails = new HashMap<>();
     errorDetails.put("error", "Unauthorized");
     errorDetails.put("message", exception.getMessage());

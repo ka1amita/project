@@ -1,7 +1,10 @@
 package com.gfa.dtos.responsedtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ErrorResponseDTO extends ResponseDTO {
 
+    @JsonProperty("error_message")
     private String errorMessage;
 
     public ErrorResponseDTO() {

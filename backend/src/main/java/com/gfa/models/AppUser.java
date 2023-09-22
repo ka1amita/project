@@ -6,14 +6,11 @@ import static javax.persistence.FetchType.EAGER;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
 
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,7 +21,7 @@ public class AppUser implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, nullable = false, updatable = false)
+    @Column(updatable = false)
     private Long id;
     @Column(unique = true, nullable = false)
     private String username;
