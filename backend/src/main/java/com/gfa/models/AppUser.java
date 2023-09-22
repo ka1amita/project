@@ -35,8 +35,8 @@ public class AppUser implements UserDetails {
     @Column(columnDefinition = "TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime verified_at = null;
-    private boolean active = Boolean.FALSE;
-    private boolean deleted = Boolean.FALSE;
+    private boolean active;
+    private boolean deleted;
     @ManyToMany(fetch = EAGER, cascade = {MERGE})
     @JoinTable(
             name = "app_users_roles",
