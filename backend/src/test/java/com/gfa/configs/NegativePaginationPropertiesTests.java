@@ -2,13 +2,12 @@ package com.gfa.configs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.gfa.configurations.PaginationProperties;
+import com.gfa.config.PaginationProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)

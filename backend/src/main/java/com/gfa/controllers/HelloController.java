@@ -1,8 +1,7 @@
 package com.gfa.controllers;
 
-import static com.gfa.utils.Endpoint.REGISTER;
+import static com.gfa.utils.Endpoint.HELLO_WORLD;
 
-import com.gfa.dtos.responsedtos.HelloMessageDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HelloController {
-    @RequestMapping(REGISTER)
+    @RequestMapping(HELLO_WORLD)
     public ResponseEntity<?> index() {
-        return ResponseEntity.ok(new HelloMessageDTO("Hello world!"));
+        return ResponseEntity.ok("Hello world!");
     }
 }

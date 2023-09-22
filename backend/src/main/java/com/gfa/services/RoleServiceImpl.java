@@ -1,5 +1,6 @@
 package com.gfa.services;
 
+import com.gfa.exceptions.role.RoleNotFoundException;
 import com.gfa.models.Role;
 import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role findByName(String name) {
         return roleRepository.findByName(name).orElseThrow(()
-                -> new NoSuchElementException("Couldn't find the role in our database."));
+                -> new NoSuchElementException("Couldn't find the role in our database"));
     }
 
     @Override

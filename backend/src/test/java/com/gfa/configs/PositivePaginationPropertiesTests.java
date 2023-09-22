@@ -2,7 +2,7 @@ package com.gfa.configs;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.gfa.configurations.PaginationProperties;
+import com.gfa.config.PaginationProperties;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import org.junit.jupiter.api.BeforeAll;

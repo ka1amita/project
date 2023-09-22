@@ -2,7 +2,7 @@ package com.gfa.controllers;
 
 import static com.gfa.utils.Endpoint.USERS;
 
-import com.gfa.configurations.PaginationProperties;
+import com.gfa.config.PaginationProperties;
 import com.gfa.services.AppUserService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;

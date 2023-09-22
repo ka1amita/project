@@ -1,4 +1,4 @@
-package com.gfa.configurations;
+package com.gfa.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

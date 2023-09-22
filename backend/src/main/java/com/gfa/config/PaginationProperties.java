@@ -1,4 +1,4 @@
-package com.gfa.configurations;
+package com.gfa.config;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
