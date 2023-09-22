@@ -12,9 +12,8 @@ import javax.mail.MessagingException;
 @RestController
 @RequestMapping("/reset")
 public class PasswordResetController {
-    @Autowired
     private final AppUserService appUserService;
-
+    @Autowired
     public PasswordResetController(AppUserService appUserService) {
         this.appUserService = appUserService;
     }
