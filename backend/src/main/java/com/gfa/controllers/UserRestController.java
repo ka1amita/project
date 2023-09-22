@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(USERS)
 public class UserRestController {
-  @Value("${pagination.size.default}")
+  @Value("${pagination.page.size}")
   private Integer defaultSize;
-  @Value("${pagination.size.max}")
+  @Value("${pagination.page.size.max}")
   private Integer maxSize;
   @Value("${pagination.sort.by}")
   private String defaultSortBy;
