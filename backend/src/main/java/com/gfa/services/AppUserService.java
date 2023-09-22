@@ -5,7 +5,6 @@ import com.gfa.models.AppUser;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
-import com.gfa.models.Role;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
@@ -24,8 +23,6 @@ public interface AppUserService{
     void addRoleToAppUser(AppUser appUser, String roleName);
 
     void addRoleToAppUser(String username, String roleName);
-
-    Role saveRole(Role role);
 
     AppUser saveUser(AppUser user);
 
