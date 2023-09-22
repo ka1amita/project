@@ -1,16 +1,12 @@
 package com.gfa.controllers;
 
-import com.gfa.models.AppUser;
 import com.gfa.services.AppUserService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserRestController {
 
   public final AppUserService appUserService;
@@ -20,8 +16,9 @@ public class UserRestController {
     this.appUserService = appUserService;
   }
 
-  @GetMapping("/users")
-  ResponseEntity<List<AppUser>> getAllAppUsers() {
-    return ResponseEntity.ok(appUserService.getAllAppUsers());
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> destroy(@PathVariable Long id) {
+    appUserService.removeAppUser(id);
+    return ResponseEntity.status(201).build();
   }
 }

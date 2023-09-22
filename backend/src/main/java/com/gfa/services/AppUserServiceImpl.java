@@ -141,6 +141,11 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
+    public void removeAppUser(Long id) {
+        
+    }
+
+    @Override
     public AppUser registerUser(RegisterRequestDTO request) {
 
         if (appUserRepository.existsByUsername(request.getUsername())) {

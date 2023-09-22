@@ -31,4 +31,6 @@ public interface AppUserService{
     List<AppUser> getAllAppUsers();
 
     void setAppUserActive(AppUser user);
+
+    void removeAppUser(Long id);
 }

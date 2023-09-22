@@ -6,6 +6,8 @@ import com.gfa.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -20,7 +22,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role findByName(String name) {
         return roleRepository.findByName(name).orElseThrow(()
-                -> new RoleNotFoundException("Couldn't find the role in our database"));
+                -> new NoSuchElementException("Couldn't find the role in our database"));
     }
 
     @Override
