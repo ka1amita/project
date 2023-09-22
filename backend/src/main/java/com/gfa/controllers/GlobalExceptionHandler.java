@@ -2,13 +2,16 @@ package com.gfa.controllers;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
-import com.gfa.exceptions.*;
+import com.gfa.exceptions.activation.InvalidActivationCodeException;
+import com.gfa.exceptions.email.EmailAlreadyExistsException;
+import com.gfa.exceptions.user.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,9 +60,25 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
     }
 
+    @ExceptionHandler(MissingJSONBodyException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingJSONBodyException(MissingJSONBodyException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPatchDataException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidPatchDataException(InvalidPatchDataException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
     @ExceptionHandler(JWTVerificationException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserMissingBearerTokenException(
-        JWTVerificationException e) {
+            JWTVerificationException e) {
         return ResponseEntity.status(401).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.status(405).body(new ErrorResponseDTO(e.getMessage()));
     }
 }

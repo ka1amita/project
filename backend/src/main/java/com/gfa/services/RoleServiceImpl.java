@@ -20,7 +20,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role findByName(String name) {
         return roleRepository.findByName(name).orElseThrow(()
-                -> new NoSuchElementException("Couldn't find the role in our database."));
+                -> new NoSuchElementException("Couldn't find the role in our database"));
     }
 
     @Override
