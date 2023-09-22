@@ -54,6 +54,7 @@ import Icon from "@mui/material/Icon";
 localStorage.setItem('userRoles', JSON.stringify(['USER', '']));
 const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
 
+// TODO: Maybe the whole route shouldn't exist when not an ADMIN?
 const routes = [
     {
         type: "title",
@@ -61,14 +62,16 @@ const routes = [
         title: "Group1",
     },
     {
-        type: "collapse",
-        name: "EX_Dashboard",
-        key: "dashboard",
-        icon: <Icon fontSize="small">dashboard</Icon>,
-        route: "/dashboard",
-        component: /*<Dashboard/>,*/{
-            ...(userRoles.includes('ADMIN') ? <Dashboard/> : <Navigate to="/tables"/>)
-        },
+        ...(userRoles.includes('ADMIN') ? {
+            type: "collapse",
+            name: "EX_Dashboard",
+            key: "dashboard",
+            icon: <Icon fontSize="small">dashboard</Icon>,
+            route: "/dashboard",
+            component: /*<Dashboard/>,*/{
+                ...(userRoles.includes('ADMIN') ? <Dashboard/> : <Navigate to="/tables"/>)
+            }
+        } : {})
     },
     {
         type: "collapse",
