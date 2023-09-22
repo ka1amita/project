@@ -40,7 +40,7 @@ public class UserRestController {
                                                            Optional<Sort.Direction> optSortDirection) {
 
     Integer page = optPage.orElse(1) - 1; // converts to a zero-based page index
-    Integer size = optSize.orElse(paginationConfig.getPageSize());
+    Integer size = optSize.orElse(paginationConfig.getPageSizeDefault());
     String sortBy = optSortBy.orElse(paginationConfig.getSortBy());
     Sort.Direction sortDirection = optSortDirection.orElse(paginationConfig.getSortOrder());
 
@@ -55,6 +55,4 @@ public class UserRestController {
 //     return ResponseEntity.ok(usersList);
     return null;
   }
-
-
 }

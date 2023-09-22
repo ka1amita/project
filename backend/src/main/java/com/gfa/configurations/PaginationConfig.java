@@ -4,23 +4,26 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-@Configuration
+@Validated // must be present for the field validations to work!
+@Component // but not @Configuration!
 @ConfigurationProperties(prefix = "pagination")
 public class PaginationConfig {
     @Min(1)
-    private Integer pageSize = 20;
+    private Integer pageSizeDefault = 20;
     @Min(1)
     private Integer pageSizeMax = 100;
     @NotEmpty
     private String sortBy = "id";
     @NotNull
-    private Sort.Direction sortOrder = Sort.Direction.ASC;
+    // Spring recognises the possible values by default and tells the allowed value! :-)
+    private Sort.Direction sortOrder = Sort.Direction.DESC;
 
-    public void setPageSize(Integer pageSize) {
-        this.pageSize = pageSize;
+    public void setPageSizeDefault(Integer pageSizeDefault) {
+        this.pageSizeDefault = pageSizeDefault;
     }
 
     public void setPageSizeMax(Integer pageSizeMax) {
@@ -35,8 +38,8 @@ public class PaginationConfig {
         this.sortOrder = sortOrder;
     }
 
-    public Integer getPageSize() {
-        return pageSize;
+    public Integer getPageSizeDefault() {
+        return pageSizeDefault;
     }
 
     public Integer getPageSizeMax() {
