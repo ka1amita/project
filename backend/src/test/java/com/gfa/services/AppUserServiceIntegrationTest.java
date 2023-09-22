@@ -1,8 +1,8 @@
 package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
-import com.gfa.exceptions.EmailAlreadyExistsException;
-import com.gfa.exceptions.UserAlreadyExistsException;
+import com.gfa.exceptions.email.EmailAlreadyExistsException;
+import com.gfa.exceptions.user.UserAlreadyExistsException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.ActivationCodeRepository;
