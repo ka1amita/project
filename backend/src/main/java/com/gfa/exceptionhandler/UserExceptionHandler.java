@@ -34,27 +34,27 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(ActivationCodeExpiredException.class)
-    public ResponseEntity<String> handleActivationCodeExpiredException(ActivationCodeExpiredException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleActivationCodeExpiredException(ActivationCodeExpiredException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleRoleNotFoundException(RoleNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(MissingJSONBodyException.class)
-    public ResponseEntity<String> handleMissingJSONBodyException(MissingJSONBodyException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleMissingJSONBodyException(MissingJSONBodyException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(InvalidPatchDataException.class)
-    public ResponseEntity<String> handleInvalidPatchDataException(InvalidPatchDataException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleInvalidPatchDataException(InvalidPatchDataException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.status(405).body(new ErrorResponseDTO(e.getMessage()));
     }
 }
