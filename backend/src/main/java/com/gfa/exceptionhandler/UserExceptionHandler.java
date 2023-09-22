@@ -1,7 +1,6 @@
 package com.gfa.exceptionhandler;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
-import com.gfa.exceptions.activation.AccountAlreadyActiveException;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
 import com.gfa.exceptions.role.RoleNotFoundException;
@@ -33,11 +32,6 @@ public class UserExceptionHandler {
     @ExceptionHandler(InvalidPasswordFormatException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidPasswordFormatException(InvalidPasswordFormatException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-    @ExceptionHandler(AccountAlreadyActiveException.class)
-    public ResponseEntity<String> handleAccountAlreadyActiveException(AccountAlreadyActiveException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     @ExceptionHandler(ActivationCodeExpiredException.class)
