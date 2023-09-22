@@ -49,8 +49,13 @@ import Icon from "@mui/material/Icon";
 
 const routes = [
     {
+        type: "title",
+        key: "group1",
+        title: "Group1",
+    },
+    {
         type: "collapse",
-        name: "Dashboard",
+        name: "EX_Dashboard",
         key: "dashboard",
         icon: <Icon fontSize="small">dashboard</Icon>,
         route: "/dashboard",
@@ -58,7 +63,7 @@ const routes = [
     },
     {
         type: "collapse",
-        name: "Tables",
+        name: "EX_Tables",
         key: "tables",
         icon: <Icon fontSize="small">table_view</Icon>,
         route: "/tables",
@@ -66,15 +71,20 @@ const routes = [
     },
     {
         type: "collapse",
-        name: "Billing",
+        name: "EX_Billing",
         key: "billing",
         icon: <Icon fontSize="small">receipt_long</Icon>,
         route: "/billing",
         component: <Billing/>,
     },
     {
+        type: "title",
+        key: "group2",
+        title: "Group2",
+    },
+    {
         type: "collapse",
-        name: "Notifications",
+        name: "EX_Notifications",
         key: "notifications",
         icon: <Icon fontSize="small">notifications</Icon>,
         route: "/notifications",
@@ -82,15 +92,24 @@ const routes = [
     },
     {
         type: "collapse",
-        name: "Profile",
+        name: "EX_Profile",
         key: "profile",
         icon: <Icon fontSize="small">person</Icon>,
         route: "/profile",
         component: <Profile/>,
     },
     {
+        type: "divider",
+        key: "div1",
+    },
+    {
+        type: "title",
+        key: "group3",
+        title: "Group3",
+    },
+    {
         type: "collapse",
-        name: "Sign In",
+        name: "Login",
         key: "sign-in",
         icon: <Icon fontSize="small">login</Icon>,
         route: "/authentication/sign-in",
@@ -98,7 +117,7 @@ const routes = [
     },
     {
         type: "collapse",
-        name: "Sign Up",
+        name: "Register",
         key: "sign-up",
         icon: <Icon fontSize="small">assignment</Icon>,
         route: "/authentication/sign-up",

@@ -35,8 +35,8 @@
   "scripts": {
     "start": "set \"GENERATE_SOURCEMAP=false\" && react-scripts start",
     "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "test": "set \"GENERATE_SOURCEMAP=false\" && react-scripts test",
+    "eject": "set \"GENERATE_SOURCEMAP=false\" && react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
   },
   "eslintConfig": {
@@ -59,13 +59,11 @@
   },
   "devDependencies": {
     "eslint": "8.39.0",
-    "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
-    "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.8.8"
+    "eslint-plugin-react-hooks": "4.6.0"
   },
   "overrides": {
     "svgo": "3.0.2"

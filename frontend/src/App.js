@@ -69,6 +69,7 @@ export default function App() {
     const [rtlCache, setRtlCache] = useState(null);
     const {pathname} = useLocation();
 
+
     // Cache for the rtl
     useMemo(() => {
         const cacheRtl = createCache({
@@ -153,7 +154,7 @@ export default function App() {
                 <Sidenav
                     color={sidenavColor}
                     brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                    brandName="Material Dashboard 2"
+                    brandName="TODO app"
                     routes={routes}
                     onMouseEnter={handleOnMouseEnter}
                     onMouseLeave={handleOnMouseLeave}
