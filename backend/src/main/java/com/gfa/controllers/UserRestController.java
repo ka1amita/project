@@ -2,10 +2,10 @@ package com.gfa.controllers;
 
 import static com.gfa.utils.Endpoint.USERS;
 
+import com.gfa.configurations.PaginationConfig;
 import com.gfa.services.AppUserService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(USERS)
 public class UserRestController {
-  @Value("${pagination.page.size}")
-  private Integer defaultSize;
-  @Value("${pagination.page.size.max}")
-  private Integer maxSize;
-  @Value("${pagination.sort.by}")
-  private String defaultSortBy;
-  @Value("${pagination.sort.order}")
-  private Sort.Direction defaultSortOrder;
-  public final AppUserService appUserService;
+  private final PaginationConfig paginationConfig;
+  private final AppUserService appUserService;
 
   @Autowired
-  public UserRestController(AppUserService appUserService) {
+  public UserRestController(PaginationConfig paginationConfig, AppUserService appUserService) {
+    this.paginationConfig = paginationConfig;
     this.appUserService = appUserService;
   }
 
@@ -46,11 +40,11 @@ public class UserRestController {
                                                            Optional<Sort.Direction> optSortDirection) {
 
     Integer page = optPage.orElse(1) - 1; // converts to a zero-based page index
-    Integer size = optSize.orElse(defaultSize);
-    String sortBy = optSortBy.orElse(defaultSortBy);
-    Sort.Direction sortDirection = optSortDirection.orElse(defaultSortOrder);
+    Integer size = optSize.orElse(paginationConfig.getPageSize());
+    String sortBy = optSortBy.orElse(paginationConfig.getSortBy());
+    Sort.Direction sortDirection = optSortDirection.orElse(paginationConfig.getSortOrder());
 
-    Assert.isTrue(size <= maxSize, "Page size must not exceed limit of " + maxSize);
+    Assert.isTrue(size <= paginationConfig.getPageSizeMax(), "Page size must not exceed limit of " + paginationConfig.getPageSizeMax());
     // other cases covered by the Pageable class
 
     Sort sort = Sort.by(sortDirection,sortBy);
