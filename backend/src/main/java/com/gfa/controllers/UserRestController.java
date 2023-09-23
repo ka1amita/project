@@ -3,9 +3,11 @@ package com.gfa.controllers;
 import static com.gfa.utils.Endpoint.USERS;
 
 import com.gfa.config.PaginationProperties;
+import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.services.AppUserService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +31,14 @@ public class UserRestController {
     appUserService.removeAppUser(id);
     return ResponseEntity.status(201).build();
   }
-  @PostMapping("/list")
-  public ResponseEntity<?> getPagedActiveNonDeletedUsers(@RequestParam(required = false,name = "page")
+  @GetMapping()
+  public ResponseEntity<?> index(@RequestParam(required = false,name = "page")
                                                            Optional<Integer> optPage,
                                                          @RequestParam(required = false,name = "size")
                                                            Optional<Integer> optSize,
-                                                         @RequestParam(required = false,name = "sortBy")
+                                                         @RequestParam(required = false,name = "by")
                                                            Optional<String> optSortBy,
-                                                         @RequestParam(required = false,name = "optSortDirection")
+                                                         @RequestParam(required = false,name = "direction")
                                                            Optional<Sort.Direction> optSortDirection) {
 
     Integer page = optPage.orElse(1) - 1; // converts to a zero-based page index
@@ -49,10 +51,9 @@ public class UserRestController {
 
     Sort sort = Sort.by(sortDirection,sortBy);
     PageRequest pageRequest = PageRequest.of(page, size, sort);
-    // Page<UserDTO> usersPage = appUserService.getAllAppUsers(pageRequest);
-    // List<UserDTO> usersList = userPage.toList();
-// List, Slice or Page<UserDTO extends ResponseDTO> users = appUserService.findAll(Pageable pageRequest)
-//     return ResponseEntity.ok(usersList);
-    return null;
+
+    Page<AppUserResponseDTO> users = appUserService.pageAppUserDtos(pageRequest);
+    return ResponseEntity.ok(users.toList());
   }
 }
+

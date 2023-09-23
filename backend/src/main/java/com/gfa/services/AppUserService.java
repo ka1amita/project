@@ -1,6 +1,7 @@
 package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
+import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.models.AppUser;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
@@ -8,6 +9,8 @@ import com.gfa.dtos.responsedtos.ResponseDTO;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import javax.mail.MessagingException;
@@ -37,4 +40,6 @@ public interface AppUserService {
     void setAppUserActive(AppUser user);
 
     AppUser findByUsernameOrEmail(String username);
+
+    Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest);
 }

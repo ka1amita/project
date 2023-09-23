@@ -4,6 +4,7 @@ import com.gfa.config.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
+import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
@@ -19,6 +20,9 @@ import com.gfa.repositories.AppUserRepository;
 import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -159,6 +163,17 @@ public class AppUserServiceImpl implements AppUserService {
         return appUserRepository.findByUsernameOrEmail(username, username)
                                 .orElseThrow(() -> new UsernameNotFoundException(
                                     "User not found in the DB"));
+    }
+
+    @Override
+    public Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest) {
+        Page<AppUser> page = pageAppUsers(pageRequest);
+        Page<AppUserResponseDTO> dtos = new PageImpl<>(null);
+        return dtos;
+    }
+    public Page<AppUser> pageAppUsers(PageRequest pageRequest) {
+        Page<AppUser> page = appUserRepository.findAll(pageRequest);
+        return page;
     }
 
     @Override
