@@ -21,7 +21,6 @@ import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -167,13 +166,10 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest) {
-        Page<AppUser> page = pageAppUsers(pageRequest);
-        Page<AppUserResponseDTO> dtos = new PageImpl<>(null);
-        return dtos;
+        return pageAppUsers(pageRequest).map(AppUserResponseDTO::new);
     }
     public Page<AppUser> pageAppUsers(PageRequest pageRequest) {
-        Page<AppUser> page = appUserRepository.findAll(pageRequest);
-        return page;
+        return appUserRepository.findAll(pageRequest);
     }
 
     @Override

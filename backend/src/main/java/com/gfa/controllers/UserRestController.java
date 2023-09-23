@@ -47,12 +47,11 @@ public class UserRestController {
     Sort.Direction sortDirection = optSortDirection.orElse(paginationProperties.getSortOrder());
 
     Assert.isTrue(size <= paginationProperties.getPageSizeMax(), "Page size must not exceed limit of " + paginationProperties.getPageSizeMax());
-    // other cases covered by the Pageable class
 
     Sort sort = Sort.by(sortDirection,sortBy);
-    PageRequest pageRequest = PageRequest.of(page, size, sort);
+    PageRequest request = PageRequest.of(page, size, sort);
 
-    Page<AppUserResponseDTO> users = appUserService.pageAppUserDtos(pageRequest);
+    Page<AppUserResponseDTO> users = appUserService.pageAppUserDtos(request);
     return ResponseEntity.ok(users.toList());
   }
 }
