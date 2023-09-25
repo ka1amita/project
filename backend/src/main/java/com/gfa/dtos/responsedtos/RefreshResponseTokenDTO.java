@@ -1,13 +1,16 @@
 package com.gfa.dtos.responsedtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RefreshResponseTokenDTO extends ResponseDTO {
-  private String refresh_token;
+  @JsonProperty("refresh_token")
+  private String refreshToken;
 
   public RefreshResponseTokenDTO(String token) {
-    refresh_token=token;
+    refreshToken =token;
   }
 
-  public String getToken() {
-    return refresh_token;
+  public String getRefreshToken() {
+    return refreshToken;
   }
 }
