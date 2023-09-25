@@ -4,7 +4,6 @@ import com.gfa.config.SoftDeleteConfig;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
-import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
 import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
@@ -12,29 +11,49 @@ import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
 import com.gfa.exceptions.email.EmailSendingFailedException;
-import com.gfa.exceptions.user.*;
+import com.gfa.exceptions.user.InvalidIdException;
+import com.gfa.exceptions.user.InvalidPasswordFormatException;
+import com.gfa.exceptions.user.InvalidPatchDataException;
+import com.gfa.exceptions.user.MissingJSONBodyException;
+import com.gfa.exceptions.user.UserAlreadyExistsException;
+import com.gfa.exceptions.user.UserNotFoundException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import javax.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import com.gfa.dtos.responsedtos.AppUserResponseDTO;
+import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
+import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
+import com.gfa.dtos.responsedtos.ResponseDTO;
+import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
+import com.gfa.dtos.responsedtos.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import java.util.stream.Collectors;
+
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
     private final RoleService roleService;
@@ -47,11 +66,11 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              PasswordEncoder passwordEncoder,
+                              BCryptPasswordEncoder bCryptPasswordEncoder,
                               EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService, SoftDeleteConfig softDeleteConfig) {
 
         this.appUserRepository = appUserRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
@@ -84,7 +103,7 @@ public class AppUserServiceImpl implements AppUserService {
             if (Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
                 AppUser appUser = activationCode.get().getAppUser();
                 appUser.setPassword(passwordResetWithCodeRequestDTO.getPassword());
-                encodePasswordAndSaveAppUser(appUser);
+                saveUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
                 throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
@@ -117,33 +136,112 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser encodePasswordAndSaveAppUser(AppUser appUser) {
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
         return appUserRepository.save(appUser);
     }
 
     /**
-     * use findByUsernameOrEmail
+     * use encodePasswordAndSaveAppUser()
      */
+    @Deprecated
+    public AppUser saveUser(AppUser appUser) {
+        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+        return appUserRepository.save(appUser);
+    }
+
+
     @Override
     public AppUser findUserByUsername(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         return optAppUser.orElseThrow(
             () -> new UsernameNotFoundException("User not found in the DB"));
     }
+    /**
+     * use findByUsername()
+     */
+    @Deprecated
+    public AppUser getAppUser(String username) {
+        Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
+        return optAppUser.orElseThrow(
+            () -> new UsernameNotFoundException("User not found in the DB"));
+    }
 
     @Override
-    public List<AppUser> getAllAppUsers() {
-        return appUserRepository.findAll();
+    public AppUser fetchAppUserById(Long id) {
+        return appUserRepository.findById(id).orElseThrow(()
+                -> new UserNotFoundException("User not found")
+        );
+    }
+
+    @Override
+    public AppUserResponseDTO fetchUserApi(Long id) {
+        Utils.IsUserIdValid(id);
+        AppUser user = fetchAppUserById(id);
+        return new AppUserResponseDTO(user);
+    }
+
+    @Override
+    public AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException {
+        if(id == null) throw new InvalidIdException("Please provide an Id");
+        if (request == null) throw new MissingJSONBodyException("Please provide a JSON body");
+        Utils.IsUserIdValid(id);
+        AppUser appUser = fetchAppUserById(id);
+
+        if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
+            throw new InvalidPatchDataException("Invalid data");
+        }
+
+        if (request.getUsername().isEmpty() && request.getEmail().isEmpty() && request.getPassword().isEmpty()) {
+            throw new InvalidPatchDataException("Invalid data");
+        }
+
+            if (!request.getUsername().isEmpty()) {
+                appUser.setUsername(request.getUsername());
+            }
+
+        String oldEmail = appUser.getEmail();
+        if (!request.getEmail().isEmpty()) {
+            appUser.setEmail(request.getEmail());
+        }
+
+        if (!request.getPassword().isEmpty()) {
+            if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
+                appUser.setPassword(request.getPassword());
+            } else
+                throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+        }
+
+        if (!oldEmail.equals(appUser.getEmail())) {
+            appUser.setActive(false);
+            appUser.setVerifiedAt(null);
+            ActivationCode activationCode = assignActivationCodeToUser(appUser);
+            emailService.registerConfirmationEmail(appUser.getEmail(), appUser.getUsername(), activationCode.getActivationCode());
+        }
+
+        saveUser(appUser);
+
+        return new AppUserResponseDTO(appUser);
+    }
+
+    @Override
+    public List<AppUserResponseDTO> getAllAppUsers() {
+        return appUserRepository.findAll().stream()
+                .map(AppUserResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AppUserResponseDTO> getAllAppUsersDeleted() {
+        return appUserRepository.findAllDeletedAppUsers().stream()
+                .map(AppUserResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void removeAppUser(Long id) {
-        if (id < 0) throw new InvalidIdException("Please provide a valid ID");
-        AppUser user =
-                appUserRepository.findById(id).orElseThrow(()
-                        -> new UserNotFoundException("User not found")
-                );
+        Utils.IsUserIdValid(id); // TODO check the purpose!
         if (softDeleteConfig.isEnabled()) {
+        AppUser user = fetchAppUserById(id);
             user.setDeleted(true);
             user.setActive(false);
             appUserRepository.save(user);
@@ -159,17 +257,12 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser findByUsernameOrEmail(String username) {
-        return appUserRepository.findByUsernameOrEmail(username, username)
-                                .orElseThrow(() -> new UsernameNotFoundException(
-                                    "User not found in the DB"));
+        return null;
     }
 
     @Override
     public Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest) {
-        return pageAppUsers(pageRequest).map(AppUserResponseDTO::new);
-    }
-    public Page<AppUser> pageAppUsers(PageRequest pageRequest) {
-        return appUserRepository.findAll(pageRequest);
+        return null;
     }
 
     @Override
@@ -196,22 +289,17 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
         newUser.assignRole(roleService.findByName("USER"));
-        newUser.setCreated_at(LocalDateTime.now());
+        newUser.setCreatedAt(LocalDateTime.now());
 
-        String code = Utils.GenerateActivationCode(ActivationCodeMaxSize);
-        ActivationCode activationCode = new ActivationCode(code, newUser);
-
-        encodePasswordAndSaveAppUser(newUser);
-        activationCodeService.saveActivationCode(activationCode);
-
-        activationCode.setAppUser(newUser);
-
+        ActivationCode activationCode = assignActivationCodeToUser(newUser);
         try {
-            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
+            // TODO pass "whole" newUser!
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(),
+                                                   activationCode.getActivationCode());
         } catch (MessagingException e) {
             throw new EmailSendingFailedException("Unable to send the activation email");
         }
-
+        // TODO return savedUser!
         return newUser;
     }
 
@@ -235,9 +323,18 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         appUser.setActive(true);
-        appUser.setVerified_at(LocalDateTime.now());
+        appUser.setVerifiedAt(LocalDateTime.now());
         appUserRepository.save(appUser);
 
         activationCodeService.deleteActivationCode(activationCode);
+    }
+
+    private ActivationCode assignActivationCodeToUser(AppUser appUser) {
+        String code = Utils.GenerateActivationCode(48);
+        ActivationCode activationCode = new ActivationCode(code, appUser);
+        saveUser(appUser);
+        activationCodeService.saveActivationCode(activationCode);
+        activationCode.setAppUser(appUser);
+        return activationCode;
     }
 }

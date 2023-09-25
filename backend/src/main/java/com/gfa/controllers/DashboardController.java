@@ -1,5 +1,6 @@
 package com.gfa.controllers;
 
+import com.gfa.dtos.responsedtos.ResponseDTO;
 import static com.gfa.utils.Endpoint.DASHBOARD;
 
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(DASHBOARD)
 public class DashboardController {
     @GetMapping({"", "/"})
-    public ResponseEntity<?> index() {
+    public ResponseEntity<? extends ResponseDTO> index() {
         return ResponseEntity.ok().build();
     }
 }

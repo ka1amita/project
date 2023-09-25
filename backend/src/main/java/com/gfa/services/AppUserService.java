@@ -1,6 +1,7 @@
 package com.gfa.services;
 
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
+import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.models.AppUser;
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
@@ -33,7 +34,15 @@ public interface AppUserService {
 
     AppUser findUserByUsername(String username);
 
-    List<AppUser> getAllAppUsers();
+    AppUser fetchAppUserById(Long id);
+
+    AppUserResponseDTO fetchUserApi(Long id);
+
+    AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException;
+
+    List<AppUserResponseDTO> getAllAppUsers();
+
+    List<AppUserResponseDTO> getAllAppUsersDeleted();
 
     void removeAppUser(Long id);
 

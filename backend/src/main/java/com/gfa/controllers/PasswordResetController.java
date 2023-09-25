@@ -4,6 +4,7 @@ import static com.gfa.utils.Endpoint.RESET_PASSWORD;
 
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
+import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,12 @@ public class PasswordResetController {
     }
 
     @PostMapping({"", "/"})
-    public ResponseEntity<?> index(@RequestBody(required = false) PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
+    public ResponseEntity<? extends ResponseDTO> index(@RequestBody(required = false) PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException {
         return appUserService.reset(passwordResetRequestDTO);
     }
 
     @PostMapping("/{resetCode}")
-    public ResponseEntity<?> passwordResetWithCode(@RequestBody PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, @PathVariable String resetCode) {
+    public ResponseEntity<? extends ResponseDTO> passwordResetWithCode(@RequestBody PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO, @PathVariable String resetCode) {
         return appUserService.resetWithCode(passwordResetWithCodeRequestDTO, resetCode);
     }
 }
