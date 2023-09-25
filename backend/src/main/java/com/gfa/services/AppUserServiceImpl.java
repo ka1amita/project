@@ -28,27 +28,15 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
-import com.gfa.dtos.responsedtos.PasswordResetResponseDTO;
-import com.gfa.dtos.responsedtos.PasswordResetWithCodeResponseDTO;
-import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
-import com.gfa.dtos.responsedtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import java.util.stream.Collectors;
-
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -253,8 +241,10 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public AppUser findByUsernameOrEmail(String username) {
-        return null;
+    public AppUser findByUsernameOrEmail(String login) {
+        Optional<AppUser> optAppUser = appUserRepository.findByUsernameOrEmail(login, login);
+        return optAppUser.orElseThrow(
+            () -> new UsernameNotFoundException("User not found in the DB"));
     }
 
     @Override
