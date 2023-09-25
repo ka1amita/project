@@ -1,6 +1,6 @@
 package com.gfa.controllers;
 
-import static com.gfa.utils.Endpoint.USERS;
+import static com.gfa.utils.Endpoint.USERS_API;
 
 import com.gfa.config.PaginationProperties;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
@@ -24,8 +24,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
-// @RequestMapping("/api/users") // TODO change in the Endpoint interface
-@RequestMapping(USERS)
+@RequestMapping(USERS_API)
 public class UserRestController {
   private final PaginationProperties paginationProperties;
   private final AppUserService appUserService;
@@ -102,4 +101,3 @@ public class UserRestController {
         return PageRequest.of(page, size, sort);
     }
 }
-

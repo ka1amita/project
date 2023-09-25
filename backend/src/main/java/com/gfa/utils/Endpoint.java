@@ -10,7 +10,7 @@ public interface Endpoint {
     String VERIFY_EMAIL_WITH_TOKEN="/email/verify";
     String RESEND_VERIFICATION_EMAIL="/email/verify/resend";
     String DASHBOARD="/dashboard";
-    String USERS="/users";
+    String USERS_API ="/api/users";
     String REFRESH_TOKEN="/token/refresh";
 
 }
