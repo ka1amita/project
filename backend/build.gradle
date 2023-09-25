@@ -4,6 +4,7 @@ plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
+    id 'org.flywaydb.flyway' version '8.5.12'
 }
 
 group = 'com.gfa'
@@ -15,6 +16,14 @@ configurations {
     runtimeClasspath {
         extendsFrom developmentOnly
     }
+}
+
+flyway {
+    // doesn't work!
+    user = 'root'
+    password = 'password'
+    url = 'jdbc:mysql://localhost:3306/fox-dining'
+//    schemas = 'fox-dining'
 }
 
 checkstyle {
@@ -97,6 +106,9 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:8.5.12'
         // https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
     implementation 'org.flywaydb:flyway-mysql:8.5.12'
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
+    implementation 'org.flywaydb:flyway-maven-plugin:8.5.12'
+
 
     testImplementation 'org.springframework.security:spring-security-test'
 
