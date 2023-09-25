@@ -1,6 +1,6 @@
 package com.gfa.dtos.responsedtos;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gfa.models.AppUser;
 
 import java.time.LocalDateTime;
@@ -10,13 +10,14 @@ public class AppUserResponseDTO extends ResponseDTO {
     public final Long id;
     public final String username;
     public final String email;
-    public final LocalDateTime verified_at;
+    @JsonProperty("verified_at")
+    public final LocalDateTime verifiedAt;
 
     public AppUserResponseDTO(AppUser appUser) {
         this.id = appUser.getId();
         this.username = appUser.getUsername();
         this.email = appUser.getEmail();
-        verified_at = appUser.getVerified_at();
+        verifiedAt = appUser.getVerifiedAt();
     }
 
     public Long getId() {
@@ -31,7 +32,7 @@ public class AppUserResponseDTO extends ResponseDTO {
         return email;
     }
 
-    public LocalDateTime getVerified_at() {
-        return verified_at;
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 }

@@ -1,6 +1,8 @@
 package com.gfa.controllers;
 
+import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
+import com.gfa.dtos.responsedtos.RegisterResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.services.AppUserService;
 import java.util.List;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,6 +27,12 @@ public class UserRestController {
     @GetMapping("/")
     public ResponseEntity<List<? extends ResponseDTO>> index() {
         return ResponseEntity.ok(appUserService.getAllAppUsers());
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<? extends ResponseDTO> store(@Valid @RequestBody RegisterRequestDTO request) throws MessagingException {
+        appUserService.registerUser(request);
+        return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
     }
 
     @GetMapping("/deleted")
