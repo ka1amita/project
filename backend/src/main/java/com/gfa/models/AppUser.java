@@ -49,6 +49,8 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "appUser")
     @JsonManagedReference
     private Set<ActivationCode> activationCodes = new HashSet<>();
+    @Column(name="lang",nullable = false,length = 2)
+    private String preferredLanguage = "en";
 
     public AppUser() {
     }
@@ -190,6 +192,14 @@ public class AppUser implements UserDetails {
 
     public void setVerified_at(LocalDateTime verified_at) {
         this.verified_at = verified_at;
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 
     public boolean hasValidRoles() {
