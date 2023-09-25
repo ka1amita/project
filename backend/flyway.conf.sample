@@ -1,9 +1,10 @@
 flyway.cleanDisabled=false
-
-flyway.url=jdbc:mysql://localhost:3306/fox-dining?serverTimezone=UTC
+#If any of the three properties has not been set, the value of its equivalent spring.datasource property will be used.
+flyway.url=jdbc:mysql://localhost:3306
+flyway.schemas=fox-dining
 flyway.user=root
 flyway.password=password
-flyway.locations=filesystem:src/main/resources/db/migrations/
+flyway.locations=filesystem:src/main/resources/db/migrations/{vendor}
 
 spring.flyway.placeholder-prefix=${
 spring.flyway.placeholder-replacement=true
