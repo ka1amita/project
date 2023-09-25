@@ -223,7 +223,6 @@ public class AppUserServiceImpl implements AppUserService {
         return new AppUserResponseDTO(appUser);
     }
 
-    @Override
     public List<AppUserResponseDTO> getAllAppUsers() {
         return appUserRepository.findAll().stream()
                 .map(AppUserResponseDTO::new)
@@ -231,10 +230,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public List<AppUserResponseDTO> getAllAppUsersDeleted() {
-        return appUserRepository.findAllDeletedAppUsers().stream()
-                .map(AppUserResponseDTO::new)
-                .collect(Collectors.toList());
+    public Page<AppUserResponseDTO> pageDeletedAppUserDtos(PageRequest request) {
+        return appUserRepository.findAllDeletedAppUsers(request).map(AppUserResponseDTO::new);
     }
 
     @Override
@@ -261,8 +258,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest) {
-        return null;
+    public Page<AppUserResponseDTO> pageAppUserDtos(PageRequest request) {
+        return appUserRepository.findAll(request).map(AppUserResponseDTO::new);
     }
 
     @Override
