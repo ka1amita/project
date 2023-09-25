@@ -1,18 +1,16 @@
 package com.gfa.utils;
 
-public enum Endpoint {
+public interface Endpoint {
     // don't add wildcards otherwise CustomAuthorizationFilter exceptions gonna break!
-    REGISTER("/register"), CONFIRM_WITH_CODE("/confirm/"), LOGIN("/login"),
-    RESET_PASSWORD("/reset"),
-    VERIFY_EMAIL_WITH_TOKEN("/email/verify/"), RESEND_VERIFICATION_EMAIL("/email/verify/resend"),
-    DASHBOARD("/dashboard"), REFRESH_TOKEN("/token/refresh"), HELLO_WORLD("/hello");
-    private final String value;
+    String HELLO_WORLD="/hello";
+    String REGISTER = "/register";
+    String CONFIRM_WITH_CODE = "/confirm";
+    String LOGIN = "/login";
+    String RESET_PASSWORD="/reset";
+    String VERIFY_EMAIL_WITH_TOKEN="/email/verify";
+    String RESEND_VERIFICATION_EMAIL="/email/verify/resend";
+    String DASHBOARD="/dashboard";
+    String USERS_API ="/api/users";
+    String REFRESH_TOKEN="/token/refresh";
 
-    Endpoint(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
 }

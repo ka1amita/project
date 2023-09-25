@@ -44,21 +44,21 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                   @NonNull FilterChain filterChain) throws ServletException,
                                                                             IOException {
     if (request.getServletPath()
-               .equals(Endpoint.HELLO_WORLD.getValue()) ||
+               .equals(Endpoint.HELLO_WORLD) ||
         request.getServletPath()
-               .equals(Endpoint.REGISTER.getValue()) ||
+               .equals(Endpoint.REGISTER) ||
         request.getServletPath()
-               .equals(Endpoint.LOGIN.getValue()) ||
+               .equals(Endpoint.LOGIN) ||
         request.getServletPath()
-               .equals(Endpoint.REFRESH_TOKEN.getValue()) ||
+               .equals(Endpoint.REFRESH_TOKEN) ||
         request.getServletPath()
-               .startsWith(Endpoint.RESET_PASSWORD.getValue()) ||
+               .startsWith(Endpoint.RESET_PASSWORD) ||
         request.getServletPath()
-               .equals(Endpoint.RESEND_VERIFICATION_EMAIL.getValue()) ||
+               .equals(Endpoint.RESEND_VERIFICATION_EMAIL) ||
         request.getServletPath()
-               .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()) ||
+               .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN) ||
         request.getServletPath()
-               .startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())
+               .startsWith(Endpoint.CONFIRM_WITH_CODE)
     ) {
 
       filterChain.doFilter(request, response);
