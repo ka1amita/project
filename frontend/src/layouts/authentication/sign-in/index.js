@@ -41,10 +41,23 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
+import {login} from "api/Authentication";
+
+
 function Basic() {
     const [rememberMe, setRememberMe] = useState(false);
+    const [user, setUser] = useState({});
 
     const handleSetRememberMe = () => setRememberMe(!rememberMe);
+    const handleEmailChange = (event) => {
+        user.username = event.target.value;
+    };
+    const handlePasswordChange = (event) => {
+        user.password = event.target.value;
+    };
+    const handleLoginButtonClicked = () => {
+        login(user)
+    };
 
     return (
         <BasicLayout image={bgImage}>
@@ -61,7 +74,7 @@ function Basic() {
                     textAlign="center"
                 >
                     <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-                        Sign in
+                        Login
                     </MDTypography>
                     <Grid container spacing={3} justifyContent="center" sx={{mt: 1, mb: 2}}>
                         <Grid item xs={2}>
@@ -84,40 +97,55 @@ function Basic() {
                 <MDBox pt={4} pb={3} px={3}>
                     <MDBox component="form" role="form">
                         <MDBox mb={2}>
-                            <MDInput type="email" label="Email" fullWidth/>
+                            <MDInput type="email" label="Email" fullWidth onChange={handleEmailChange}/>
                         </MDBox>
                         <MDBox mb={2}>
-                            <MDInput type="password" label="Password" fullWidth/>
+                            <MDInput type="password" label="Password" fullWidth onChange={handlePasswordChange}/>
                         </MDBox>
-                        <MDBox display="flex" alignItems="center" ml={-1}>
-                            <Switch checked={rememberMe} onChange={handleSetRememberMe}/>
-                            <MDTypography
-                                variant="button"
-                                fontWeight="regular"
-                                color="text"
-                                onClick={handleSetRememberMe}
-                                sx={{cursor: "pointer", userSelect: "none", ml: -1}}
-                            >
-                                &nbsp;&nbsp;Remember me
-                            </MDTypography>
-                        </MDBox>
+                        {/*<MDBox display="flex" alignItems="center" ml={-1}>*/}
+                        {/*    <Switch checked={rememberMe} onChange={handleSetRememberMe}/>*/}
+                        {/*    <MDTypography*/}
+                        {/*        variant="button"*/}
+                        {/*        fontWeight="regular"*/}
+                        {/*        color="text"*/}
+                        {/*        onClick={handleSetRememberMe}*/}
+                        {/*        sx={{cursor: "pointer", userSelect: "none", ml: -1}}*/}
+                        {/*    >*/}
+                        {/*        &nbsp;&nbsp;Remember me*/}
+                        {/*    </MDTypography>*/}
+                        {/*</MDBox>*/}
                         <MDBox mt={4} mb={1}>
-                            <MDButton variant="gradient" color="info" fullWidth>
-                                sign in
+                            <MDButton variant="gradient" color="info" fullWidth onClick={handleLoginButtonClicked}>
+                                login
                             </MDButton>
                         </MDBox>
-                        <MDBox mt={3} mb={1} textAlign="center">
+                        <MDBox mt={3} mb={0} textAlign="center">
                             <MDTypography variant="button" color="text">
                                 Don&apos;t have an account?{" "}
                                 <MDTypography
                                     component={Link}
-                                    to="/authentication/sign-up"
+                                    to="/authentication/register"
                                     variant="button"
                                     color="info"
                                     fontWeight="medium"
                                     textGradient
                                 >
-                                    Sign up
+                                    Register
+                                </MDTypography>
+                            </MDTypography>
+                        </MDBox>
+                        <MDBox mt={0} mb={1} textAlign="center">
+                            <MDTypography variant="button" color="text">
+                                Forgot your password?{" "}
+                                <MDTypography
+                                    component={Link}
+                                    to="/authentication/password-reset"
+                                    variant="button"
+                                    color="info"
+                                    fontWeight="medium"
+                                    textGradient
+                                >
+                                    Reset password
                                 </MDTypography>
                             </MDTypography>
                         </MDBox>
