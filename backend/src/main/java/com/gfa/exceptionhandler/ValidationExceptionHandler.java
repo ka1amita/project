@@ -3,6 +3,7 @@ package com.gfa.exceptionhandler;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.email.EmailSendingFailedException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
+import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidResetCodeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,4 +40,8 @@ public class ValidationExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(e.getMessage()));
     }
 
+    @ExceptionHandler(InvalidIdException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidIdException(InvalidIdException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(e.getMessage()));
+    }
 }
