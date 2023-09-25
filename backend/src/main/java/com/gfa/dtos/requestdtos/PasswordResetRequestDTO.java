@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotEmpty;
 
 public class PasswordResetRequestDTO extends RequestDTO {
-    @NotEmpty(message = "Username or Email cannot be null or empty")
+    @NotEmpty(message = "{error.not.empty.username.or.email}")
     @JsonProperty("email")
     @JsonAlias("username")
     String usernameOrEmail;
