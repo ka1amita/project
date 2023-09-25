@@ -177,7 +177,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (!oldEmail.equals(appUser.getEmail())) {
             appUser.setActive(false);
-            appUser.setVerified_at(null);
+            appUser.setVerifiedAt(null);
             ActivationCode activationCode = assignActivationCodeToUser(appUser);
             emailService.registerConfirmationEmail(appUser.getEmail(), appUser.getUsername(), activationCode.getActivationCode());
         }
@@ -243,7 +243,7 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setEmail(request.getEmail());
         newUser.setPassword(request.getPassword());
         newUser.assignRole(roleService.findByName("USER"));
-        newUser.setCreated_at(LocalDateTime.now());
+        newUser.setCreatedAt(LocalDateTime.now());
 
         ActivationCode activationCode = assignActivationCodeToUser(newUser);
 
@@ -276,7 +276,7 @@ public class AppUserServiceImpl implements AppUserService {
         }
 
         appUser.setActive(true);
-        appUser.setVerified_at(LocalDateTime.now());
+        appUser.setVerifiedAt(LocalDateTime.now());
         appUserRepository.save(appUser);
 
         activationCodeService.deleteActivationCode(activationCode);

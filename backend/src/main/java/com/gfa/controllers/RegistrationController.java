@@ -16,14 +16,17 @@ public class RegistrationController {
 
     private final AppUserService appUserService;
 
+    private final UserRestController userRestController;
+
     @Autowired
-    public RegistrationController(AppUserService appUserService) {
+    public RegistrationController(AppUserService appUserService, UserRestController userRestController) {
         this.appUserService = appUserService;
+        this.userRestController = userRestController;
     }
 
     @PostMapping("/register")
     public ResponseEntity<? extends ResponseDTO> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
-        appUserService.registerUser(registerRequest);
+        this.userRestController.store(registerRequest);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
     }
 
