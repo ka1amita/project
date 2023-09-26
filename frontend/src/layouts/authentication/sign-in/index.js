@@ -13,10 +13,10 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  */
 
-import {useState} from "react";
+import React, {useState} from "react";
 
 // react-router-dom components
-import {Link} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -47,6 +47,9 @@ import {login} from "api/Authentication";
 function Basic() {
     const [rememberMe, setRememberMe] = useState(false);
     const [user, setUser] = useState({});
+    const [isLoginLoading, setIsLoginLoading] = useState(false);
+    const navigate = useNavigate();
+
 
     const handleSetRememberMe = () => setRememberMe(!rememberMe);
     const handleEmailChange = (event) => {
@@ -55,8 +58,12 @@ function Basic() {
     const handlePasswordChange = (event) => {
         user.password = event.target.value;
     };
-    const handleLoginButtonClicked = () => {
-        login(user)
+    const handleLoginButtonClicked = async () => {
+        setIsLoginLoading(true);
+        let loginSuccessful = await login(user);
+        if(loginSuccessful) {
+            navigate('/dashboard');
+        }
     };
 
     return (

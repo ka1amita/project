@@ -45,16 +45,13 @@ import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
+import PasswordReset from "layouts/authentication/reset-password/cover"
 
 
 // @mui icons
 import Icon from "@mui/material/Icon";
 
-// TODO: This should be changed according to authentication.js
-localStorage.setItem('userRoles', JSON.stringify(['USER', '']));
-const userRoles = JSON.parse(localStorage.getItem('userRoles')) || [];
 
-// TODO: Maybe the whole route shouldn't exist when not an ADMIN?
 const routes = [
     {
         type: "title",
@@ -62,16 +59,13 @@ const routes = [
         title: "Group1",
     },
     {
-        ...(userRoles.includes('ADMIN') ? {
-            type: "collapse",
-            name: "EX_Dashboard",
-            key: "dashboard",
-            icon: <Icon fontSize="small">dashboard</Icon>,
-            route: "/dashboard",
-            component: /*<Dashboard/>,*/{
-                ...(userRoles.includes('ADMIN') ? <Dashboard/> : <Navigate to="/tables"/>)
-            }
-        } : {})
+        type: "collapse",
+        name: "EX_Dashboard",
+        key: "dashboard",
+        icon: <Icon fontSize="small">dashboard</Icon>,
+        route: "/dashboard",
+        isProtected: false,
+        component: <Dashboard/>,
     },
     {
         type: "collapse",
@@ -122,18 +116,27 @@ const routes = [
     {
         type: "collapse",
         name: "Login",
-        key: "sign-in",
+        key: "login",
         icon: <Icon fontSize="small">login</Icon>,
-        route: "/authentication/sign-in",
+        route: "/authentication/login",
+        isProtected: localStorage.getItem('token'),
         component: <SignIn/>,
     },
     {
         type: "collapse",
         name: "Register",
-        key: "sign-up",
+        key: "register",
         icon: <Icon fontSize="small">assignment</Icon>,
-        route: "/authentication/sign-up",
+        route: "/authentication/register",
         component: <SignUp/>,
+    },
+    {
+        type: "collapse",
+        name: "Password reset",
+        key: "password-reset",
+        icon: <Icon fontSize="small">assignment</Icon>,
+        route: "/authentication/password-reset",
+        component: <PasswordReset/>,
     },
 ];
 

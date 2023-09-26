@@ -138,8 +138,8 @@ function Sidenav({color, brand, brandName, routes, ...rest}) {
                         );
                     }
                 } else {
-                    returnValue = (localStorage.getItem('token')?
-                        <Navigate to="/dashboard"/> : <Navigate to="/authentication/login"/>
+                    returnValue = (localStorage.getItem('token') ?
+                            <Navigate to="/dashboard"/> : <Navigate to="/authentication/login"/>
                     );
                 }
 
