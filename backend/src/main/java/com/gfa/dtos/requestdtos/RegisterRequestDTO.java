@@ -1,5 +1,6 @@
 package com.gfa.dtos.requestdtos;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 
@@ -7,6 +8,7 @@ public class RegisterRequestDTO {
     @NotEmpty(message = "Username cannot be null or empty")
     private String username;
     @NotEmpty(message = "Email cannot be null or empty")
+    @Email(message = "{error.email.invalid.format}")
     private String email;
     @NotEmpty(message = "Password cannot be null or empty")
     private String password;

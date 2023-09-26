@@ -24,12 +24,12 @@ public class UserRestController {
         this.appUserService = appUserService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<? extends ResponseDTO>> index() {
         return ResponseEntity.ok(appUserService.getAllAppUsers());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<? extends ResponseDTO> store(@Valid @RequestBody RegisterRequestDTO request) throws MessagingException {
         appUserService.registerUser(request);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
@@ -46,7 +46,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<? extends ResponseDTO> update(@RequestBody(required = false) UpdateAppUserDTO request,
+    public ResponseEntity<? extends ResponseDTO> update(@Valid @RequestBody(required = false) UpdateAppUserDTO request,
                                                       @PathVariable Long id) throws MessagingException {
         return ResponseEntity.ok(appUserService.updateAppUserApi(id, request));
     }

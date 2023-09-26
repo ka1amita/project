@@ -20,12 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -146,33 +144,25 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException {
-        if(id == null) throw new InvalidIdException("Please provide an Id");
+        if (id == null) throw new InvalidIdException("Please provide an Id");
         if (request == null) throw new MissingJSONBodyException("Please provide a JSON body");
         Utils.IsUserIdValid(id);
         AppUser appUser = fetchAppUserById(id);
 
-        if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
-            throw new InvalidPatchDataException("Invalid data");
+        if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+            appUser.setUsername(request.getUsername());
         }
-
-        if (request.getUsername().isEmpty() && request.getEmail().isEmpty() && request.getPassword().isEmpty()) {
-            throw new InvalidPatchDataException("Invalid data");
-        }
-
-            if (!request.getUsername().isEmpty()) {
-                appUser.setUsername(request.getUsername());
-            }
 
         String oldEmail = appUser.getEmail();
-        if (!request.getEmail().isEmpty()) {
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
             appUser.setEmail(request.getEmail());
         }
 
-        if (!request.getPassword().isEmpty()) {
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
                 appUser.setPassword(request.getPassword());
             } else
-                throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+                throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
         }
 
         if (!oldEmail.equals(appUser.getEmail())) {
@@ -244,11 +234,10 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setPassword(request.getPassword());
         newUser.assignRole(roleService.findByName("USER"));
         newUser.setCreatedAt(LocalDateTime.now());
-
-        ActivationCode activationCode = assignActivationCodeToUser(newUser);
-
+        saveUser(newUser);
+        ActivationCode code = assignActivationCodeToUser(newUser);
         try {
-            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), code.getActivationCode());
         } catch (MessagingException e) {
             throw new EmailSendingFailedException("Unable to send the activation email");
         }
@@ -283,11 +272,8 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     private ActivationCode assignActivationCodeToUser(AppUser appUser) {
-        String code = Utils.GenerateActivationCode(48);
-        ActivationCode activationCode = new ActivationCode(code, appUser);
-        saveUser(appUser);
-        activationCodeService.saveActivationCode(activationCode);
-        activationCode.setAppUser(appUser);
-        return activationCode;
+        ActivationCode code = new ActivationCode(Utils.GenerateActivationCode(48), appUser);
+        activationCodeService.saveActivationCode(code);
+        return code;
     }
 }

@@ -1,8 +1,11 @@
 package com.gfa.dtos.requestdtos;
 
+import javax.validation.constraints.Email;
+
 public class UpdateAppUserDTO {
 
     public final String username;
+    @Email(message = "{error.email.invalid.format}")
     public final String email;
     public final String password;
 
