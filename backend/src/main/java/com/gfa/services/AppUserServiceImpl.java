@@ -10,7 +10,6 @@ import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
-import com.gfa.exceptions.email.EmailSendingFailedException;
 import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidPasswordFormatException;
 import com.gfa.exceptions.user.InvalidPatchDataException;
@@ -18,7 +17,6 @@ import com.gfa.exceptions.user.MissingJSONBodyException;
 import com.gfa.exceptions.user.UserAlreadyExistsException;
 import com.gfa.exceptions.user.UserNotFoundException;
 import com.gfa.exceptions.email.EmailFormatException;
-import com.gfa.exceptions.user.*;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
@@ -37,23 +35,16 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.stream.Collectors;
-
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 @Service
@@ -77,11 +68,12 @@ public class AppUserServiceImpl implements AppUserService {
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
                               BCryptPasswordEncoder bCryptPasswordEncoder,
-                              EmailService emailService, ActivationCodeService activationCodeService, RoleService roleService, SoftDeleteConfig softDeleteConfig) {
-        BCryptPasswordEncoder bCryptPasswordEncoder,
-        EmailService emailService, ActivationCodeService activationCodeService,
-                RoleService roleService, SoftDeleteConfig softDeleteConfig,
-                HttpServletRequest httpServletRequest, MessageSource messageSource){
+                              EmailService emailService,
+                              ActivationCodeService activationCodeService,
+                              RoleService roleService,
+                              SoftDeleteConfig softDeleteConfig,
+                              HttpServletRequest httpServletRequest,
+                              MessageSource messageSource) {
 
             this.appUserRepository = appUserRepository;
             this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -173,9 +165,10 @@ public class AppUserServiceImpl implements AppUserService {
 
         @Override
         public AppUser findUserByUsername (String username){
+            Locale currentLocale = LocaleContextHolder.getLocale();
             Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
             return optAppUser.orElseThrow(
-                    () -> new UsernameNotFoundException("User not found in the DB"));
+                    () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
         }
         /**
          * use findByUsername()
@@ -190,8 +183,9 @@ public class AppUserServiceImpl implements AppUserService {
 
         @Override
         public AppUser fetchAppUserById (Long id){
+            Locale currentLocale = LocaleContextHolder.getLocale();
             return appUserRepository.findById(id).orElseThrow(()
-                    -> new UserNotFoundException("User not found")
+                    -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale))
             );
         }
 
@@ -204,17 +198,18 @@ public class AppUserServiceImpl implements AppUserService {
 
         @Override
         public AppUserResponseDTO updateAppUserApi (Long id, UpdateAppUserDTO request) throws MessagingException {
-            if (id == null) throw new InvalidIdException("Please provide an Id");
-            if (request == null) throw new MissingJSONBodyException("Please provide a JSON body");
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            if (id == null) throw new InvalidIdException(messageSource.getMessage("error.invalid.id",null, currentLocale));
+            if (request == null) throw new MissingJSONBodyException(messageSource.getMessage("error.missing.json.body", null, currentLocale));
             Utils.IsUserIdValid(id);
             AppUser appUser = fetchAppUserById(id);
 
             if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
-                throw new InvalidPatchDataException("Invalid data");
+                throw new InvalidPatchDataException(messageSource.getMessage("error.invalid.patch.data", null, currentLocale));
             }
 
             if (request.getUsername().isEmpty() && request.getEmail().isEmpty() && request.getPassword().isEmpty()) {
-                throw new InvalidPatchDataException("Invalid data");
+                throw new InvalidPatchDataException(messageSource.getMessage("error.invalid.patch.data", null, currentLocale));
             }
 
             if (!request.getUsername().isEmpty()) {
@@ -230,7 +225,7 @@ public class AppUserServiceImpl implements AppUserService {
                 if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
                     appUser.setPassword(request.getPassword());
                 } else
-                    throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+                    throw new IllegalArgumentException(messageSource.getMessage("error.invalid.password.format", null, currentLocale));
             }
 
             if (!oldEmail.equals(appUser.getEmail())) {
@@ -261,12 +256,10 @@ public class AppUserServiceImpl implements AppUserService {
         public void removeAppUser (Long id){
             Locale currentLocale = LocaleContextHolder.getLocale();
             if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
-            AppUser user =
-                    appUserRepository.findById(id).orElseThrow(()
-                            -> new UserNotFoundException(messageSource.getMessage("error.user.not.found=", null, currentLocale)));
+            AppUser user = appUserRepository.findById(id).orElseThrow(()
+                            -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale)));
             Utils.IsUserIdValid(id); // TODO check the purpose!
             if (softDeleteConfig.isEnabled()) {
-                AppUser user = fetchAppUserById(id);
                 user.setDeleted(true);
                 user.setActive(false);
                 appUserRepository.save(user);
@@ -287,9 +280,10 @@ public class AppUserServiceImpl implements AppUserService {
 
         @Override
         public AppUser findByUsernameOrEmail (String login){
+            Locale currentLocale = LocaleContextHolder.getLocale();
             Optional<AppUser> optAppUser = appUserRepository.findByUsernameOrEmail(login, login);
             return optAppUser.orElseThrow(
-                    () -> new UsernameNotFoundException("User not found in the DB"));
+                    () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
         }
 
         @Override
@@ -330,7 +324,7 @@ public class AppUserServiceImpl implements AppUserService {
                 newUser.setPreferredLanguage(langHeader);  // saves "en", "hu" or "cz" in the database
             }
             
-            ActivationCode activationCode = activationCodeToUser(newUser);
+            ActivationCode activationCode = assignActivationCodeToUser(newUser);
             emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
 
             return newUser;
@@ -348,7 +342,6 @@ public class AppUserServiceImpl implements AppUserService {
             ActivationCode activationCode = activationCodeOpt.get();
             AppUser appUser = activationCode.getAppUser();
             String language = appUser.getPreferredLanguage();
-            System.err.println("service language found users language" + language);
 
             LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
             LocalDateTime now = LocalDateTime.now();
@@ -359,7 +352,7 @@ public class AppUserServiceImpl implements AppUserService {
             }
 
             appUser.setActive(true);
-            appUser.setVerified_at(LocalDateTime.now());
+            appUser.setVerifiedAt(LocalDateTime.now());
             appUserRepository.save(appUser);
             String lang = appUser.getPreferredLanguage();
             activationCodeService.deleteActivationCode(activationCode);
