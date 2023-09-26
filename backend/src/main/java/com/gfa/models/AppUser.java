@@ -56,6 +56,8 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "appUser")
     @JsonManagedReference
     private Set<ActivationCode> activationCodes = new HashSet<>();
+    @OneToMany(mappedBy = "appUser")
+    private Set<Todo> todos = new HashSet<>();
 
     public AppUser() {
     }
@@ -199,29 +201,28 @@ public class AppUser implements UserDetails {
         this.verifiedAt = verified_at;
     }
 
-    public boolean hasValidRoles() {
-        for (Role role : roles) {
-            if (!role.isValidRole()) {
-                return false;
-            }
-        }
-        return true;
+    public Set<Todo> getTodos() {
+        return todos;
+    }
+
+    public void setTodos(Set<Todo> todos) {
+        this.todos = todos;
+    }
+
+    public void assignTodo(Todo todo) {
+        this.todos.add(todo);
+    }
+
+    public void removeTodo(Todo todo) {
+        this.todos.remove(todo);
     }
 
     public void assignRole(Role role) {
-        if (role.isValidRole()) {
             this.roles.add(role);
-        } else {
-            throw new IllegalArgumentException("Invalid role");
-        }
     }
 
     public void removeRole(Role role) {
-        if (role.isValidRole()) {
             this.roles.remove(role);
-        } else {
-            throw new IllegalArgumentException("Invalid role");
-        }
     }
 }
 
