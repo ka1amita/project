@@ -11,10 +11,7 @@ import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
 import com.gfa.exceptions.email.EmailSendingFailedException;
-import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidPasswordFormatException;
-import com.gfa.exceptions.user.InvalidPatchDataException;
-import com.gfa.exceptions.user.MissingJSONBodyException;
 import com.gfa.exceptions.user.UserAlreadyExistsException;
 import com.gfa.exceptions.user.UserNotFoundException;
 import com.gfa.models.ActivationCode;
@@ -142,7 +139,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUser findUserByUsername(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         return optAppUser.orElseThrow(
-            () -> new UsernameNotFoundException("User not found in the DB"));
+                () -> new UsernameNotFoundException("User not found in the DB"));
     }
     /**
      * use findByUsername()
@@ -151,7 +148,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUser getAppUser(String username) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         return optAppUser.orElseThrow(
-            () -> new UsernameNotFoundException("User not found in the DB"));
+                () -> new UsernameNotFoundException("User not found in the DB"));
     }
 
     @Override
@@ -163,40 +160,31 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUserResponseDTO fetchUserApi(Long id) {
-        Utils.IsUserIdValid(id);
+        Utils.IsProvidedIdValid(id);
         AppUser user = fetchAppUserById(id);
         return new AppUserResponseDTO(user);
     }
 
     @Override
     public AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException {
-        if(id == null) throw new InvalidIdException("Please provide an Id");
-        if (request == null) throw new MissingJSONBodyException("Please provide a JSON body");
-        Utils.IsUserIdValid(id);
+        Utils.isJSONBodyPresent(request);
+        Utils.IsProvidedIdValid(id);
         AppUser appUser = fetchAppUserById(id);
 
-        if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
-            throw new InvalidPatchDataException("Invalid data");
+        if (Utils.isNotNullOrEmpty(request.getUsername())) {
+            appUser.setUsername(request.getUsername());
         }
-
-        if (request.getUsername().isEmpty() && request.getEmail().isEmpty() && request.getPassword().isEmpty()) {
-            throw new InvalidPatchDataException("Invalid data");
-        }
-
-            if (!request.getUsername().isEmpty()) {
-                appUser.setUsername(request.getUsername());
-            }
 
         String oldEmail = appUser.getEmail();
-        if (!request.getEmail().isEmpty()) {
+        if (Utils.isNotNullOrEmpty(request.getEmail())) {
             appUser.setEmail(request.getEmail());
         }
 
-        if (!request.getPassword().isEmpty()) {
+        if (Utils.isNotNullOrEmpty(request.getPassword())) {
             if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
                 appUser.setPassword(request.getPassword());
             } else
-                throw new IllegalArgumentException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
+                throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
         }
 
         if (!oldEmail.equals(appUser.getEmail())) {
@@ -224,9 +212,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void removeAppUser(Long id) {
-        Utils.IsUserIdValid(id); // TODO check the purpose!
+        Utils.IsProvidedIdValid(id);
         if (softDeleteConfig.isEnabled()) {
-        AppUser user = fetchAppUserById(id);
+            AppUser user = fetchAppUserById(id);
             user.setDeleted(true);
             user.setActive(false);
             appUserRepository.save(user);
@@ -244,7 +232,7 @@ public class AppUserServiceImpl implements AppUserService {
     public AppUser findByUsernameOrEmail(String login) {
         Optional<AppUser> optAppUser = appUserRepository.findByUsernameOrEmail(login, login);
         return optAppUser.orElseThrow(
-            () -> new UsernameNotFoundException("User not found in the DB"));
+                () -> new UsernameNotFoundException("User not found in the DB"));
     }
 
     @Override
@@ -282,7 +270,7 @@ public class AppUserServiceImpl implements AppUserService {
         try {
             // TODO pass "whole" newUser!
             emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(),
-                                                   activationCode.getActivationCode());
+                    activationCode.getActivationCode());
         } catch (MessagingException e) {
             throw new EmailSendingFailedException("Unable to send the activation email");
         }
