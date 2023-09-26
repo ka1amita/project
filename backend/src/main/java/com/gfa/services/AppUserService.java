@@ -1,18 +1,16 @@
 package com.gfa.services;
 
+import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
+import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
-import com.gfa.models.AppUser;
-import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
-import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
-
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-
+import com.gfa.models.AppUser;
 import javax.mail.MessagingException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 
 public interface AppUserService {
 
@@ -28,9 +26,9 @@ public interface AppUserService {
 
     void addRoleToAppUser(String username, String roleName);
 
-    AppUser saveUser(AppUser user);
+    AppUser encodePasswordAndSaveAppUser(AppUser user);
 
-    AppUser getAppUser(String username);
+    AppUser findUserByUsername(String username);
 
     AppUser fetchAppUserById(Long id);
 
@@ -38,11 +36,13 @@ public interface AppUserService {
 
     AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException;
 
-    List<AppUserResponseDTO> getAllAppUsers();
+    Page<AppUserResponseDTO> pageDeletedAppUserDtos(PageRequest request);
 
-    List<AppUserResponseDTO> getAllAppUsersDeleted();
+    Page<AppUserResponseDTO> pageAppUserDtos(PageRequest pageRequest);
 
     void removeAppUser(Long id);
 
     void setAppUserActive(AppUser user);
+
+    AppUser findByUsernameOrEmail(String username);
 }

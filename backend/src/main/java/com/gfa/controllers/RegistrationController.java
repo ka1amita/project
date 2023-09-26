@@ -1,5 +1,8 @@
 package com.gfa.controllers;
 
+import static com.gfa.utils.Endpoint.REGISTER;
+import static com.gfa.utils.Endpoint.CONFIRM_WITH_CODE;
+
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.RegisterResponseDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
@@ -24,13 +27,14 @@ public class RegistrationController {
         this.userRestController = userRestController;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<? extends ResponseDTO> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
+    @PostMapping(REGISTER)
+    public ResponseEntity<? extends ResponseDTO> registerUser(@Valid
+                                                              @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
         this.userRestController.store(registerRequest);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
     }
 
-    @GetMapping("/confirm/{activationCode}")
+    @GetMapping(CONFIRM_WITH_CODE + "/{activationCode}")
     public ResponseEntity<? extends ResponseDTO> activateAccount(@PathVariable String activationCode) {
         appUserService.activateAccount(activationCode);
         return ResponseEntity.ok(new RegisterResponseDTO("Account activated successfully"));

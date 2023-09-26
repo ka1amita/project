@@ -124,8 +124,8 @@ public class TokenServiceImpl implements TokenService {
 
   @Override
   public ResponseTokensDTO refreshTokens(RequestTokenDTO tokenDto) {
-
-    AppUser appUser = appUserService.getAppUser(getSubject(tokenDto.getToken()));
+    // username is stored in JWT
+    AppUser appUser = appUserService.findUserByUsername(getSubject(tokenDto.getToken()));
     String username = appUser.getUsername();
     String issuer = tokenDto.getIssuer();
     Set<Role> authorities = appUser.getRoles();

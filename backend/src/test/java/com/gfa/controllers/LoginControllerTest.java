@@ -16,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
-
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
@@ -36,9 +34,7 @@ public class LoginControllerTest {
         user.setActive(true);
         ActivationCode code = new ActivationCode("code", user);
         user.getActivationCodes().add(code);
-        appUserService.saveUser(user);
-        Role roleUser = new Role("ROLE_USER");
-        user.getRoles().add(roleUser);
+        appUserService.encodePasswordAndSaveAppUser(user);
     }
 
     @Test

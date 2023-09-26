@@ -1,5 +1,7 @@
 package com.gfa.controllers;
 
+import static com.gfa.utils.Endpoint.RESET_PASSWORD;
+
 import com.gfa.dtos.requestdtos.PasswordResetRequestDTO;
 import com.gfa.dtos.requestdtos.PasswordResetWithCodeRequestDTO;
 import com.gfa.dtos.responsedtos.ResponseDTO;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 
 @RestController
-@RequestMapping("/reset")
+@RequestMapping(RESET_PASSWORD)
 public class PasswordResetController {
     private final AppUserService appUserService;
     @Autowired
