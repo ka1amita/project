@@ -40,10 +40,11 @@ public class TokenServiceImpl implements TokenService {
   private String secret;
   private static final String PREFIX = "Bearer ";
   private final AppUserService appUserService;
-
+  private final MessageSource messageSource;
   @Autowired
-  public TokenServiceImpl(AppUserService appUserService) {
+  public TokenServiceImpl(AppUserService appUserService, MessageSource messageSource) {
     this.appUserService = appUserService;
+    this.messageSource = messageSource;
   }
 
   @Override
@@ -112,7 +113,7 @@ public class TokenServiceImpl implements TokenService {
     String authorizationHeader = request.getHeader(AUTHORIZATION);
 
     if (authorizationHeader == null || !authorizationHeader.startsWith(PREFIX)) {
-      throw new MissingBearerTokenException();
+      throw new MissingBearerTokenException(messageSource.getMessage("error.missing.bearer.token", null, LocaleContextHolder.getLocale()));
     }
 
     String token = authorizationHeader.substring(PREFIX.length());
