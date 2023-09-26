@@ -22,7 +22,7 @@ public class PaginationProperties {
     private String sortBy = "id";
     @NotNull
     // Spring recognises the possible values by default and tells the allowed value! :-)
-    private Sort.Direction sortOrder = Sort.Direction.DESC;
+    private Sort.Direction sortOrder = Sort.Direction.ASC;
 
     public void setPageSizeDefault(Integer pageSizeDefault) {
         this.pageSizeDefault = pageSizeDefault;
