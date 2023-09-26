@@ -47,6 +47,7 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
     http.csrf()
         .disable();
+    http.cors();
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
     http.authorizeRequests()
