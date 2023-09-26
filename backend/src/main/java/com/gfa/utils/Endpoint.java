@@ -11,6 +11,7 @@ public interface Endpoint {
     String RESEND_VERIFICATION_EMAIL="/email/verify/resend";
     String DASHBOARD="/dashboard";
     String USERS_API ="/api/users";
+    String TODO_API ="/api/todos";
     String REFRESH_TOKEN="/token/refresh";
 
 }
