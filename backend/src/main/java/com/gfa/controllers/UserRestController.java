@@ -34,9 +34,8 @@ public class UserRestController {
     this.paginationProperties = paginationProperties;
     this.appUserService = appUserService;
   }
-// TODO resolve with Daniel which one to keep
-    @GetMapping({"","/"})
-    public ResponseEntity<?> index(@RequestParam(required = false,name = "page")
+    @GetMapping("")
+    public ResponseEntity<List<? extends ResponseDTO>> index(@RequestParam(required = false,name = "page")
                                    Optional<Integer> optPage,
                                    @RequestParam(required = false,name = "size")
                                    Optional<Integer> optSize,
@@ -49,7 +48,7 @@ public class UserRestController {
         return ResponseEntity.ok(users.toList());
   }
 
-    @PostMapping({"","/"})
+    @PostMapping("")
     public ResponseEntity<? extends ResponseDTO> store(@Valid @RequestBody RegisterRequestDTO request) throws MessagingException {
         appUserService.registerUser(request);
         return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
