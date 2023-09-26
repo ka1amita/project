@@ -53,38 +53,35 @@ public class SecurityConfig {
         return authenticationManager;
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
-        http.csrf()
-                .disable();
-        http.sessionManagement()
-                .sessionCreationPolicy(STATELESS);
-        http.authorizeRequests()
-                .antMatchers(Endpoint.HELLO_WORLD.getValue())
-                .permitAll();
-        http.authorizeRequests()
-                .antMatchers(GET,
-                        Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue() + "/*",
-                        Endpoint.CONFIRM_WITH_CODE.getValue() + "/*")
-                .permitAll();
-        http.authorizeRequests()
-                .antMatchers(POST,
-                        Endpoint.REGISTER.getValue(),
-                        Endpoint.LOGIN.getValue(),
-                        Endpoint.REFRESH_TOKEN.getValue(),
-                        Endpoint.RESET_PASSWORD.getValue(),
-                        Endpoint.RESET_PASSWORD.getValue() + "/*",
-                        Endpoint.RESEND_VERIFICATION_EMAIL.getValue())
-                .permitAll();
-        http.authorizeRequests()
-                .antMatchers(Endpoint.STRINGS.getValue())
-                .permitAll();
-        http.authorizeRequests()
-                .anyRequest()
-                .authenticated(); // the rest requires some Role
-        http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService, messageSource));
-        http.addFilterBefore(new CustomAuthorizationFilter(tokenService, appUserRepository),
-                UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
+    http.csrf()
+        .disable();
+    http.sessionManagement()
+        .sessionCreationPolicy(STATELESS);
+    http.authorizeRequests()
+        .antMatchers(GET,
+                     Endpoint.VERIFY_EMAIL_WITH_TOKEN +"/*",
+                     Endpoint.CONFIRM_WITH_CODE + "/*")
+        .permitAll();
+    http.authorizeRequests()
+        .antMatchers(POST,
+                     Endpoint.REGISTER,
+                     Endpoint.LOGIN,
+                     Endpoint.REFRESH_TOKEN,
+                     Endpoint.RESET_PASSWORD,
+                     Endpoint.RESET_PASSWORD + "/*",
+                     Endpoint.RESEND_VERIFICATION_EMAIL)
+        .permitAll();
+    http.authorizeRequests()
+              .antMatchers(Endpoint.STRINGS)
+              .permitAll();
+    http.authorizeRequests()
+        .anyRequest()
+        .authenticated(); // the rest requires some Role
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
+    http.addFilterBefore(new CustomAuthorizationFilter(tokenService, appUserRepository),
+                         UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+  }
 }

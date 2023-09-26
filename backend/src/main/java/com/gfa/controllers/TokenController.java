@@ -1,5 +1,6 @@
 package com.gfa.controllers;
 
+import static com.gfa.utils.Endpoint.REFRESH_TOKEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,11 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/token")
 public class TokenController {
 
   private final TokenService tokenService;
@@ -24,7 +23,7 @@ public class TokenController {
     this.tokenService = tokenService;
   }
 
-  @PostMapping("/refresh")
+  @PostMapping(REFRESH_TOKEN)
   public void refreshTokens(HttpServletRequest request,
                            HttpServletResponse response) throws IOException {
     ResponseTokensDTO tokens = tokenService.refreshTokens(tokenService.mapToDto(request));

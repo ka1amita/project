@@ -10,6 +10,7 @@ import com.gfa.exceptions.user.UserAlreadyExistsException;
 import com.gfa.exceptions.user.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -36,15 +37,29 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(ActivationCodeExpiredException.class)
-    public ResponseEntity<String> handleActivationCodeExpiredException(ActivationCodeExpiredException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleActivationCodeExpiredException(ActivationCodeExpiredException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorResponseDTO> handleRoleNotFoundException(RoleNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponseDTO(e.getMessage()));
     }
 
+    @ExceptionHandler(MissingJSONBodyException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingJSONBodyException(MissingJSONBodyException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPatchDataException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidPatchDataException(InvalidPatchDataException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return ResponseEntity.status(405).body(new ErrorResponseDTO(e.getMessage()));
+    }
     @ExceptionHandler(EmailFormatException.class)
     public ResponseEntity<String> handleLanguageNotFoundException(EmailFormatException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

@@ -1,6 +1,7 @@
 package com.gfa.services;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -18,10 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-public class UserDetailsServiceImplTests {
+public class UserDetailsServiceUnitTests {
 
   @Mock // necessary!
-  private AppUserRepository appUserRepository;
+  AppUserRepository appUserRepository;
   @InjectMocks // necessary!
   UserDetailsServiceImpl userDetailsService;
 
@@ -29,15 +30,19 @@ public class UserDetailsServiceImplTests {
                                         "username",
                                         new BCryptPasswordEncoder().encode("password"),
                                         "email",
-                                        true,
                                         new HashSet<>(),
                                         new HashSet<>());
   // not necessary necessary any more with @ExtendWith(MockitoExtension.class)!
   // @BeforeEanch
   // static void setup() {
-  //
   //   MockitoAnnotations.openMocks(this);
   // }
+
+  @Test
+  public void check_setup() {
+    assertNotNull(appUserRepository);
+    assertNotNull(userDetailsService);
+  }
   @Test
   public void matching_user_details_are_returned_when_finds_a_user() {
 
@@ -50,6 +55,12 @@ public class UserDetailsServiceImplTests {
                                                           .getPassword());
     assertEquals(appUser.getAuthorities(), userDetailsService.loadUserByUsername("any")
                                                              .getAuthorities());
+    assertEquals(appUser.isEnabled(), userDetailsService.loadUserByUsername("any")
+                                                             .isEnabled());
+    appUser.setActive(true);
+
+    assertEquals(appUser.isEnabled(), userDetailsService.loadUserByUsername("any")
+                                                        .isEnabled());
   }
 
   @Test

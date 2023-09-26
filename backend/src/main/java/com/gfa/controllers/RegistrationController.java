@@ -1,8 +1,12 @@
 package com.gfa.controllers;
 
+import static com.gfa.utils.Endpoint.REGISTER;
+import static com.gfa.utils.Endpoint.CONFIRM_WITH_CODE;
+
 import com.gfa.dtos.requestdtos.RegisterRequestDTO;
 import com.gfa.dtos.responsedtos.RegisterResponseDTO;
 import com.gfa.models.AppUser;
+import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -22,17 +26,20 @@ public class RegistrationController {
 
     private final MessageSource messsageSource;
 
+    private final UserRestController userRestController;
 
     @Autowired
     public RegistrationController(AppUserService appUserService, MessageSource messsageSource) {
+    public RegistrationController(AppUserService appUserService, UserRestController userRestController) {
         this.appUserService = appUserService;
         this.messsageSource = messsageSource;
+        this.userRestController = userRestController;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
-        appUserService.registerUser(registerRequest);
-        return ResponseEntity.ok(new RegisterResponseDTO(messsageSource.getMessage("dto.register.response", null, LocaleContextHolder.getLocale())));
+    @PostMapping(REGISTER)
+    public ResponseEntity<? extends ResponseDTO> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequest) throws MessagingException {
+        this.userRestController.store(registerRequest);
+            return ResponseEntity.ok(new RegisterResponseDTO(messsageSource.getMessage("dto.register.response", null, LocaleContextHolder.getLocale())));
     }
 
     @GetMapping("/confirm/{activationCode}")

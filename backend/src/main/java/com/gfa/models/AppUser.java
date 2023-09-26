@@ -5,12 +5,19 @@ import static javax.persistence.FetchType.EAGER;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -31,12 +38,12 @@ public class AppUser implements UserDetails {
     private String email;
     @Column(nullable = false, columnDefinition = "TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
     @Column(columnDefinition = "TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime verified_at = null;
-    private boolean active = Boolean.FALSE;
-    private boolean deleted = Boolean.FALSE;
+    private LocalDateTime verifiedAt = null;
+    private boolean active;
+    private boolean deleted;
     @ManyToMany(fetch = EAGER, cascade = {MERGE})
     @JoinTable(
             name = "app_users_roles",
@@ -59,7 +66,7 @@ public class AppUser implements UserDetails {
         this.username = username;
         this.password = password;
         this.email = email;
-        created_at = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     public AppUser(String username, String password, String email, Set<Role> roles) {
@@ -67,7 +74,7 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        created_at = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     public AppUser(Long id, String username, String password, String email, Set<Role> roles) {
@@ -75,7 +82,7 @@ public class AppUser implements UserDetails {
         this.password = password;
         this.email = email;
         this.roles = roles;
-        created_at = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     public AppUser(Long id, String username, String password, String email,
@@ -86,7 +93,7 @@ public class AppUser implements UserDetails {
         this.email = email;
         this.roles = roles;
         this.activationCodes = activationCodes;
-        created_at = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -178,20 +185,20 @@ public class AppUser implements UserDetails {
         this.activationCodes = activationCodes;
     }
 
-    public LocalDateTime getCreated_at() {
-        return created_at;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(LocalDateTime created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(LocalDateTime created_at) {
+        this.createdAt = created_at;
     }
 
-    public LocalDateTime getVerified_at() {
-        return verified_at;
+    public LocalDateTime getVerifiedAt() {
+        return verifiedAt;
     }
 
-    public void setVerified_at(LocalDateTime verified_at) {
-        this.verified_at = verified_at;
+    public void setVerifiedAt(LocalDateTime verified_at) {
+        this.verifiedAt = verified_at;
     }
 
     public String getPreferredLanguage() {
