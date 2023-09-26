@@ -2,6 +2,7 @@ package com.gfa.exceptionhandler;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
+import com.gfa.exceptions.email.EmailFormatException;
 import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidResetCodeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.mail.MessagingException;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -50,11 +50,6 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(InvalidResetCodeException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidResetCodeException(InvalidResetCodeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-    @ExceptionHandler(EmailSendingFailedException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEmailSendingException(EmailSendingFailedException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(InvalidIdException.class)
