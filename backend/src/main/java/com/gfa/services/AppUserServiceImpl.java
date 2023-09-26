@@ -60,9 +60,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Value("${ACTIVATION_CODE_MAX_SIZE:48}")
     private final Integer ActivationCodeMaxSize = 48;
     private final SoftDeleteConfig softDeleteConfig;
-
-    private final HttpServletRequest httpServletRequest;//add
-
+    private final HttpServletRequest httpServletRequest;
     private final MessageSource messageSource;
 
     @Autowired
@@ -74,7 +72,6 @@ public class AppUserServiceImpl implements AppUserService {
                               SoftDeleteConfig softDeleteConfig,
                               HttpServletRequest httpServletRequest,
                               MessageSource messageSource) {
-
             this.appUserRepository = appUserRepository;
             this.bCryptPasswordEncoder = bCryptPasswordEncoder;
             this.emailService = emailService;
@@ -162,7 +159,6 @@ public class AppUserServiceImpl implements AppUserService {
             return appUserRepository.save(appUser);
         }
 
-
         @Override
         public AppUser findUserByUsername (String username){
             Locale currentLocale = LocaleContextHolder.getLocale();
@@ -191,7 +187,8 @@ public class AppUserServiceImpl implements AppUserService {
 
         @Override
         public AppUserResponseDTO fetchUserApi (Long id){
-            Utils.IsUserIdValid(id);
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
             AppUser user = fetchAppUserById(id);
             return new AppUserResponseDTO(user);
         }
@@ -201,7 +198,7 @@ public class AppUserServiceImpl implements AppUserService {
             Locale currentLocale = LocaleContextHolder.getLocale();
             if (id == null) throw new InvalidIdException(messageSource.getMessage("error.invalid.id",null, currentLocale));
             if (request == null) throw new MissingJSONBodyException(messageSource.getMessage("error.missing.json.body", null, currentLocale));
-            Utils.IsUserIdValid(id);
+            if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
             AppUser appUser = fetchAppUserById(id);
 
             if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
@@ -258,7 +255,7 @@ public class AppUserServiceImpl implements AppUserService {
             if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
             AppUser user = appUserRepository.findById(id).orElseThrow(()
                             -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale)));
-            Utils.IsUserIdValid(id); // TODO check the purpose!
+            if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
             if (softDeleteConfig.isEnabled()) {
                 user.setDeleted(true);
                 user.setActive(false);
