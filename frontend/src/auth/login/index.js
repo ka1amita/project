@@ -63,7 +63,7 @@ function Login() {
 
     const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-    if (inputs.email.trim().length === 0 || !inputs.email.trim().match(mailFormat)) {
+    if (inputs.email.trim().length === 0 /*|| !inputs.email.trim().match(mailFormat)*/) {
       setErrors({ ...errors, emailError: true });
       return;
     }
@@ -146,8 +146,8 @@ function Login() {
           <MDBox component="form" role="form" method="POST" onSubmit={submitHandler}>
             <MDBox mb={2}>
               <MDInput
-                type="email"
-                label="Email"
+                type="text"
+                label="Email or Username"
                 fullWidth
                 value={inputs.email}
                 name="email"

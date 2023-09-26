@@ -5,12 +5,19 @@ class AuthService {
 
   login = async (payload) => {
     const loginEndpoint = 'login';
-    return await HttpService.post(loginEndpoint, payload);
+    const requestData= payload.data.attributes;
+    requestData.loginInput = requestData.email;
+    delete requestData.email;
+    return await HttpService.post(loginEndpoint, requestData);
   };
 
   register = async (credentials) => {
     const registerEndpoint = 'register';
-    return await HttpService.post(registerEndpoint, credentials);
+    const requestData = credentials.data.attributes;
+    requestData.username = requestData.name;
+    delete requestData.name;
+    delete requestData.password_confirmation;
+    return await HttpService.post(registerEndpoint, requestData);
   };
 
   logout = async () => {

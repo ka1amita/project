@@ -66,5 +66,5 @@
     "prettier": "2.5.1"
   },
   "homepage": "https://material-dashboard-react-nodejs.creative-tim.com/",
-  "proxy": "https://node-json-api-free.creative-tim.com/"
+  "proxy": "http://127.0.0.1:8080/"
 }

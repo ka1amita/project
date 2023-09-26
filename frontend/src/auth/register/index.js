@@ -95,7 +95,7 @@ function Register() {
 
     try {
       const response = await AuthService.register(myData);
-      authContext.login(response.access_token, response.refresh_token);
+      // authContext.login(response.access_token, response.refresh_token);
 
       setInputs({
         name: "",
