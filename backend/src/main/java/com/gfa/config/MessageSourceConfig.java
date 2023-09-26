@@ -14,10 +14,10 @@ public class MessageSourceConfig {
         ReloadableResourceBundleMessageSource messageSource =new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
         messageSource.setDefaultEncoding("UTF-8");
-        return  messageSource;
+        return messageSource;
     }
 
-    @Bean
+    @Bean//for annotations like @NotEmpty, @Email
     public LocalValidatorFactoryBean validator() {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
