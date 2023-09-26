@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,10 +31,13 @@ public class UserRestController {
   private final PaginationProperties paginationProperties;
   private final AppUserService appUserService;
 
+  private final MessageSource messageSource;
+
   @Autowired
-  public UserRestController(PaginationProperties paginationProperties, AppUserService appUserService) {
+  public UserRestController(PaginationProperties paginationProperties, AppUserService appUserService, MessageSource messageSource) {
     this.paginationProperties = paginationProperties;
     this.appUserService = appUserService;
+      this.messageSource = messageSource;
   }
 // TODO resolve with Daniel which one to keep
     @GetMapping({"","/"})
@@ -52,7 +57,7 @@ public class UserRestController {
     @PostMapping({"","/"})
     public ResponseEntity<? extends ResponseDTO> store(@Valid @RequestBody RegisterRequestDTO request) throws MessagingException {
         appUserService.registerUser(request);
-        return ResponseEntity.ok(new RegisterResponseDTO("Registration successful, please activate your account"));
+        return ResponseEntity.ok(new RegisterResponseDTO(messageSource.getMessage("dto.register.response", null, LocaleContextHolder.getLocale())));
     }
 
     @GetMapping("/deleted")
@@ -95,7 +100,7 @@ public class UserRestController {
         String sortBy = optSortBy.orElse(paginationProperties.getSortBy());
         Sort.Direction sortDirection = optSortDirection.orElse(paginationProperties.getSortOrder());
 
-        Assert.isTrue(size <= paginationProperties.getPageSizeMax(), "Page size must not exceed limit of " + paginationProperties.getPageSizeMax());
+        Assert.isTrue(size <= paginationProperties.getPageSizeMax(), messageSource.getMessage("assert.pagination", null, LocaleContextHolder.getLocale()) + paginationProperties.getPageSizeMax());
 
         Sort sort = Sort.by(sortDirection,sortBy);
         return PageRequest.of(page, size, sort);
