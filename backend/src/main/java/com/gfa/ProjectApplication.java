@@ -12,9 +12,9 @@ public class ProjectApplication {
         SpringApplication.run(ProjectApplication.class, args);
     }
 
-    @Bean
-    FlywayMigrationStrategy flywayMigrationStrategy() {
-        // prevents automatic migration on App start-up
-        return args -> {};
-    }
+    // @Bean
+    // FlywayMigrationStrategy flywayMigrationStrategy() {
+    //     prevents automatic migration on App start-up
+        // return args -> {};
+    // }
 }
