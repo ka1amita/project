@@ -1,10 +1,10 @@
 /**
 =========================================================
-* Material Dashboard 2 React - v2.2.0
+* Material Dashboard 2 React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -13,10 +13,10 @@ Coded by www.creative-tim.com
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 // react-router components
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -36,6 +36,8 @@ import MDInput from "components/MDInput";
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 
+import AuthService from "services/auth-service";
+
 // Custom styles for DashboardNavbar
 import {
   navbar,
@@ -52,13 +54,17 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "context";
+import MDButton from "components/MDButton";
+import { AuthContext } from "context";
 
 function DashboardNavbar({ absolute, light, isMini }) {
+  const authContext = useContext(AuthContext);
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  let navigate = useNavigate();
 
   useEffect(() => {
     // Setting the navbar type
@@ -123,6 +129,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
     },
   });
 
+  const handleLogOut = async () => {
+    const response = await AuthService.logout();
+    authContext.logout();
+  };
+
   return (
     <AppBar
       position={absolute ? "absolute" : navbarType}
@@ -138,7 +149,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
             <MDBox pr={1}>
               <MDInput label="Search here" />
             </MDBox>
-            <MDBox color={light ? "white" : "inherit"}>
+            <MDBox display="flex" alignItems="center" color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
@@ -177,6 +188,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton>
               {renderMenu()}
+              <MDBox>
+                <MDButton
+                  variant="gradient"
+                  color="info"
+                  fullWidth
+                  type="button"
+                  onClick={handleLogOut}
+                >
+                  Log Out
+                </MDButton>
+              </MDBox>
             </MDBox>
           </MDBox>
         )}
