@@ -54,7 +54,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException,
             IOException {
-        System.err.println("inside filter");
+
         if (request.getServletPath().startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())) {
             System.err.println("insideactivateendpoint");
             String[] subPath = request.getServletPath().split("/");
@@ -88,15 +88,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             try {
                 Authentication authentication =
                         tokenService.getAuthentication(tokenService.mapToDto(request));
-//---------------
                 if (authentication != null) {
-                    System.err.println("auth is not null");
                     AppUser user = (AppUser) authentication.getPrincipal();
                     setPreferredLanguage(user.getUsername());
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
                 }
-//---------------
             } catch (Exception e) {
                 handleException(response, e);
             } finally {
