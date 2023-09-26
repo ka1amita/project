@@ -30,7 +30,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-
     private final MessageSource messageSource;
 
     public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
