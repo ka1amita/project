@@ -76,9 +76,9 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 request.getServletPath()
                         .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN) ||
                 request.getServletPath()
-                        .startsWith(Endpoint.CONFIRM_WITH_CODE)||
+                        .startsWith(Endpoint.CONFIRM_WITH_CODE) ||
                 request.getServletPath()
-                .startsWith(Endpoint.STRINGS)
+                        .startsWith(Endpoint.STRINGS)
         ) {
             filterChain.doFilter(request, response);
         } else {
@@ -86,8 +86,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                 Authentication authentication =
                         tokenService.getAuthentication(tokenService.mapToDto(request));
                 if (authentication != null) {
-                    AppUser user = (AppUser) authentication.getPrincipal();
-                    setPreferredLanguage(user.getUsername());
+                    if (authentication.getPrincipal() instanceof AppUser) {
+                        AppUser user = (AppUser) authentication.getPrincipal();
+                        setPreferredLanguage(user.getUsername());
+                    }
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
                 }
