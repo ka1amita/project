@@ -55,8 +55,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException,
             IOException {
 
-        if (request.getServletPath().startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())) {
-            System.err.println("insideactivateendpoint");
+        if (request.getServletPath().startsWith(Endpoint.CONFIRM_WITH_CODE)) {
             String[] subPath = request.getServletPath().split("/");
             String activationCode = subPath[subPath.length - 1];
             Optional<AppUser> userWithCode = appUserRepository.findAppUserByActivationCode(activationCode);
@@ -65,23 +64,21 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
         }
         if (request.getServletPath()
-                .equals(Endpoint.HELLO_WORLD.getValue()) ||
+                        .equals(Endpoint.REGISTER) ||
                 request.getServletPath()
-                        .equals(Endpoint.REGISTER.getValue()) ||
+                        .equals(Endpoint.LOGIN) ||
                 request.getServletPath()
-                        .equals(Endpoint.LOGIN.getValue()) ||
+                        .equals(Endpoint.REFRESH_TOKEN) ||
                 request.getServletPath()
-                        .equals(Endpoint.REFRESH_TOKEN.getValue()) ||
+                        .startsWith(Endpoint.RESET_PASSWORD) ||
                 request.getServletPath()
-                        .startsWith(Endpoint.RESET_PASSWORD.getValue()) ||
+                        .equals(Endpoint.RESEND_VERIFICATION_EMAIL) ||
                 request.getServletPath()
-                        .equals(Endpoint.RESEND_VERIFICATION_EMAIL.getValue()) ||
+                        .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN) ||
                 request.getServletPath()
-                        .startsWith(Endpoint.VERIFY_EMAIL_WITH_TOKEN.getValue()) ||
+                        .startsWith(Endpoint.CONFIRM_WITH_CODE)||
                 request.getServletPath()
-                        .startsWith(Endpoint.CONFIRM_WITH_CODE.getValue())||
-                request.getServletPath()
-                .startsWith(Endpoint.STRINGS.getValue())
+                .startsWith(Endpoint.STRINGS)
         ) {
             filterChain.doFilter(request, response);
         } else {
@@ -106,7 +103,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         Optional<AppUser> appUser = appUserRepository.findByUsername(username);
         if (appUser.isPresent()) {
             String preferredLang = appUser.get().getPreferredLanguage();
-            System.err.println("setting preffered language");
             LocaleContextHolder.setLocale(new Locale(preferredLang));
         }
     }
@@ -114,8 +110,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private void setPreferredLanguageForAppUser(Optional<AppUser> appUser) {
         if (appUser.isPresent()) {
             String preferredLang = appUser.get().getPreferredLanguage();
-            System.err.println("setting preffered language2");
-            System.err.println(preferredLang);
             LocaleContextHolder.setLocale(new Locale(preferredLang));
         }
     }
