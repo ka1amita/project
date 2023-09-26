@@ -57,6 +57,7 @@ public class AppUser implements UserDetails {
     @JsonManagedReference
     private Set<ActivationCode> activationCodes = new HashSet<>();
     @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
     private Set<Todo> todos = new HashSet<>();
 
     public AppUser() {
