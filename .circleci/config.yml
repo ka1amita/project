@@ -55,7 +55,7 @@ jobs:
     environment:
       SERVER_URL: http://localhost
       SERVER_PORT: 8080
-      SMTP_HOST: sandbox.smtp.mailtrap.io
+      SMTP_HOST: smtp.mailtrap.io
       SMTP_PORT: 2525
     working_directory: ~/simensis-osic-devops-zwei/backend
     steps:
