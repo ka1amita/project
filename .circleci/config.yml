@@ -4,7 +4,8 @@ orbs:
 
 jobs:
   build:
-    working_directory: ~/repo
+    docker:
+      - image: alpine:3.15
 
     steps:
       - checkout
@@ -17,7 +18,8 @@ jobs:
           webhook: "${DISCORD_STATUS_WEBHOOK}"
 
   deploy_prod:
-    working_directory: ~/repo
+    docker:
+      - image: alpine:3.15
     steps:
       - checkout
       - run:
@@ -28,3 +30,8 @@ jobs:
           failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
           webhook: 1150422762398171196/1150430461043150889
           success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
+workflow:
+    Example-Workflow:
+    jobs:
+      - build
+      - deploy_prod
