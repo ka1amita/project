@@ -7,8 +7,6 @@ executors:
   java1_8:
     docker:
       - image: cimg/openjdk:8.0
-commands:
-  cache_key: v
 
 jobs:
   build:
@@ -64,6 +62,8 @@ workflows:
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
+          cache_key: v
+          
 
           
 
