@@ -11,5 +11,6 @@ workflows:
   checkout-build-test:
     jobs:
       - gradle/test:
-          app_src_directory: ~/project/backend/src
+          app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
+          
