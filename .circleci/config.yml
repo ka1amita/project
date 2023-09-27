@@ -7,6 +7,10 @@ executors:
   java1_8:
     docker:
       - image: cimg/openjdk:8.0
+with_cache:
+  cache_key: v1-
+default:
+  tag: 8.0
 
 jobs:
   build:
@@ -39,9 +43,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
+            - v1-{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+            - v1-
 
       - run: ./gradlew dependencies
 
@@ -57,9 +61,10 @@ workflows:
     jobs:
       - build
       - gradle/test:
-          executor: java1_8
+          # executor: java1_8
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
+          
 
           
