@@ -5,7 +5,7 @@ orbs:
   gradle: circleci/gradle@3.0.0
 
 
-app_src_directory: ~/backend
+app_src_directory: ~/backend/
 
 workflows:
   checkout-build-test:
@@ -13,4 +13,6 @@ workflows:
       - gradle/test:
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
+          reports_path: ~/project/backend/build/reports
+
           
