@@ -1,37 +1,8 @@
 version: 2.1
 orbs:
-  discord: antonioned/discord@0.1.0
-
-jobs:
-  build:
-    docker:
-      - image: alpine:3.15
-
-    steps:
-      - checkout
-      - run:
-          name: print random text
-          command: echo "HELLO"
-      - discord/status:
-          fail_only: true
-          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-          webhook: "${DISCORD_STATUS_WEBHOOK}"
-
-  deploy_prod:
-    docker:
-      - image: alpine:3.15
-    steps:
-      - checkout
-      - run:
-          name: deploy code
-          command: echo "deploying to production"
-      - discord/status:
-          fail_only: false
-          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
-          webhook: 1150422762398171196/1150430461043150889
-          success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
-workflow:
-    Example-Workflow:
+  gradle: circleci/gradle@3.0.0
+workflows:
+  checkout-build-test:
     jobs:
-      - build
-      - deploy_prod
+      - gradle/test:
+          app_src_directory: backend/src
