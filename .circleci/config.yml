@@ -9,4 +9,5 @@ orbs:
 workflows:
   checkout-build-test:
     jobs:
-      - gradle/test
+      - gradle/test:
+          app_src_directory: backend
