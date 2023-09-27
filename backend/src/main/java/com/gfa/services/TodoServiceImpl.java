@@ -8,7 +8,6 @@ import com.gfa.dtos.responsedtos.TodoResponseDTO;
 import com.gfa.exceptions.role.NoPermissionForRequestException;
 import com.gfa.exceptions.todo.TodoAlreadyExistsWithThisNameForThisUserException;
 import com.gfa.exceptions.todo.TodoNotFoundException;
-import com.gfa.exceptions.user.MissingJSONBodyException;
 import com.gfa.models.AppUser;
 import com.gfa.models.Todo;
 import com.gfa.repositories.TodoRepository;
@@ -43,13 +42,10 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public SuccessTodoCreationResponseDTO createNewTodo(Authentication authentication, TodoCreateRequestDTO request) {
         Utils.isJSONBodyPresent(request);
-
-        AppUser appUser = appUserService.findUserByUsername(request.getAppUser());
-
         if (!Utils.hasAdminRole(authentication) && !authentication.getName().equals(request.getAppUser())) {
             throw new NoPermissionForRequestException("Permission denied");
         }
-
+        AppUser appUser = appUserService.findUserByUsername(request.getAppUser());
         checkIfTodoWithTitleExistsForUser(appUser, request.title);
 
         Todo todo = new Todo(request.getTitle(),
@@ -62,10 +58,7 @@ public class TodoServiceImpl implements TodoService {
 
         saveTodo(todo);
 
-        return new
-
-                SuccessTodoCreationResponseDTO("Todo creation successful");
-
+        return new SuccessTodoCreationResponseDTO("Todo creation successful");
     }
 
     @Override
@@ -77,7 +70,6 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public TodoResponseDTO updateTodo(Authentication authentication, Long id, UpdateTodoDTO request) {
         Utils.isJSONBodyPresent(request);
-
         AppUser appUser = appUserService.findUserByUsername(authentication.getName());
         Todo todo = inputDataAndPermissionValidation(authentication, id);
 
@@ -106,7 +98,7 @@ public class TodoServiceImpl implements TodoService {
         Todo todo = inputDataAndPermissionValidation(authentication, id);
         if (softDeleteConfig.isEnabled()) {
             todo.setDeleted(true);
-            todoRepository.save(todo);
+            saveTodo(todo);
         } else {
             todoRepository.deleteById(id);
         }
@@ -115,13 +107,12 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public void markAsCompleted(Todo todo) {
         todo.setCompleted(true);
-        todoRepository.save(todo);
+        saveTodo(todo);
     }
 
     @Override
     public List<TodoResponseDTO> getAllTodosBasedOnRole(Authentication authentication) {
         Stream<Todo> todoStream;
-
         if (Utils.hasAdminRole(authentication)) {
             todoStream = todoRepository.findAll().stream();
         } else {
