@@ -3,10 +3,7 @@ version: 2.1
 orbs:
   gradle: circleci/gradle@3.0.0
 
-executors:
-  my-openjdk:
-    docker:
-      - image: openjdk:8
+tag: 8
 
 jobs:
   build:
@@ -57,7 +54,6 @@ workflows:
     jobs:
       - build
       - gradle/test:
-          executor: my-openjdk
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
