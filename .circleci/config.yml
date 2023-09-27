@@ -3,7 +3,10 @@ version: 2.1
 orbs:
   gradle: circleci/gradle@3.0.0
 
-tag: 8
+executors:
+  java1_8:
+    docker:
+      - image: cimg/openjdk:8.0
 
 jobs:
   build:
@@ -54,6 +57,7 @@ workflows:
     jobs:
       - build
       - gradle/test:
+          executor: java1_8
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
