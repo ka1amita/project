@@ -11,6 +11,7 @@ jobs:
          template: basic_fail_1
       - slack/notify:
           event: pass
+          mentions: '@ka1amita'
           template: success_tagged_deploy_1
 workflows:
   send-notification:
