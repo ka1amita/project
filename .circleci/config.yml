@@ -12,4 +12,3 @@ workflows:
     jobs:
       - gradle/test:
           app_src_directory: ~/project/backend
-          command: ls -la
