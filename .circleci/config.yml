@@ -10,4 +10,7 @@ workflows:
   checkout-build-test:
     jobs:
       - gradle/test:
-          app_src_directory: backend
+          app_src_directory: project/backend
+          tore_artifacts: build/reports/
+          test_command: myTests
+          test_results_path: build/test-results/
