@@ -1,59 +1,123 @@
+# See: https://circleci.com/docs/2.0/language-java/
 version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  # running commands on a basic image
-  Hello-World:
+  build:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: alpine:3.15
+      # specify the version you desire here
+      - image: cimg/openjdk:8.0
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    # Specify the working directory for the created docker container
+    # - all (relative) paths below will be relative to this directory
+    working_directory: ~/project-fox-dining/backend
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      - run:
-          name: Saying Hello
-          command: |
-            echo 'Hello World!'
-            echo 'This is the delivery pipeline'
-  # fetching code from the repo
-  Fetch-Code:
+      - checkout:
+          path: ~/project-fox-dining
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "build.gradle" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: gradle dependencies
+
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      - run: gradle build -x test -x checkstyleMain -x checkstyleTest
+
+  test:
     docker:
-      - image: cimg/base:2021.04
+      - image: cimg/openjdk:8.0
+    environment:
+      SERVER_URL: http://localhost
+      SERVER_PORT: 8080
+      SMTP_HOST: smtp.mailtrap.io
+      SMTP_PORT: 2525
+    working_directory: ~/project-fox-dining/backend
     steps:
-      - checkout
+      - checkout:
+          path: ~/project-fox-dining
+      - run: gradle test
       - run:
-          name: Getting the Code
-          command: |
-            ls -al
-            echo '^^^Your repo files^^^'
-  # running a node container
-  Using-Node:
+          name: Generate code coverage report
+          command: gradle jacocoTestReport
+      - run: 
+          name: Test Coverage Verification
+          command: gradle jacocoTestCoverageVerification
+
+      - store_test_results:
+          # Report files must be in a subfolder. Test data must be inside a 
+          # subfolder of whatever path is provided to store_test_results. 
+          # If the path is set to test-results then the test report file must 
+          # be in a subfolder of test-results, and not directly within it. 
+          # For example: test-results/somefolder/report.xml
+          # @see: https://support.circleci.com/hc/en-us/articles/360021624194-Test-summary-troubleshooting
+          path: build/test-results
+      - store_artifacts:
+          path: build/reports/tests/test
+          destination: test-reports
+      - store_artifacts:
+          path: build/jacoco
+          destination: test-coverage
+
+  checkstyle:
     docker:
-      - image: cimg/node:17.2
+      - image: cimg/openjdk:8.0
+    environment:
+      SERVER_URL: http://localhost
+      SERVER_PORT: 8080
+      SMTP_HOST: smtp.mailtrap.io
+      SMTP_PORT: 2525
+    working_directory: ~/project-fox-dining/backend
     steps:
+      - checkout:
+          path: ~/project-fox-dining
       - run:
-          name: Running the Node Container
-          command: |
-            node -v
-  Now-Complete:
-    docker:
-      - image: alpine:3.15
-    steps:
-      - run:
-          name: Approval Complete
-          command: |
-            echo 'The work is now complete.'
+          name: Build project
+          command: gradle build
+      - run: gradle checkstyleMain
+      - run: gradle checkstyleTest
+
+      - store_artifacts:
+          path: build/reports/checkstyle
+          destination: checkstyle
 
 workflows:
-  Example-Workflow:
+  checkstyle_build_and_test:
     jobs:
-      - Hello-World
-      - Fetch-Code:
+      - checkstyle:
+          context:
+            - mailtrap
+      - build
+      - test:
+          context:
+            - mailtrap
           requires:
-            - Hello-World
-      - Using-Node:
-          requires:
-            - Fetch-Code
-      - Hold-for-Approval:
-          type: approval
-          requires:
-            - Using-Node
-            - Fetch-Code
-      - Now-Complete:
-          requires:
-            - Hold-for-Approval
+            - build
+
+# The values for SMTP_USERNAME and SMTP_PASSWORD
+# are provided in the `mailtrap` context under
+# Organization Settings > Contexts on app.circleci.com
+# see: https://circleci.com/docs/contexts 
