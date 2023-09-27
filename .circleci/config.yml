@@ -1,20 +1,30 @@
 version: 2.1
 orbs:
-  slack: circleci/slack@4.9.3
+  discord: antonioned/discord@0.1.0
+
 jobs:
-  notify:
-    docker:
-      - image: 'cimg/base:stable'
+  build:
+    working_directory: ~/repo
+
     steps:
-      - slack/notify:
-         event: fail
-         template: basic_fail_1
-      - slack/notify:
-          event: pass
-          mentions: '@ka1amita'
-          template: success_tagged_deploy_1
-workflows:
-  send-notification:
-    jobs:
-      - notify:
-          context: test-slack-secrets
+      - checkout
+      - run:
+          name: print random text
+          command: echo "HELLO"
+      - discord/status:
+          fail_only: true
+          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+          webhook: "${DISCORD_STATUS_WEBHOOK}"
+
+  deploy_prod:
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: deploy code
+          command: echo "deploying to production"
+      - discord/status:
+          fail_only: false
+          failure_message: "**${CIRCLE_USERNAME}**'s build: **${CIRCLE_JOB}** failed."
+          webhook: 1150422762398171196/1150430461043150889
+          success_message: "**${CIRCLE_USERNAME}** deployed api to prod."
