@@ -12,3 +12,4 @@ workflows:
     jobs:
       - gradle/test:
           app_src_directory: ~/project/backend
+          test_results_path: ~/project/backend/build/test-results
