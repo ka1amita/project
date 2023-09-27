@@ -18,7 +18,7 @@ jobs:
 
     # Specify the working directory for the created docker container
     # - all (relative) paths below will be relative to this directory
-    working_directory: ~/project-fox-dining/backend
+    working_directory: ~/simensis-osic-devops-zwei/backend
 
     environment:
       # Customize the JVM maximum heap limit
@@ -29,7 +29,7 @@ jobs:
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout:
-          path: ~/project-fox-dining
+          path: ~/simensis-osic-devops-zwei
 
       # Download and cache dependencies
       - restore_cache:
@@ -53,12 +53,12 @@ jobs:
     environment:
       SERVER_URL: http://localhost
       SERVER_PORT: 8080
-      SMTP_HOST: smtp.mailtrap.io
+      SMTP_HOST: sandbox.smtp.mailtrap.io
       SMTP_PORT: 2525
-    working_directory: ~/project-fox-dining/backend
+    working_directory: ~/simensis-osic-devops-zwei/backend
     steps:
       - checkout:
-          path: ~/project-fox-dining
+          path: ~/simensis-osic-devops-zwei
       - run: gradle test
       - run:
           name: Generate code coverage report
@@ -90,10 +90,10 @@ jobs:
       SERVER_PORT: 8080
       SMTP_HOST: smtp.mailtrap.io
       SMTP_PORT: 2525
-    working_directory: ~/project-fox-dining/backend
+    working_directory: ~/simensis-osic-devops-zwei/backend
     steps:
       - checkout:
-          path: ~/project-fox-dining
+          path: ~/simensis-osic-devops-zwei
       - run:
           name: Build project
           command: gradle build
