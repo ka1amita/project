@@ -7,7 +7,7 @@ executors:
   java1_8:
     docker:
       - image: cimg/openjdk:8.0
-
+tag: 8.0
 jobs:
   build:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -57,7 +57,7 @@ workflows:
     jobs:
       - build
       - gradle/test:
-          executor: java1_8
+          # executor: java1_8
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
