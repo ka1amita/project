@@ -60,7 +60,7 @@ workflows:
       - gradle/test:
           # executor: 
           executor:
-            name: gradle/default
+            name: default
             tag: "8.0" 
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
