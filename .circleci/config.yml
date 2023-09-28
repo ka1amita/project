@@ -11,7 +11,7 @@ workflows:
           executor:
             name: gradle/default
             tag: "8.0"
-          command: ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+          command: .backend/gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
 
       - gradle/test:
