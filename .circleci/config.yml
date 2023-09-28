@@ -65,9 +65,3 @@ workflows:
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
           cache_key: v1-dependencies
-
-          
-
-          
-
-          
