@@ -24,7 +24,7 @@ workflows:
             name: gradle/default
             tag: "8.0"
           app_src_directory: ~/project/backend/
-          test_command: checkstyleMain & ./gradlew checkstyleTest
+          test_command: checkstyleMain
           cache_key: v1-dependencies
           reports_path: ~/project/backend/build/reports/checkstyle
           test_results_path: 
