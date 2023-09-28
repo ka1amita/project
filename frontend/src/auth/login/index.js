@@ -37,8 +37,8 @@ function Login() {
   const [rememberMe, setRememberMe] = useState(false);
 
   const [inputs, setInputs] = useState({
-    email: "admin@jsonapi.com",
-    password: "secret",
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({
@@ -166,18 +166,18 @@ function Login() {
                 error={errors.passwordError}
               />
             </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
-              <MDTypography
-                variant="button"
-                fontWeight="regular"
-                color="text"
-                onClick={handleSetRememberMe}
-                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-              >
-                &nbsp;&nbsp;Remember me
-              </MDTypography>
-            </MDBox>
+            {/*<MDBox display="flex" alignItems="center" ml={-1}>*/}
+            {/*  <Switch checked={rememberMe} onChange={handleSetRememberMe} />*/}
+            {/*  <MDTypography*/}
+            {/*    variant="button"*/}
+            {/*    fontWeight="regular"*/}
+            {/*    color="text"*/}
+            {/*    onClick={handleSetRememberMe}*/}
+            {/*    sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}*/}
+            {/*  >*/}
+            {/*    &nbsp;&nbsp;Remember me*/}
+            {/*  </MDTypography>*/}
+            {/*</MDBox>*/}
             <MDBox mt={4} mb={1}>
               <MDButton variant="gradient" color="info" fullWidth type="submit">
                 sign in

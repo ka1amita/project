@@ -35,7 +35,12 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 
+import AuthService from "services/auth-service";
+import { AuthContext } from "context";
+import {useContext} from "react";
+
 function Dashboard() {
+  const authContext = useContext(AuthContext);
   const { sales, tasks } = reportsLineChartData;
 
   return (

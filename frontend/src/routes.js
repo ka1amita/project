@@ -127,7 +127,8 @@ const routes = [
     key: "user-management",
     icon: <Icon fontSize="small">list</Icon>,
     route: "/user-management",
-    component: <UserManagement />,
+    component: <UserManagement/>,
+    roleProtected: ["ADMIN"],
   },
   {
     type: "collapse",

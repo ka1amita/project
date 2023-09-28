@@ -120,6 +120,16 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
+  const filteredRoutes = (allRoutes) => {
+    return allRoutes.filter(route => {
+      if (route.roleProtected) {
+        return authContext.hasRoles(route.roleProtected)
+      } else {
+        return true;
+      }
+    })
+  }
+
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
@@ -236,8 +246,8 @@ export default function App() {
                 <Sidenav
                   color={sidenavColor}
                   brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                  brandName="Material Dashboard 2"
-                  routes={routes}
+                  brandName="TODO app"
+                  routes={filteredRoutes(routes)}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
                 />
@@ -263,8 +273,8 @@ export default function App() {
               <Sidenav
                 color={sidenavColor}
                 brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                brandName="Material Dashboard 2"
-                routes={routes}
+                brandName="TODO app"
+                routes={filteredRoutes(routes)}
                 onMouseEnter={handleOnMouseEnter}
                 onMouseLeave={handleOnMouseLeave}
               />

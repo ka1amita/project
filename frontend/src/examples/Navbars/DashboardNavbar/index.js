@@ -55,6 +55,7 @@ import {
   setOpenConfigurator,
 } from "context";
 import MDButton from "components/MDButton";
+import MDTypography from "components/MDTypography";
 import { AuthContext } from "context";
 
 function DashboardNavbar({ absolute, light, isMini }) {
@@ -65,6 +66,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
   let navigate = useNavigate();
+  const [username, setUsername] = useState("")
+
+  useEffect(() => {
+    setUsername(authContext.getUsername());
+  });
 
   useEffect(() => {
     // Setting the navbar type
@@ -153,6 +159,9 @@ function DashboardNavbar({ absolute, light, isMini }) {
               <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
                   <Icon sx={iconsStyle}>account_circle</Icon>
+                  <MDTypography component="h6" variant="button" fontWeight="medium">
+                    {username}
+                  </MDTypography>
                 </IconButton>
               </Link>
               <IconButton
