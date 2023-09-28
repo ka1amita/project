@@ -3,25 +3,49 @@ enviroments:
 
 orbs:
   gradle: circleci/gradle@3.0.0
-
+executors:
+  default:
+    parameters: 
+      tag:
+        type: string
+        default: "8.0"
 workflows:
   checkout-build-test:
     jobs:
       - gradle/run:
-          executor:
-            name: gradle/default
-            tag: "8.0"
+          name: "build"
+          # executor:
+          #   name: gradle/default
+          #   tag: "8.0"
           app_src_directory: ~/project/backend/
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
 
       - gradle/test:
+          name: test
           requires: 
-            - gradle/run
-          executor:
-            name: gradle/default
-            tag: "8.0"
+            - build
+          # executor:
+          #   name: gradle/default
+          #   tag: "8.0"
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
           cache_key: v1-dependencies
+      
+      - gradle/test:
+          name: test_coverage
+          requires: 
+            - build
+          # executor:
+          #   name: gradle/default
+          #   tag: "8.0"
+          test_command: |
+                        jacocoTestReport
+                        jacocoTestCoverageVerification
+          app_src_directory: ~/project/backend/
+          test_results_path: ~/project/backend/build/test-results
+          reports_path: ~/project/backend/build/reports
+
+
+
