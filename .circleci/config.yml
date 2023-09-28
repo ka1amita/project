@@ -8,7 +8,7 @@ workflows:
   checkout-build-test:
     jobs:
       - gradle/run:
-          name: "build"
+          name: build
           executor:
             name: gradle/default
             tag: "8.0"
@@ -16,6 +16,18 @@ workflows:
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
 
+      - gradle/test:
+          name: checkstyle
+          requires:
+            - build
+          executor:
+            name: gradle/default
+            tag: "8.0"
+          app_src_directory: ~/project/backend/
+          test_command: checkstyleMain & ./gradlew checkstyleTest
+          cache_key: v1-dependencies
+          reports_path: ~/project/backend/build/reports/checkstyle
+      
       - gradle/test:
           name: test
           requires: 
@@ -29,7 +41,7 @@ workflows:
           cache_key: v1-dependencies
       
       - gradle/test:
-          name: test_coverage
+          name: coverage
           requires: 
             - test
           executor:
@@ -37,7 +49,6 @@ workflows:
             tag: "8.0"
           test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
           app_src_directory: ~/project/backend/
-          test_results_path: ~/project/backend/build/jacoco
           reports_path: ~/project/backend/build/jacoco
 
 
