@@ -29,6 +29,8 @@ workflows:
           reports_path: ~/project/backend/build/reports/checkstyle
       
       - hold:
+          requires:
+            - build
           type: approval
       - gradle/test:
           name: test
