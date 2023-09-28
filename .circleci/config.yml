@@ -44,8 +44,8 @@ workflows:
                         jacocoTestReport
                         jacocoTestCoverageVerification
           app_src_directory: ~/project/backend/
-          test_results_path: ~/project/backend/build/test-results
-          reports_path: ~/project/backend/build/reports
+          test_results_path: ~/project/backend/build/jacoco/test-results
+          reports_path: ~/project/backend/build/jacoco/reports
 
 
 
