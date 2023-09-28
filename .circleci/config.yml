@@ -58,9 +58,8 @@ workflows:
     jobs:
       - build
       - gradle/test:
-          # executor: 
           executor:
-            name: default
+            name: gradle/default
             tag: "8.0" 
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
