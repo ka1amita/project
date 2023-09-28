@@ -62,7 +62,8 @@ workflows:
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
-          cache_key: v1-dependencies-{{ checksum "/project/backend/build.gradle" }}
+          cache_key: v1-dependencies-
+          deps_checksum_file: ~/project/backend/build.gradle
 
           
 
