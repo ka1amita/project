@@ -15,6 +15,10 @@ workflows:
           app_src_directory: ~/project/backend/
           command: dependencies && ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
+          filters:
+            branches:
+              only:
+                - develop
 
       - gradle/test:
           name: checkstyle
@@ -26,12 +30,12 @@ workflows:
           app_src_directory: ~/project/backend/
           test_command: checkstyleMain; ./gradlew checkstyleTest
           cache_key: v1-dependencies
-          reports_path: ~/project/backend/build/reports/checkstyle
-      
-      - hold:
-          requires:
-            - build
-          type: approval
+          reports_path: ~/project/backend/build/reports/checkstyle 
+          filters:
+            branches:
+              only:
+                - develop
+
       - gradle/test:
           name: test
           requires: 
@@ -47,13 +51,17 @@ workflows:
       - gradle/test:
           name: coverage
           requires: 
-            - test
+            - build
           executor:
             name: gradle/default
             tag: "8.0"
           test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
           app_src_directory: ~/project/backend/
           reports_path: ~/project/backend/build/jacoco
+          filters:
+            branches:
+              only:
+                - develop
 
 
 
