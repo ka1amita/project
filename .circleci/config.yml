@@ -9,13 +9,13 @@ workflows:
     jobs:
       - gradle/run:
           name: build
-          executor:
+          executor: &java8executor
             name: gradle/default
             tag: "8.0"
           app_src_directory: ~/project/backend/
           command: dependencies && ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
-          filters:
+          filters: &develop_only
             branches:
               only:
                 - develop
@@ -25,43 +25,38 @@ workflows:
           requires:
             - build
           executor:
-            name: gradle/default
-            tag: "8.0"
+            <<: *java8executor
           app_src_directory: ~/project/backend/
           test_command: checkstyleMain; ./gradlew checkstyleTest
           cache_key: v1-dependencies
           reports_path: ~/project/backend/build/reports/checkstyle 
           filters:
-            branches:
-              only:
-                - develop
+            <<: *develop_only
 
       - gradle/test:
           name: test
           requires: 
             - build
           executor:
-            name: gradle/default
-            tag: "8.0"
+            <<: *java8executor
           app_src_directory: ~/project/backend/
           test_results_path: ~/project/backend/build/test-results
           reports_path: ~/project/backend/build/reports
           cache_key: v1-dependencies
+          filters:
+            <<: *develop_only
       
       - gradle/test:
           name: coverage
           requires: 
             - build
           executor:
-            name: gradle/default
-            tag: "8.0"
+            <<: *java8executor
           test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
           app_src_directory: ~/project/backend/
           reports_path: ~/project/backend/build/jacoco
           filters:
-            branches:
-              only:
-                - develop
+            <<: *develop_only
 
 
 
