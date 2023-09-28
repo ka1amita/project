@@ -13,7 +13,7 @@ workflows:
             name: gradle/default
             tag: "8.0"
           app_src_directory: ~/project/backend/
-          command: gradle dependencies; ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+          command: dependencies & ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           cache_key: v1-dependencies
 
       - gradle/test:
