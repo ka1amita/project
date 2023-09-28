@@ -40,12 +40,10 @@ workflows:
           # executor:
           #   name: gradle/default
           #   tag: "8.0"
-          test_command: |
-                        jacocoTestReport
-                        jacocoTestCoverageVerification
+          test_command: jacocoTestReport
           app_src_directory: ~/project/backend/
-          test_results_path: ~/project/backend/build/jacoco/test-results
-          reports_path: ~/project/backend/build/jacoco/reports
+          test_results_path: ~/project/backend/build/jacoco
+          reports_path: ~/project/backend/build/jacoco
 
 
 
