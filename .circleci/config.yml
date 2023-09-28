@@ -30,6 +30,7 @@ workflows:
           test_results_path: ""
       
       - gradle/test:
+          type: approval
           name: test
           requires: 
             - build
