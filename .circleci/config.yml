@@ -27,6 +27,7 @@ workflows:
           test_command: checkstyleMain & ./gradlew checkstyleTest
           cache_key: v1-dependencies
           reports_path: ~/project/backend/build/reports/checkstyle
+          test_results_path: 
       
       - gradle/test:
           name: test
