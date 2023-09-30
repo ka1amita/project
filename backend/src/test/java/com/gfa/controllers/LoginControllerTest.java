@@ -30,10 +30,8 @@ public class LoginControllerTest {
     @BeforeEach
     public void beforeEachTest() {
         objectMapper = new ObjectMapper();
-        Role roleUser = new Role("ROLE_USER");
         AppUser user = new AppUser(1L,"user", "user", "user2@gfa.com", new HashSet<>());
         user.setActive(true);
-        user.getRoles().add(roleUser);
         ActivationCode code = new ActivationCode("code", user);
         user.getActivationCodes().add(code);
         appUserService.encodePasswordAndSaveAppUser(user);

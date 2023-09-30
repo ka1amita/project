@@ -79,7 +79,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<? extends ResponseDTO> update(@RequestBody(required = false) UpdateAppUserDTO request,
+    public ResponseEntity<? extends ResponseDTO> update(@Valid @RequestBody(required = false) UpdateAppUserDTO request,
                                                       @PathVariable Long id) throws MessagingException {
         return ResponseEntity.ok(appUserService.updateAppUserApi(id, request));
     }

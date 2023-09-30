@@ -22,21 +22,18 @@ import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
 import com.gfa.utils.Utils;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.context.annotation.Lazy;
 import java.util.Locale;
-
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
@@ -201,40 +198,21 @@ public class AppUserServiceImpl implements AppUserService {
             if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
             AppUser appUser = fetchAppUserById(id);
 
-            if (request.getUsername() == null || request.getEmail() == null || request.getPassword() == null) {
-                throw new InvalidPatchDataException(messageSource.getMessage("error.invalid.patch.data", null, currentLocale));
-            }
+        if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+            appUser.setUsername(request.getUsername());
+        }
 
-            if (request.getUsername().isEmpty() && request.getEmail().isEmpty() && request.getPassword().isEmpty()) {
-                throw new InvalidPatchDataException(messageSource.getMessage("error.invalid.patch.data", null, currentLocale));
-            }
+        String oldEmail = appUser.getEmail();
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            appUser.setEmail(request.getEmail());
+        }
 
-            if (!request.getUsername().isEmpty()) {
-                appUser.setUsername(request.getUsername());
-            }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
+                appUser.setPassword(request.getPassword());
+            } else
+                throw new InvalidPasswordFormatException("Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.");
 
-            String oldEmail = appUser.getEmail();
-            if (!request.getEmail().isEmpty()) {
-                appUser.setEmail(request.getEmail());
-            }
-
-            if (!request.getPassword().isEmpty()) {
-                if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
-                    appUser.setPassword(request.getPassword());
-                } else
-                    throw new IllegalArgumentException(messageSource.getMessage("error.invalid.password.format", null, currentLocale));
-            }
-
-            if (!oldEmail.equals(appUser.getEmail())) {
-                appUser.setActive(false);
-                appUser.setVerifiedAt(null);
-                ActivationCode activationCode = assignActivationCodeToUser(appUser);
-                emailService.registerConfirmationEmail(appUser.getEmail(), appUser.getUsername(), activationCode.getActivationCode());
-            }
-
-            saveUser(appUser);
-
-            return new AppUserResponseDTO(appUser);
         }
 
         public List<AppUserResponseDTO> getAllAppUsers () {
@@ -283,9 +261,24 @@ public class AppUserServiceImpl implements AppUserService {
                     () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
         }
 
+        AppUser newUser = new AppUser();
+        newUser.setUsername(request.getUsername());
+        newUser.setEmail(request.getEmail());
+        newUser.setPassword(request.getPassword());
+        newUser.assignRole(roleService.findByName("USER"));
+        newUser.setCreatedAt(LocalDateTime.now());
+        saveUser(newUser);
+        ActivationCode code = assignActivationCodeToUser(newUser);
+        try {
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), code.getActivationCode());
+
+        } catch (MessagingException e) {
+            throw new EmailSendingFailedException("Unable to send the activation email");
+
         @Override
         public Page<AppUserResponseDTO> pageAppUserDtos (PageRequest request){
             return appUserRepository.findAll(request).map(AppUserResponseDTO::new);
+
         }
 
         @Override
@@ -357,12 +350,16 @@ public class AppUserServiceImpl implements AppUserService {
             return lang;
         }
 
-        private ActivationCode assignActivationCodeToUser (AppUser appUser){
-            String code = Utils.GenerateActivationCode(48);
-            ActivationCode activationCode = new ActivationCode(code, appUser);
-            saveUser(appUser);
-            activationCodeService.saveActivationCode(activationCode);
-            activationCode.setAppUser(appUser);
-            return activationCode;
-        }
+        appUser.setActive(true);
+        appUser.setVerifiedAt(LocalDateTime.now());
+        appUserRepository.save(appUser);
+
+        activationCodeService.deleteActivationCode(activationCode);
     }
+
+    private ActivationCode assignActivationCodeToUser(AppUser appUser) {
+        ActivationCode code = new ActivationCode(Utils.GenerateActivationCode(48), appUser);
+        activationCodeService.saveActivationCode(code);
+        return code;
+    }
+}
