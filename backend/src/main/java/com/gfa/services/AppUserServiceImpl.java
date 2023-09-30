@@ -293,6 +293,7 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setPassword(request.getPassword());
         newUser.assignRole(roleService.findByName("USER"));
         newUser.setCreatedAt(LocalDateTime.now());
+        encodePasswordAndSaveAppUser(newUser);
 
         //add
         String langHeader = httpServletRequest.getHeader("Accept-Language");
