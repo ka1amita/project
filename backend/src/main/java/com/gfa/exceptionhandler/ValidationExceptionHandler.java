@@ -2,6 +2,8 @@ package com.gfa.exceptionhandler;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
+import com.gfa.exceptions.todo.TodoAlreadyExistsWithThisNameForThisUserException;
+import com.gfa.exceptions.todo.TodoNotFoundException;
 import com.gfa.exceptions.email.EmailFormatException;
 import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidResetCodeException;
@@ -55,5 +57,15 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(InvalidIdException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidIdException(InvalidIdException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(TodoAlreadyExistsWithThisNameForThisUserException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTodoAlreadyExistsWithThisNameForThisUserException(TodoAlreadyExistsWithThisNameForThisUserException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTodoNotFoundException(TodoNotFoundException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 }

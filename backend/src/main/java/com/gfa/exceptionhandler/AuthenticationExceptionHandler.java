@@ -1,6 +1,7 @@
 package com.gfa.exceptionhandler;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
+import com.gfa.exceptions.role.NoPermissionForRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -26,6 +27,11 @@ public class AuthenticationExceptionHandler {
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleNotReadableException(HttpMessageNotReadableException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(NoPermissionForRequestException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNoPermissionForRequestException(NoPermissionForRequestException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 }

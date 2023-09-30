@@ -57,6 +57,9 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "appUser")
     @JsonManagedReference
     private Set<ActivationCode> activationCodes = new HashSet<>();
+    @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
+    private Set<Todo> todos = new HashSet<>();
     @Column(name="lang",nullable = false,length = 2)
     private String preferredLanguage = "en";
 
@@ -201,6 +204,23 @@ public class AppUser implements UserDetails {
     public void setVerifiedAt(LocalDateTime verified_at) {
         this.verifiedAt = verified_at;
     }
+  
+    public Set<Todo> getTodos() {
+        return todos;
+    }
+
+    public void setTodos(Set<Todo> todos) {
+        this.todos = todos;
+    }
+
+    public void assignTodo(Todo todo) {
+        this.todos.add(todo);
+    }
+
+    public void removeTodo(Todo todo) {
+        this.todos.remove(todo);
+    }
+
     public String getPreferredLanguage() {
         return preferredLanguage;
     }

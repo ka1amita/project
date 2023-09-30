@@ -10,10 +10,9 @@ import com.gfa.dtos.responsedtos.ResponseDTO;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
+import com.gfa.exceptions.email.EmailSendingFailedException;
 import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidPasswordFormatException;
-import com.gfa.exceptions.user.InvalidPatchDataException;
-import com.gfa.exceptions.user.MissingJSONBodyException;
 import com.gfa.exceptions.user.UserAlreadyExistsException;
 import com.gfa.exceptions.user.UserNotFoundException;
 import com.gfa.exceptions.email.EmailFormatException;
@@ -221,7 +220,6 @@ public class AppUserServiceImpl implements AppUserService {
                     .collect(Collectors.toList());
         }
 
-
         @Override
         public Page<AppUserResponseDTO> pageDeletedAppUserDtos (PageRequest request){
             return appUserRepository.findAllDeletedAppUsers(request).map(AppUserResponseDTO::new);
@@ -315,10 +313,15 @@ public class AppUserServiceImpl implements AppUserService {
             }
             
             ActivationCode activationCode = assignActivationCodeToUser(newUser);
-            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
+            try {
+            // TODO pass "whole" newUser!
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(),
+                    activationCode.getActivationCode());
+            } catch (MessagingException e) {
+            throw new EmailSendingFailedException("Unable to send the activation email");
 
             return newUser;
-        }
+            }
 
         @Override
         public String activateAccount (String code){
@@ -349,13 +352,6 @@ public class AppUserServiceImpl implements AppUserService {
 
             return lang;
         }
-
-        appUser.setActive(true);
-        appUser.setVerifiedAt(LocalDateTime.now());
-        appUserRepository.save(appUser);
-
-        activationCodeService.deleteActivationCode(activationCode);
-    }
 
     private ActivationCode assignActivationCodeToUser(AppUser appUser) {
         ActivationCode code = new ActivationCode(Utils.GenerateActivationCode(48), appUser);
