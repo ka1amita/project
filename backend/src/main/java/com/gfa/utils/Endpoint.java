@@ -12,6 +12,5 @@ public interface Endpoint {
     String USERS_API ="/api/users";
     String TODO_API ="/api/todos";
     String REFRESH_TOKEN="/token/refresh";
-    String USERS_API ="/api/users";
     String STRINGS="/strings";
 }

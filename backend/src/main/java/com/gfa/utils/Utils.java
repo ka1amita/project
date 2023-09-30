@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Utils {
+
     private static final String UserPasswordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!\"#$%&'()*+,-./:;<=>?@\\[\\]\\\\^_`{|}~]).{8,}$";
     private static final String ActivationCodeGenerationSample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -21,13 +22,6 @@ public class Utils {
 
     public static Boolean IsUserPasswordFormatValid(String password) {
         return password.matches(UserPasswordPattern);
-    }
-
-    public static void IsProvidedIdValid(Long id) {
-        if (id < 0) throw new InvalidIdException("Please provide a valid ID");
-    }
-    public static <T> void isJSONBodyPresent(T request) {
-        if (request == null) throw new MissingJSONBodyException("Please provide a JSON body");
     }
 
     public static Boolean hasAdminRole(Authentication authentication) {

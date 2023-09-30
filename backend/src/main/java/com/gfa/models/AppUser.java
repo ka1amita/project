@@ -229,14 +229,6 @@ public class AppUser implements UserDetails {
         this.preferredLanguage = preferredLanguage;
     }
 
-    public boolean hasValidRoles() {
-        for (Role role : roles) {
-            if (!role.isValidRole()) {
-                return false;
-            }
-        }
-        return true;
-    }
     public void assignRole(Role role) {
             this.roles.add(role);
     }
