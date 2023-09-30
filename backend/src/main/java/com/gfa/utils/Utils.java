@@ -19,8 +19,4 @@ public class Utils {
     public static Boolean IsUserPasswordFormatValid(String password) {
         return password.matches(UserPasswordPattern);
     }
-
-    public static void IsUserIdValid(Long id) {
-        if (id < 0) throw new InvalidIdException("Please provide a valid ID");
-    }
 }

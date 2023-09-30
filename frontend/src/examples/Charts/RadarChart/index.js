@@ -1,10 +1,10 @@
 /**
 =========================================================
-* Material Dashboard 2  React - v2.2.0
+* Material Dashboard 2 React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -19,15 +19,6 @@ import { useMemo } from "react";
 import PropTypes from "prop-types";
 
 // react-chartjs-2 components
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import { Radar } from "react-chartjs-2";
 
 // @mui material components
@@ -47,9 +38,7 @@ import colors from "assets/theme/base/colors";
 // Material Dashboard 2 React helper functions
 import rgba from "assets/theme/functions/rgba";
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
-
-function RadarChart({ icon, title, description, height, chart }) {
+function RadarChart({ icon, title, description, chart }) {
   const chartDatasets = chart.datasets
     ? chart.datasets.map((dataset) => ({
         ...dataset,
@@ -69,9 +58,9 @@ function RadarChart({ icon, title, description, height, chart }) {
             <MDBox
               width="4rem"
               height="4rem"
-              bgColor={icon.color || "dark"}
+              bgColor={icon.color || "info"}
               variant="gradient"
-              coloredShadow={icon.color || "dark"}
+              coloredShadow={icon.color || "info"}
               borderRadius="xl"
               display="flex"
               justifyContent="center"
@@ -95,8 +84,8 @@ function RadarChart({ icon, title, description, height, chart }) {
       ) : null}
       {useMemo(
         () => (
-          <MDBox p={6} height={height}>
-            <Radar data={data} options={options} redraw />
+          <MDBox p={6}>
+            <Radar data={data} options={options} />
           </MDBox>
         ),
         [chart]
@@ -131,7 +120,6 @@ RadarChart.propTypes = {
   }),
   title: PropTypes.string,
   description: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
-  height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   chart: PropTypes.objectOf(PropTypes.array).isRequired,
 };
 
