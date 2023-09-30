@@ -3,8 +3,8 @@
 * Material Dashboard 2 React - v2.1.0
 =========================================================
 
-* Product Page: https://www.creative-tim.com/product/nextjs-material-dashboard-pro
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Product Page: https://www.creative-tim.com/product/material-dashboard-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -12,8 +12,6 @@ Coded by www.creative-tim.com
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
-// Material Dashboard 2 React base styles
-import typography from "assets/theme/base/typography";
 
 function configs(labels, datasets) {
   return {
@@ -46,10 +44,11 @@ function configs(labels, datasets) {
           ticks: {
             display: true,
             padding: 10,
-            color: "#b2b9bf",
+            color: "#9ca2b7",
             font: {
-              size: 11,
-              family: typography.fontFamily,
+              size: 14,
+              weight: 300,
+              family: "Roboto",
               style: "normal",
               lineHeight: 2,
             },
@@ -66,11 +65,12 @@ function configs(labels, datasets) {
           },
           ticks: {
             display: true,
-            color: "#b2b9bf",
-            padding: 20,
+            color: "#9ca2b7",
+            padding: 10,
             font: {
-              size: 11,
-              family: typography.fontFamily,
+              size: 14,
+              weight: 300,
+              family: "Roboto",
               style: "normal",
               lineHeight: 2,
             },

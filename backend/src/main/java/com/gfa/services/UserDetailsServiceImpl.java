@@ -3,6 +3,8 @@ package com.gfa.services;
 import com.gfa.models.AppUser;
 import com.gfa.repositories.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,16 +18,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final AppUserRepository appUserRepository;
 
+  private final MessageSource messageSource;
+
   @Autowired
-  public UserDetailsServiceImpl(AppUserRepository appUserRepository) {
+  public UserDetailsServiceImpl(AppUserRepository appUserRepository, MessageSource messageSource) {
     this.appUserRepository = appUserRepository;
+    this.messageSource = messageSource;
   }
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     AppUser appUser = appUserRepository.findByUsernameOrEmail(username, username)
                                        .orElseThrow(() -> new UsernameNotFoundException(
-                                           "User not found in the DB"));
+                                           messageSource.getMessage("error.username.not.found", null, LocaleContextHolder.getLocale())));
     return new User(
         appUser.getUsername(),
         appUser.getPassword(),

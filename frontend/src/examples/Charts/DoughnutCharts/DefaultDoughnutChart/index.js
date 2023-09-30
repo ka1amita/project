@@ -1,10 +1,10 @@
 /**
 =========================================================
-* Material Dashboard 2  React - v2.2.0
+* Material Dashboard 2 React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -20,7 +20,6 @@ import PropTypes from "prop-types";
 
 // react-chartjs-2 components
 import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -33,8 +32,6 @@ import MDTypography from "components/MDTypography";
 // DefaultDoughnutChart configurations
 import configs from "examples/Charts/DoughnutCharts/DefaultDoughnutChart/configs";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
 function DefaultDoughnutChart({ icon, title, description, height, chart }) {
   const { data, options } = configs(chart.labels || [], chart.datasets || {}, chart.cutout);
 
@@ -46,9 +43,9 @@ function DefaultDoughnutChart({ icon, title, description, height, chart }) {
             <MDBox
               width="4rem"
               height="4rem"
-              bgColor={icon.color || "dark"}
+              bgColor={icon.color || "info"}
               variant="gradient"
-              coloredShadow={icon.color || "dark"}
+              coloredShadow={icon.color || "info"}
               borderRadius="xl"
               display="flex"
               justifyContent="center"
@@ -73,7 +70,7 @@ function DefaultDoughnutChart({ icon, title, description, height, chart }) {
       {useMemo(
         () => (
           <MDBox height={height}>
-            <Doughnut data={data} options={options} redraw />
+            <Doughnut data={data} options={options} />
           </MDBox>
         ),
         [chart, height]
