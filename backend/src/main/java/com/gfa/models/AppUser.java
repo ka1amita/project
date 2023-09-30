@@ -1,5 +1,6 @@
 package com.gfa.models;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.EAGER;
 
@@ -44,7 +45,7 @@ public class AppUser implements UserDetails {
     private LocalDateTime verifiedAt = null;
     private boolean active;
     private boolean deleted;
-    @ManyToMany(fetch = EAGER, cascade = {MERGE})
+    @ManyToMany(fetch = EAGER, cascade = MERGE)
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
@@ -203,7 +204,7 @@ public class AppUser implements UserDetails {
     public void setVerifiedAt(LocalDateTime verified_at) {
         this.verifiedAt = verified_at;
     }
-
+  
     public Set<Todo> getTodos() {
         return todos;
     }
@@ -218,6 +219,8 @@ public class AppUser implements UserDetails {
 
     public void removeTodo(Todo todo) {
         this.todos.remove(todo);
+    }
+
     public String getPreferredLanguage() {
         return preferredLanguage;
     }
@@ -234,7 +237,6 @@ public class AppUser implements UserDetails {
         }
         return true;
     }
-
     public void assignRole(Role role) {
             this.roles.add(role);
     }
