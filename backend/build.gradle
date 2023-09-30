@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath 'com.puppycrawl.tools:checkstyle:8.32'
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -5,6 +11,8 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
 }
+
+apply plugin: 'checkstyle'
 
 group = 'com.gfa'
 version = '0.0.1-SNAPSHOT'
@@ -18,14 +26,14 @@ configurations {
 }
 
 checkstyle {
-  toolVersion "8.32"
-  configFile file("config/checkstyle/checkstyle.xml")
+    toolVersion "8.32"
+    configFile file("config/checkstyle/checkstyle.xml")
 }
 checkstyleMain {
-  source = 'src/main/java'
+    source = 'src/main/java'
 }
 checkstyleTest {
-  source = 'src/test/java'
+    source = 'src/test/java'
 }
 tasks.withType(Checkstyle) {
     exclude 'src/main/resources'
@@ -73,29 +81,29 @@ repositories {
 dependencies {
     // Dependency for MailTrap
     implementation 'org.springframework:spring-context-support'
-        // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
     implementation group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
     // Dependency for env files
-        // https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv
+    // https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
     // Dependency for JWT Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-        // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-        // https://mvnrepository.com/artifact/com.auth0/java-jwt
+    // https://mvnrepository.com/artifact/com.auth0/java-jwt
     implementation 'com.auth0:java-jwt:4.4.0'
-        // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+    // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
     //Dependency for 2 factor authentication
-        // https://mvnrepository.com/artifact/dev.samstevens.totp/totp
+    // https://mvnrepository.com/artifact/dev.samstevens.totp/totp
     //noinspection VulnerableLibrariesLocal
     implementation 'dev.samstevens.totp:totp:1.7.1'
 
     //Dependency for Flyway
-        // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
     implementation 'org.flywaydb:flyway-core:8.5.12'
-        // https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
     implementation 'org.flywaydb:flyway-mysql:8.5.12'
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-maven-plugin
     implementation 'org.flywaydb:flyway-maven-plugin:8.5.12'
