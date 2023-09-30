@@ -1,10 +1,10 @@
 /**
 =========================================================
-* Material Dashboard 2  React - v2.2.0
+* Material Dashboard 2 React - v2.1.0
 =========================================================
 
 * Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
 
 Coded by www.creative-tim.com
 
@@ -20,17 +20,6 @@ import PropTypes from "prop-types";
 
 // react-chartjs-2 components
 import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -43,17 +32,6 @@ import MDTypography from "components/MDTypography";
 
 // ReportsLineChart configurations
 import configs from "examples/Charts/LineCharts/ReportsLineChart/configs";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
 
 function ReportsLineChart({ color, title, description, date, chart }) {
   const { data, options } = configs(chart.labels || [], chart.datasets || {});
@@ -73,7 +51,7 @@ function ReportsLineChart({ color, title, description, date, chart }) {
               mt={-5}
               height="12.5rem"
             >
-              <Line data={data} options={options} redraw />
+              <Line data={data} options={options} />
             </MDBox>
           ),
           [chart, color]
@@ -102,7 +80,7 @@ function ReportsLineChart({ color, title, description, date, chart }) {
 
 // Setting default values for the props of ReportsLineChart
 ReportsLineChart.defaultProps = {
-  color: "info",
+  color: "dark",
   description: "",
 };
 

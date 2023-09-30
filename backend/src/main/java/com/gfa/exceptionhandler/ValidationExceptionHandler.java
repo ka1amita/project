@@ -1,12 +1,15 @@
 package com.gfa.exceptionhandler;
 
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
-import com.gfa.exceptions.email.EmailSendingFailedException;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.todo.TodoAlreadyExistsWithThisNameForThisUserException;
 import com.gfa.exceptions.todo.TodoNotFoundException;
+import com.gfa.exceptions.email.EmailFormatException;
 import com.gfa.exceptions.user.InvalidIdException;
 import com.gfa.exceptions.user.InvalidResetCodeException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -14,10 +17,24 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.mail.MessagingException;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class ValidationExceptionHandler {
+
+    private final MessageSource messageSource;
+    @Autowired
+    public ValidationExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMessagingException(MessagingException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(messageSource.getMessage("error.email.invalid.format", null, LocaleContextHolder.getLocale()));
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException e) {
         String errorMsg = e.getBindingResult()
@@ -35,11 +52,6 @@ public class ValidationExceptionHandler {
     @ExceptionHandler(InvalidResetCodeException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidResetCodeException(InvalidResetCodeException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
-    }
-
-    @ExceptionHandler(EmailSendingFailedException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEmailSendingException(EmailSendingFailedException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponseDTO(e.getMessage()));
     }
 
     @ExceptionHandler(InvalidIdException.class)

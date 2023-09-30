@@ -10,13 +10,23 @@ import com.gfa.models.AppUser;
 import javax.mail.MessagingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import com.gfa.models.Role;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 public interface AppUserService {
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 
-    void activateAccount(String activationCode);
+    String activateAccount(String activationCode);
 
     ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException;
 
@@ -43,6 +53,10 @@ public interface AppUserService {
     void removeAppUser(Long id);
 
     void setAppUserActive(AppUser user);
+
+    @Query("SELECT u FROM AppUser u JOIN u.activationCodes ac WHERE ac.activationCode = :activationCode")
+    Optional<AppUser> findAppUserByActivationCode(@Param("activationCode") String activationCode);
+
 
     AppUser findByUsernameOrEmail(String username);
 }
