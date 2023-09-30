@@ -1,5 +1,6 @@
 package com.gfa.models;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.FetchType.EAGER;
 
@@ -44,7 +45,7 @@ public class AppUser implements UserDetails {
     private LocalDateTime verifiedAt = null;
     private boolean active;
     private boolean deleted;
-    @ManyToMany(fetch = EAGER, cascade = {MERGE})
+    @ManyToMany(fetch = EAGER, cascade = MERGE)
     @JoinTable(
             name = "app_users_roles",
             joinColumns = @JoinColumn(name = "app_user_id"),
@@ -56,6 +57,11 @@ public class AppUser implements UserDetails {
     @OneToMany(mappedBy = "appUser")
     @JsonManagedReference
     private Set<ActivationCode> activationCodes = new HashSet<>();
+    @OneToMany(mappedBy = "appUser")
+    @JsonManagedReference
+    private Set<Todo> todos = new HashSet<>();
+    @Column(name="lang",nullable = false,length = 2)
+    private String preferredLanguage = "en";
 
     public AppUser() {
     }
@@ -198,30 +204,37 @@ public class AppUser implements UserDetails {
     public void setVerifiedAt(LocalDateTime verified_at) {
         this.verifiedAt = verified_at;
     }
+  
+    public Set<Todo> getTodos() {
+        return todos;
+    }
 
-    public boolean hasValidRoles() {
-        for (Role role : roles) {
-            if (!role.isValidRole()) {
-                return false;
-            }
-        }
-        return true;
+    public void setTodos(Set<Todo> todos) {
+        this.todos = todos;
+    }
+
+    public void assignTodo(Todo todo) {
+        this.todos.add(todo);
+    }
+
+    public void removeTodo(Todo todo) {
+        this.todos.remove(todo);
+    }
+
+    public String getPreferredLanguage() {
+        return preferredLanguage;
+    }
+
+    public void setPreferredLanguage(String preferredLanguage) {
+        this.preferredLanguage = preferredLanguage;
     }
 
     public void assignRole(Role role) {
-        if (role.isValidRole()) {
             this.roles.add(role);
-        } else {
-            throw new IllegalArgumentException("Invalid role");
-        }
     }
 
     public void removeRole(Role role) {
-        if (role.isValidRole()) {
             this.roles.remove(role);
-        } else {
-            throw new IllegalArgumentException("Invalid role");
-        }
     }
 }
 

@@ -1,0 +1,62 @@
+version: 2.1
+enviroments:
+
+orbs:
+  gradle: circleci/gradle@3.0.0
+
+workflows:
+  checkout-build-test:
+    jobs:
+      - gradle/run:
+          name: build
+          executor: &java8executor
+            name: gradle/default
+            tag: "8.0"
+          app_src_directory: ~/project/backend/
+          command: dependencies && ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+          cache_key: v1-dependencies
+          filters: &develop_only
+            branches:
+              only:
+                - develop
+
+      - gradle/test:
+          name: checkstyle
+          requires:
+            - build
+          executor:
+            <<: *java8executor
+          app_src_directory: ~/project/backend/
+          test_command: checkstyleMain; ./gradlew checkstyleTest
+          cache_key: v1-dependencies
+          reports_path: ~/project/backend/build/reports/checkstyle 
+          filters:
+            <<: *develop_only
+
+      - gradle/test:
+          name: test
+          requires: 
+            - build
+          executor:
+            <<: *java8executor
+          app_src_directory: ~/project/backend/
+          test_results_path: ~/project/backend/build/test-results
+          reports_path: ~/project/backend/build/reports
+          cache_key: v1-dependencies
+          filters:
+            <<: *develop_only
+      
+      - gradle/test:
+          name: coverage
+          requires: 
+            - build
+          executor:
+            <<: *java8executor
+          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
+          app_src_directory: ~/project/backend/
+          reports_path: ~/project/backend/build/jacoco
+          filters:
+            <<: *develop_only
+
+
+

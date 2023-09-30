@@ -36,12 +36,6 @@ function ForgotPassword() {
     }, 10000)
   }, [error]);
 
-  useEffect(() => {
-    if(notification) setTimeout(() => {
-      setNotification(false);
-    }, 10000)
-  }, [notification]);
-
   const changeHandler = (e) => {
     setEmail({
       [e.target.name]: e.target.value,
@@ -72,6 +66,7 @@ function ForgotPassword() {
     try {
       if (isDemo == false) {
         const response = await authService.forgotPassword(myData);
+        setError({ err: false, textError: "" });
       }
       setNotification(true);
     } catch (err) {

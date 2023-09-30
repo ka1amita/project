@@ -6,8 +6,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
+import com.gfa.repositories.AppUserRepository;
 import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,33 +17,41 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 public class SecurityConfig {
+    //add
+    private final AppUserRepository appUserRepository;
 
-  @Bean
-  public BCryptPasswordEncoder bCryptPasswordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    private final MessageSource messageSource;
 
-  @Bean
-  public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                     BCryptPasswordEncoder bCryptPasswordEncoder,
-                                                     UserDetailsService userDetailsService)
-      throws Exception {
+    public SecurityConfig(AppUserRepository appUserRepository, MessageSource messageSource) {
+        this.appUserRepository = appUserRepository;
+        this.messageSource = messageSource;
+    }
 
-    AuthenticationManager authenticationManager =
-        http.getSharedObject(AuthenticationManagerBuilder.class)
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(bCryptPasswordEncoder)
-            .and()
-            .build();
-    http.authenticationManager(authenticationManager);
-    return authenticationManager;
-  }
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                       BCryptPasswordEncoder bCryptPasswordEncoder,
+                                                       UserDetailsService userDetailsService)
+            throws Exception {
+
+        AuthenticationManager authenticationManager =
+                http.getSharedObject(AuthenticationManagerBuilder.class)
+                        .userDetailsService(userDetailsService)
+                        .passwordEncoder(bCryptPasswordEncoder)
+                        .and()
+                        .build();
+        http.authenticationManager(authenticationManager);
+        return authenticationManager;
+    }
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
@@ -50,9 +60,6 @@ public class SecurityConfig {
     http.cors();
     http.sessionManagement()
         .sessionCreationPolicy(STATELESS);
-    http.authorizeRequests()
-        .antMatchers(Endpoint.HELLO_WORLD)
-        .permitAll();
     http.authorizeRequests()
         .antMatchers(GET,
                      Endpoint.VERIFY_EMAIL_WITH_TOKEN +"/*",
@@ -68,10 +75,13 @@ public class SecurityConfig {
                      Endpoint.RESEND_VERIFICATION_EMAIL)
         .permitAll();
     http.authorizeRequests()
+              .antMatchers(Endpoint.STRINGS)
+              .permitAll();
+    http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest requires some Role
-    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService));
-    http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
+    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService,messageSource));
+    http.addFilterBefore(new CustomAuthorizationFilter(tokenService, appUserRepository),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

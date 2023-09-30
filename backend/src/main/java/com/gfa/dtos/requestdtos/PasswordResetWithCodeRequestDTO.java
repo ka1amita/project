@@ -3,7 +3,7 @@ package com.gfa.dtos.requestdtos;
 import javax.validation.constraints.NotEmpty;
 
 public class PasswordResetWithCodeRequestDTO extends RequestDTO {
-    @NotEmpty(message = "Password cannot be null or empty")
+    @NotEmpty(message = "{error.password.empty.or.null}")
     String password;
 
     public PasswordResetWithCodeRequestDTO() {

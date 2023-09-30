@@ -26,7 +26,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { isExpired, decodeToken } from "react-jwt";
 
 
-
 // Material Dashboard 2 React main context
 const MaterialUI = createContext();
 
@@ -73,7 +72,7 @@ const AuthContextProvider = ({ children }) => {
   const login = (token) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
-
+    
     if (isExpired(token)) {
       logout()
       return;

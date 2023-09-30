@@ -79,7 +79,6 @@ export default function App() {
       key: "rtl",
       stylisPlugins: [rtlPlugin],
     });
-
     setRtlCache(cacheRtl);
   }, []);
 
@@ -246,8 +245,8 @@ export default function App() {
                 <Sidenav
                   color={sidenavColor}
                   brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                  brandName="TODO app"
-                  routes={filteredRoutes(routes)}
+                  brandName="Material Dashboard 2"
+                  routes={routes}
                   onMouseEnter={handleOnMouseEnter}
                   onMouseLeave={handleOnMouseLeave}
                 />
@@ -273,8 +272,8 @@ export default function App() {
               <Sidenav
                 color={sidenavColor}
                 brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                brandName="TODO app"
-                routes={filteredRoutes(routes)}
+                brandName="Material Dashboard 2"
+                routes={routes}
                 onMouseEnter={handleOnMouseEnter}
                 onMouseLeave={handleOnMouseLeave}
               />

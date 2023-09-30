@@ -3,6 +3,7 @@ package com.gfa.exceptionhandler;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.activation.ActivationCodeExpiredException;
 import com.gfa.exceptions.email.EmailAlreadyExistsException;
+import com.gfa.exceptions.email.EmailFormatException;
 import com.gfa.exceptions.role.RoleNotFoundException;
 import com.gfa.exceptions.user.*;
 import org.springframework.http.HttpStatus;
@@ -56,5 +57,9 @@ public class UserExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         return ResponseEntity.status(405).body(new ErrorResponseDTO(e.getMessage()));
+    }
+    @ExceptionHandler(EmailFormatException.class)
+    public ResponseEntity<String> handleLanguageNotFoundException(EmailFormatException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }
