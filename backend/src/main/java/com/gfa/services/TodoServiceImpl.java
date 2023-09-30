@@ -8,11 +8,15 @@ import com.gfa.dtos.responsedtos.TodoResponseDTO;
 import com.gfa.exceptions.role.NoPermissionForRequestException;
 import com.gfa.exceptions.todo.TodoAlreadyExistsWithThisNameForThisUserException;
 import com.gfa.exceptions.todo.TodoNotFoundException;
+import com.gfa.exceptions.user.InvalidIdException;
+import com.gfa.exceptions.user.MissingJSONBodyException;
 import com.gfa.models.AppUser;
 import com.gfa.models.Todo;
 import com.gfa.repositories.TodoRepository;
 import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +30,14 @@ public class TodoServiceImpl implements TodoService {
     private final TodoRepository todoRepository;
     private final AppUserService appUserService;
     private final SoftDeleteConfig softDeleteConfig;
+    private final MessageSource messageSource;
 
     @Autowired
-    public TodoServiceImpl(TodoRepository todoRepository, AppUserService appUserService, SoftDeleteConfig softDeleteConfig) {
+    public TodoServiceImpl(TodoRepository todoRepository, AppUserService appUserService, SoftDeleteConfig softDeleteConfig, MessageSource messageSource) {
         this.todoRepository = todoRepository;
         this.appUserService = appUserService;
         this.softDeleteConfig = softDeleteConfig;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public SuccessTodoCreationResponseDTO createNewTodo(Authentication authentication, TodoCreateRequestDTO request) {
-        Utils.isJSONBodyPresent(request);
+        isJSONBodyPresent(request);
         if (!Utils.hasAdminRole(authentication) && !authentication.getName().equals(request.getAppUser())) {
             throw new NoPermissionForRequestException("Permission denied");
         }
@@ -69,7 +75,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoResponseDTO updateTodo(Authentication authentication, Long id, UpdateTodoDTO request) {
-        Utils.isJSONBodyPresent(request);
+        isJSONBodyPresent(request);
         AppUser appUser = appUserService.findUserByUsername(authentication.getName());
         Todo todo = inputDataAndPermissionValidation(authentication, id);
 
@@ -129,7 +135,7 @@ public class TodoServiceImpl implements TodoService {
     }
 
     private Todo inputDataAndPermissionValidation(Authentication authentication, Long id) {
-        Utils.IsProvidedIdValid(id);
+        isIdValid(id);
 
         Todo todo = todoRepository.findById(id).orElseThrow(() -> new TodoNotFoundException("Todo not found"));
         AppUser todoOwner = appUserService.findUserByUsername(todo.getAppUser().getUsername());
@@ -138,5 +144,15 @@ public class TodoServiceImpl implements TodoService {
             throw new NoPermissionForRequestException("Permission denied");
         }
         return todo;
+    }
+
+    private void isIdValid(Long id) {
+        if (id < 0)
+            throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, LocaleContextHolder.getLocale()));
+    }
+
+    public <T> void isJSONBodyPresent(T request) {
+        if (request == null)
+            throw new MissingJSONBodyException(messageSource.getMessage("error.missing.json.body", null, LocaleContextHolder.getLocale()));
     }
 }
