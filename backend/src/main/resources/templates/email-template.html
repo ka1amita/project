@@ -16,7 +16,7 @@
         <p th:text="${message}" style="margin-top: 20px;">Message goes here</p><br>
     </div>
     <h3 th:text="${code}"></h3>
-    <h3><a th:href="@{'https://localhost:8080/confirm/' + ${code}}">Use your code</a></h3>
+    <h3><a th:href="@{${url} + ${code}}">Use your code</a></h3>
 </div>
 </body>
 </html>
