@@ -1,62 +1,71 @@
 version: 2.1
-enviroments:
-
 orbs:
   gradle: circleci/gradle@3.0.0
 
+jobs:
+  parallel_tests:
+    working_directory: ~/project/backend
+    executor: &java8
+      name: gradle/default
+      tag: "8.0"
+    parallelism: 5
+    steps:
+      - checkout:
+          path: ..
+      - gradle/with_cache:
+          steps:
+            # allows "rerun failed tests"; https://circleci.com/docs/rerun-failed-tests/
+            - run:
+                name: Parse classnames and split by timing
+                command: |
+                  cd src/test/java
+                  circleci tests glob "**/*.java" | cut -c 1- | sed 's@/@.@g' | sed 's/.\{5\}$//' | circleci tests run --command=">classnames.txt xargs echo" --verbose --split-by=timings --timings-type=classname
+                  [ -s classnames.txt ] || circleci-agent step halt
+            - run:
+                name: Run split tests
+                command: |
+                  GRADLE_ARGS=$(cat src/test/java/classnames.txt | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
+                  echo "Prepared arguments for Gradle: $GRADLE_ARGS"
+                  ./gradlew test $GRADLE_ARGS        
+      - store_test_results:
+          path: build/test-results/test
+      - store_artifacts:
+          path: build/reports/tests
+
 workflows:
-  checkout-build-test:
+  build_and_test:
     jobs:
       - gradle/run:
           name: build
-          executor: &java8executor
-            name: gradle/default
-            tag: "8.0"
-          app_src_directory: ~/project/backend/
-          command: dependencies && ./gradlew build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
-          cache_key: v1-dependencies
+          executor: 
+            <<: *java8
+          app_src_directory: backend
+          command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
           filters: &develop_only
             branches:
               only:
                 - develop
-
+      
+      - parallel_tests:
+          requires:
+            - build
+      
       - gradle/test:
           name: checkstyle
           requires:
             - build
           executor:
-            <<: *java8executor
-          app_src_directory: ~/project/backend/
+            <<: *java8
+          app_src_directory: backend
           test_command: checkstyleMain; ./gradlew checkstyleTest
-          cache_key: v1-dependencies
-          reports_path: ~/project/backend/build/reports/checkstyle 
-          filters:
-            <<: *develop_only
+          reports_path: backend/build/reports/checkstyle 
 
-      - gradle/test:
-          name: test
-          requires: 
-            - build
-          executor:
-            <<: *java8executor
-          app_src_directory: ~/project/backend/
-          test_results_path: ~/project/backend/build/test-results
-          reports_path: ~/project/backend/build/reports
-          cache_key: v1-dependencies
-          filters:
-            <<: *develop_only
-      
       - gradle/test:
           name: coverage
           requires: 
             - build
           executor:
-            <<: *java8executor
+            <<: *java8
           test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
-          app_src_directory: ~/project/backend/
-          reports_path: ~/project/backend/build/jacoco
-          filters:
-            <<: *develop_only
-
-
-
+          app_src_directory: backend
+          reports_path: backend/build/jacoco
