@@ -114,7 +114,7 @@ function Register() {
       openSuccessSB();
       setTimeout(() => {
         closeSuccessSB();
-        authContext.register();
+        // authContext.register();
       }, 10000)
       // authContext.login(response.access_token, response.refresh_token);
 

@@ -167,7 +167,7 @@ const routes = [
     name: "Reset Password",
     key: "reset-password",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/auth/reset-password",
+    route: "/auth/reset-password/:token",
     component: <ResetPassword />,
   },
 ];

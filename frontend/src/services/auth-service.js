@@ -33,8 +33,11 @@ class AuthService {
   }
 
   resetPassword = async (credentials) => {
-    const resetPassword = 'password-reset';
-    return await HttpService.post(resetPassword, credentials);
+    const requestData = credentials.data.attributes;
+    const resetPassword = 'reset/' + requestData.token;
+    delete requestData.password_confirmation;
+    delete requestData.token;
+    return await HttpService.post(resetPassword, requestData);
   }
 
   getProfile = async() => {
