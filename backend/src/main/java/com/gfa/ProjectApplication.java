@@ -14,7 +14,7 @@ public class ProjectApplication {
 
     // @Bean
     // FlywayMigrationStrategy flywayMigrationStrategy() {
-    //     prevents automatic migration on App start-up
-        // return args -> {};
+    //     // prevents automatic migration on App start-up
+    //     return args -> {};
     // }
 }
