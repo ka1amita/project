@@ -1,1 +1,0 @@
-; shouldExecute=(${root.enable}==true) ; not supported by Flyway Community Edition!
