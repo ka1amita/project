@@ -135,7 +135,7 @@ function Register() {
       });
     } catch (err) {
       setErrors({ ...errors, error: true, errorText: err.message });
-      console.error(err);
+      // console.error(err);
     }
   };
 
