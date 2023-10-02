@@ -50,7 +50,7 @@ public class RequestDTOTest {
     public void Testing_Valid_PasswordResetRequestDTO_Creation() {
         String usernameOrEmail = "testUser";
 
-        PasswordResetRequestDTO request = new PasswordResetRequestDTO(usernameOrEmail, usernameOrEmail);
+        PasswordResetRequestDTO request = new PasswordResetRequestDTO(usernameOrEmail);
 
         assertNotNull(request);
         assertEquals(usernameOrEmail, request.getUsernameOrEmail());
