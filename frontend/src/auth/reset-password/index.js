@@ -22,7 +22,6 @@ import AuthService from "services/auth-service";
 
 // for the reset I should take from the url the token sent and the email
 const PasswordReset = () => {
-  console.log(useParams());
   let {token} = useParams();
   // const [email, setEmail] = useState(null);
   const [notification, setNotification] = useState(false);
@@ -97,10 +96,15 @@ const PasswordReset = () => {
 
       if (errors.passwordError === false && errors.confirmationError === false) {
         setNotification(true);
+        setTimeout(() => {
+          setNotification(false);
+        }, 10000)
       }
     } catch (err) {
       if (err.hasOwnProperty("errors")) {
         setErrors({ ...errors, error: true, textError: err.errors.password[0] });
+      } else if (err.hasOwnProperty("error_message")) {
+        setErrors({ ...errors, error: true, textError: err.error_message });
       }
       return null;
     }
