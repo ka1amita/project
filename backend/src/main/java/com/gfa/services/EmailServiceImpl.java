@@ -1,6 +1,8 @@
 package com.gfa.services;
 
+import com.gfa.utils.Endpoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +15,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -23,6 +26,12 @@ public class EmailServiceImpl implements EmailService {
     private SpringTemplateEngine templateEngine;
     @Autowired
     private MessageSource messageSource;
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+    @Value("${FRONTEND_URL}")
+    String frontendUrl;
+    @Value("${FRONTEND_RESET_PASSWORD_URL}")
+    String frontendResetPasswordUrl;
 
     @Override
     public void sendSimpleMessage(String to, String subject, String text) {
@@ -34,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendMimeMessage(String to, String subject, String messageText, String code) throws MessagingException {
+    public void sendMimeMessage(String to, String subject, String messageText, String code, String url) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -43,6 +52,7 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("subject", subject);
             context.setVariable("message", messageText);
             context.setVariable("code", code);
+            context.setVariable("url", url);
             String html = templateEngine.process("email-template", context);
             helper.setTo(to);
             helper.setSubject(subject);
@@ -58,7 +68,8 @@ public class EmailServiceImpl implements EmailService {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.subject", null, currentLocale);
         String message=messageSource.getMessage("email.body", new Object[]{username}, currentLocale);
-        sendMimeMessage(to, subject, message, code);
+        String url = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + Endpoint.CONFIRM_WITH_CODE + "/";
+        sendMimeMessage(to, subject, message, code, url);
     }
 
     @Override
@@ -66,6 +77,7 @@ public class EmailServiceImpl implements EmailService {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.reset.subject", null, currentLocale);
         String body= messageSource.getMessage("email.reset.body", new Object[]{username}, currentLocale);
-        sendMimeMessage(to,subject, body, code);
+        String url = frontendUrl + frontendResetPasswordUrl;
+        sendMimeMessage(to,subject, body, code, url);
     }
 }

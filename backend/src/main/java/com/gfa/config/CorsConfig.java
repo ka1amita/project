@@ -23,6 +23,7 @@ public class CorsConfig {
         source.registerCorsConfiguration("/register", corsConfiguration);
         source.registerCorsConfiguration("/dashboard", corsConfiguration);
         source.registerCorsConfiguration("/reset", corsConfiguration);
+        source.registerCorsConfiguration("/reset/*", corsConfiguration);
         return source;
     }
 }
