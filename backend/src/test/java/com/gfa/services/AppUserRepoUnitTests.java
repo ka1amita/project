@@ -2,7 +2,7 @@ package com.gfa.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
@@ -10,21 +10,23 @@ import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class AppUserRepoUnitTests {
-// TODO doesn't work - doesn't load the applicationContext
+
     @Autowired
     AppUserRepository appUserRepository;
-
     Long id = null;
     String password = "password";
     String encodedPassword = new BCryptPasswordEncoder().encode(password);
@@ -47,7 +49,10 @@ public class AppUserRepoUnitTests {
                .add(role);
         appUser.getActivationCodes()
                .add(code);
+        appUser.setDeleted(false);
+        appUser.setActive(true);
     }
+
     @Test
     void injectedComponentsAreNotNull() {
         assertNotNull(appUserRepository);
@@ -58,11 +63,12 @@ public class AppUserRepoUnitTests {
         List<AppUser> appUserList = appUserRepository.findAll();
         assertEquals(0, appUserList.size());
     }
+
     @Test
     public void repository_saves_and_returns_saved_user_correctly() {
         AppUser savedUser = appUserRepository.save(appUser);
+
         assertEquals(appUser, savedUser);
-        assertEquals(1, savedUser.getId());
         assertEquals(appUser.getUsername(), savedUser.getUsername());
         assertEquals(appUser.getPassword(), savedUser.getPassword());
         assertEquals(appUser.isActive(), savedUser.isActive());
@@ -73,24 +79,53 @@ public class AppUserRepoUnitTests {
     }
 
     @Test
-    public void doesnt_find_user_by_wrong_email_and_wrong_name() {
-        AppUser userNotFound = appUserRepository.findByUsernameOrEmail("wrong_name", "wrong_email")
-                                                .get();
+    // resets the context including the repo otherwise non-deterministic id is obtained
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    public void repository_saves_users_with_auto_incrementing_id() {
+        AppUser savedUser = appUserRepository.save(appUser);
 
-        assertNull(userNotFound);
+        assertEquals(1, savedUser.getId());
+
+        AppUser differentAppUser =
+            new AppUser(id, "different" + username, password, "different" + email, new HashSet<>(),
+                        new HashSet<>());
+        ActivationCode code1 = new ActivationCode("differentCode", differentAppUser);
+        Role role1 = new Role("role");
+        differentAppUser.getRoles()
+                        .add(role1);
+        differentAppUser.getActivationCodes()
+                        .add(code1);
+        differentAppUser.setDeleted(false);
+        differentAppUser.setActive(true);
+
+        AppUser savedUser1 = appUserRepository.save(differentAppUser);
+        assertEquals(2, savedUser1.getId());
+    }
+
+    @Test
+    public void doesnt_find_user_by_wrong_email_and_wrong_name() {
+        Optional<AppUser> userNotFound =
+            appUserRepository.findByUsernameOrEmail("wrong_name", "wrong_email");
+
+        assertThrows(NoSuchElementException.class, userNotFound::get);
     }
 
     @Test
     public void finds_user_by_name() {
-        AppUser foundUser = appUserRepository.findByUsernameOrEmail(username, "wrong_email")
-                                                .get();
-        assertNotNull(foundUser);
-    }
-    @Test
-    public void finds_user_by_email() {
-        AppUser foundUser = appUserRepository.findByUsernameOrEmail(username, "wrong_email")
-                                                .get();
+        appUserRepository.save(appUser);
+
+        Optional<AppUser> foundUser =
+            appUserRepository.findByUsernameOrEmail(username, "wrong_email");
+
         assertNotNull(foundUser);
     }
 
+    @Test
+    public void finds_user_by_email() {
+        appUserRepository.save(appUser);
+
+        AppUser foundUser = appUserRepository.findByUsernameOrEmail("wrong_name", email)
+                                             .get();
+        assertNotNull(foundUser);
+    }
 }
