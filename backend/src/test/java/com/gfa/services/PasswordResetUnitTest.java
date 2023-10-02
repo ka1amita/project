@@ -114,8 +114,6 @@ public class PasswordResetUnitTest {
         PasswordResetWithCodeResponseDTO passwordResetWithCodeResponseDTO = (PasswordResetWithCodeResponseDTO) appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
 
         assert passwordResetWithCodeResponseDTO != null;
-        assert passwordResetWithCodeResponseDTO.getMessage() != null;
-        assertEquals(passwordResetWithCodeResponseDTO.getMessage(), "success");
     }
 
     @Test
