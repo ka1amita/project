@@ -30,6 +30,12 @@ function ForgotPassword() {
     setIsDemo(process.env.REACT_APP_IS_DEMO === "true");
   }, []);
 
+  useEffect(() => {
+    if(error.err) setTimeout(() => {
+      setError({ err: false, textError: "" });
+    }, 10000)
+  }, [error]);
+
   const changeHandler = (e) => {
     setEmail({
       [e.target.name]: e.target.value,
@@ -41,8 +47,8 @@ function ForgotPassword() {
 
     const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-    if (input.email.trim().length === 0 || !input.email.trim().match(mailFormat)) {
-      setError({ err: true, textError: "The email must be valid" });
+    if (input.email.trim().length === 0 /*|| !input.email.trim().match(mailFormat)*/) {
+      setError({ err: true, textError: "The email/username must be valid" });
       return;
     }
 
@@ -71,6 +77,8 @@ function ForgotPassword() {
         } else {
           setError({ err: true, textError: "An error occured" });
         }
+      } else if (err.hasOwnProperty("error_message")) {
+        setError({ err: true, textError: err.error_message });
       }
       return null;
     }
@@ -101,8 +109,8 @@ function ForgotPassword() {
           <MDBox component="form" role="form" method="POST" onSubmit={handleSubmit}>
             <MDBox mb={4}>
               <MDInput
-                type="email"
-                label="Email"
+                type="text"
+                label="Email or Username"
                 variant="standard"
                 fullWidth
                 value={input.email}

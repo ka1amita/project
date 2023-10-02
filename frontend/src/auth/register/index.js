@@ -11,6 +11,7 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDAlert from "components/MDAlert";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
@@ -23,7 +24,21 @@ import { AuthContext } from "context";
 import { InputLabel } from "@mui/material";
 
 function Register() {
+  const [successSB, setSuccessSB] = useState(false);
   const authContext = useContext(AuthContext);
+  const openSuccessSB = () => setSuccessSB(true);
+  const closeSuccessSB = () => setSuccessSB(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const alertContent = (message) => (
+      <MDTypography variant="body2" color="white">
+        {message}
+      </MDTypography>
+  );
+  const renderSuccessSB = (
+      <MDAlert color="success">
+        {alertContent(successMessage)}
+      </MDAlert>
+  );
 
   const [inputs, setInputs] = useState({
     name: "",
@@ -68,10 +83,10 @@ function Register() {
       return;
     }
 
-    if (inputs.agree === false) {
-      setErrors({ ...errors, agreeError: true });
-      return;
-    }
+    // if (inputs.agree === false) {
+    //   setErrors({ ...errors, agreeError: true });
+    //   return;
+    // }
 
     // here will be the post action to add a user to the db
     const newUser = { name: inputs.name, email: inputs.email, password: inputs.password };
@@ -95,6 +110,12 @@ function Register() {
 
     try {
       const response = await AuthService.register(myData);
+      setSuccessMessage(response.message);
+      openSuccessSB();
+      setTimeout(() => {
+        closeSuccessSB();
+        // authContext.register();
+      }, 10000)
       // authContext.login(response.access_token, response.refresh_token);
 
       setInputs({
@@ -204,33 +225,33 @@ function Register() {
                 </MDTypography>
               )}
             </MDBox>
-            <MDBox display="flex" alignItems="center" ml={-1}>
-              <Checkbox name="agree" id="agree" onChange={changeHandler} />
-              <InputLabel
-                variant="standard"
-                fontWeight="regular"
-                color="text"
-                sx={{ lineHeight: "1.5", cursor: "pointer" }}
-                htmlFor="agree"
-              >
-                &nbsp;&nbsp;I agree to the&nbsp;
-              </InputLabel>
-              <MDTypography
-                component={Link}
-                to="/auth/login"
-                variant="button"
-                fontWeight="bold"
-                color="info"
-                textGradient
-              >
-                Terms and Conditions
-              </MDTypography>
-            </MDBox>
-            {errors.agreeError && (
-              <MDTypography variant="caption" color="error" fontWeight="light">
-                You must agree to the Terms and Conditions
-              </MDTypography>
-            )}
+            {/*<MDBox display="flex" alignItems="center" ml={-1}>*/}
+            {/*  <Checkbox name="agree" id="agree" onChange={changeHandler} />*/}
+            {/*  <InputLabel*/}
+            {/*    variant="standard"*/}
+            {/*    fontWeight="regular"*/}
+            {/*    color="text"*/}
+            {/*    sx={{ lineHeight: "1.5", cursor: "pointer" }}*/}
+            {/*    htmlFor="agree"*/}
+            {/*  >*/}
+            {/*    &nbsp;&nbsp;I agree to the&nbsp;*/}
+            {/*  </InputLabel>*/}
+            {/*  <MDTypography*/}
+            {/*    component={Link}*/}
+            {/*    to="/auth/login"*/}
+            {/*    variant="button"*/}
+            {/*    fontWeight="bold"*/}
+            {/*    color="info"*/}
+            {/*    textGradient*/}
+            {/*  >*/}
+            {/*    Terms and Conditions*/}
+            {/*  </MDTypography>*/}
+            {/*</MDBox>*/}
+            {/*{errors.agreeError && (*/}
+            {/*  <MDTypography variant="caption" color="error" fontWeight="light">*/}
+            {/*    You must agree to the Terms and Conditions*/}
+            {/*  </MDTypography>*/}
+            {/*)}*/}
             {errors.error && (
               <MDTypography variant="caption" color="error" fontWeight="light">
                 {errors.errorText}
@@ -259,6 +280,9 @@ function Register() {
           </MDBox>
         </MDBox>
       </Card>
+      <MDBox mt={3} mb={1} textAlign="center">
+        {successSB && (renderSuccessSB)}
+      </MDBox>
     </CoverLayout>
   );
 }

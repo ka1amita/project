@@ -127,7 +127,8 @@ const routes = [
     key: "user-management",
     icon: <Icon fontSize="small">list</Icon>,
     route: "/user-management",
-    component: <UserManagement />,
+    component: <UserManagement/>,
+    roleProtected: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -166,7 +167,7 @@ const routes = [
     name: "Reset Password",
     key: "reset-password",
     icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/auth/reset-password",
+    route: "/auth/reset-password/:token",
     component: <ResetPassword />,
   },
 ];

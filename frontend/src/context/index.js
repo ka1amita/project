@@ -23,6 +23,8 @@ import { createContext, useContext, useReducer, useMemo, useState, useEffect } f
 // prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
+import { isExpired, decodeToken } from "react-jwt";
+
 
 // Material Dashboard 2 React main context
 const MaterialUI = createContext();
@@ -33,6 +35,8 @@ export const AuthContext = createContext({
   login: () => {},
   register: () => {},
   logout: () => {},
+  hasRoles: () => {},
+  getUsername: () => {},
 });
 
 const AuthContextProvider = ({ children }) => {
@@ -45,6 +49,10 @@ const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (!token) return;
+    if (isExpired(token)) {
+      logout()
+      return;
+    }
 
     setIsAuthenticated(true);
     navigate(location.pathname);
@@ -64,6 +72,11 @@ const AuthContextProvider = ({ children }) => {
   const login = (token) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
+    
+    if (isExpired(token)) {
+      logout()
+      return;
+    }
     navigate("/dashboard");
   };
 
@@ -73,8 +86,30 @@ const AuthContextProvider = ({ children }) => {
     navigate("/auth/login");
   };
 
+  const register = () => {
+    navigate("/auth/login")
+  }
+
+  const hasRoles = (roles) => {
+    if (isAuthenticated) {
+      const decodedToken = decodeToken(token);
+      if (roles) {
+        return roles.every(element => decodedToken.roles.includes(element));
+      }
+      return false;
+    }
+  }
+
+  const getUsername = () => {
+    if (isAuthenticated) {
+      const decodedToken = decodeToken(token);
+      return decodedToken.sub;
+    }
+    return "";
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, register, hasRoles, getUsername }}>
       {children}
     </AuthContext.Provider>
   );

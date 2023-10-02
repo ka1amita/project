@@ -79,7 +79,6 @@ export default function App() {
       key: "rtl",
       stylisPlugins: [rtlPlugin],
     });
-
     setRtlCache(cacheRtl);
   }, []);
 
@@ -119,6 +118,16 @@ export default function App() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
+
+  const filteredRoutes = (allRoutes) => {
+    return allRoutes.filter(route => {
+      if (route.roleProtected) {
+        return authContext.hasRoles(route.roleProtected)
+      } else {
+        return true;
+      }
+    })
+  }
 
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
@@ -277,7 +286,7 @@ export default function App() {
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
             <Route
               exact
               path="user-profile"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 // react-router-dom components
-import { Link } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -22,8 +22,9 @@ import AuthService from "services/auth-service";
 
 // for the reset I should take from the url the token sent and the email
 const PasswordReset = () => {
-  const [token, setToken] = useState(null);
-  const [email, setEmail] = useState(null);
+  console.log(useParams());
+  let {token} = useParams();
+  // const [email, setEmail] = useState(null);
   const [notification, setNotification] = useState(false);
 
   const [inputs, setInputs] = useState({
@@ -47,9 +48,9 @@ const PasswordReset = () => {
 
   useEffect(() => {
     // get the token and email sent in the url
-    const queryParams = new URLSearchParams(window.location.search);
-    setToken(queryParams.get("token"));
-    setEmail(queryParams.get("email"));
+    // const queryParams = new URLSearchParams(window.location. .pathname .search);
+    // setToken(queryParams.get("token"));
+    // setEmail(queryParams.get("email"));
   }, []);
 
   const submitHandler = async (e) => {
@@ -68,7 +69,7 @@ const PasswordReset = () => {
     const formData = {
       password: inputs.password,
       password_confirmation: inputs.password_confirmation,
-      email: email,
+      // email: email,
       token: token,
     };
 
