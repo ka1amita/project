@@ -297,8 +297,17 @@ public class AppUserServiceImpl implements AppUserService {
 
         //add
         String langHeader = httpServletRequest.getHeader("Accept-Language");
-        if (langHeader != null && (langHeader.contains("en") || langHeader.contains("hu") || langHeader.contains("cz"))) {
-            newUser.setPreferredLanguage(langHeader);  // saves "en", "hu" or "cz" in the database
+        if (langHeader != null) {
+            if(langHeader.contains("en")) {
+                newUser.setPreferredLanguage("en");
+            } else if(langHeader.contains("hu")) {
+                newUser.setPreferredLanguage("hu");
+            } else if(langHeader.contains("cz")) {
+                newUser.setPreferredLanguage("cz");
+            } else {
+                newUser.setPreferredLanguage("en");
+            }
+            newUser.setPreferredLanguage(langHeader.substring(0, 2));  // saves "en", "hu" or "cz" in the database
         }
 
         ActivationCode activationCode = assignActivationCodeToUser(newUser);
