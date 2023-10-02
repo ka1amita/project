@@ -14,7 +14,7 @@ public class PasswordResetRequestDTO extends RequestDTO {
     public PasswordResetRequestDTO() {
     }
 
-    public PasswordResetRequestDTO(String usernameOrEmail, String email) {
+    public PasswordResetRequestDTO(String usernameOrEmail) {
         this.usernameOrEmail = usernameOrEmail;
     }
 
