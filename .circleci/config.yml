@@ -41,10 +41,6 @@ workflows:
             <<: *java8
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
-          filters: &develop_only
-            branches:
-              only:
-                - develop
       
       - parallel_tests:
           requires:
