@@ -288,7 +288,7 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public String activateAccount(String code) {
+    public void activateAccount(String code) {
         Optional<ActivationCode> activationCodeOpt = activationCodeService.findByActivationCodeContains(code);
 
         if (!activationCodeOpt.isPresent()) {
@@ -297,23 +297,19 @@ public class AppUserServiceImpl implements AppUserService {
 
         ActivationCode activationCode = activationCodeOpt.get();
         AppUser appUser = activationCode.getAppUser();
-        String language = appUser.getPreferredLanguage();
 
         LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = activationCodeCreationTime.plusMinutes(ActivationCodeExpireMinutes);
 
         if (now.isAfter(expirationTime)) {
-            throw new ActivationCodeExpiredException(messageSource.getMessage("error.activation.code.expiry", null, new Locale(language)));
+            throw new ActivationCodeExpiredException(messageSource.getMessage("error.activation.code.expiry", null, LocaleContextHolder.getLocale()));
         }
 
         appUser.setActive(true);
-        appUser.setVerifiedAt(LocalDateTime.now());
+        appUser.setVerifiedAt(now);
         appUserRepository.save(appUser);
-        String lang = appUser.getPreferredLanguage();
         activationCodeService.deleteActivationCode(activationCode);
-
-        return lang;
     }
 
     private ActivationCode assignActivationCodeToUser(AppUser appUser) {
