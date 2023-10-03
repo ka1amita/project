@@ -29,14 +29,11 @@ function Register() {
   const openSuccessSB = () => setSuccessSB(true);
   const closeSuccessSB = () => setSuccessSB(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const alertContent = (message) => (
-      <MDTypography variant="body2" color="white">
-        {message}
-      </MDTypography>
-  );
   const renderSuccessSB = (
       <MDAlert color="success">
-        {alertContent(successMessage)}
+        <MDTypography variant="body2" color="white">
+          {successMessage}
+        </MDTypography>
       </MDAlert>
   );
 
@@ -55,6 +52,7 @@ function Register() {
     error: false,
     errorText: "",
   });
+  // const [error, setError]
 
   const changeHandler = (e) => {
     setInputs({
@@ -67,20 +65,45 @@ function Register() {
     e.preventDefault();
 
     const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,-./:;<=>?@\[\]\\^_`{|}~]).{8,}$/;
 
     if (inputs.name.trim().length === 0) {
-      setErrors({ ...errors, nameError: true });
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        nameError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        nameError: false
+      }));
     }
 
     if (inputs.email.trim().length === 0 || !inputs.email.trim().match(mailFormat)) {
-      setErrors({ ...errors, emailError: true });
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        emailError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        emailError: false
+      }));
     }
 
-    if (inputs.password.trim().length < 8) {
-      setErrors({ ...errors, passwordError: true });
+    if (inputs.password.trim().length < 8 || !inputs.password.trim().match(passwordFormat)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: false
+      }));
     }
 
     // if (inputs.agree === false) {
@@ -88,7 +111,6 @@ function Register() {
     //   return;
     // }
 
-    // here will be the post action to add a user to the db
     const newUser = { name: inputs.name, email: inputs.email, password: inputs.password };
 
     const myData = {
@@ -116,7 +138,6 @@ function Register() {
         closeSuccessSB();
         // authContext.register();
       }, 10000)
-      // authContext.login(response.access_token, response.refresh_token);
 
       setInputs({
         name: "",
@@ -134,8 +155,26 @@ function Register() {
         errorText: "",
       });
     } catch (err) {
-      setErrors({ ...errors, error: true, errorText: err.message });
-      // console.error(err);
+      if(err.hasOwnProperty("message")) {
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          errorText: err.message
+        }));
+      } else if(err.hasOwnProperty("error_message")) {
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          errorText: err.error_message
+        }));
+      } else {
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          errorText: "Unknown error"
+        }));
+        console.error(err);
+      }
     }
   };
 
@@ -221,7 +260,7 @@ function Register() {
               />
               {errors.passwordError && (
                 <MDTypography variant="caption" color="error" fontWeight="light">
-                  The password must be of at least 8 characters
+                  Password must contain at least 8 characters, including at least 1 lower case, 1 upper case, 1 number, and 1 special character.
                 </MDTypography>
               )}
             </MDBox>
