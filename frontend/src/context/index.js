@@ -53,21 +53,14 @@ const AuthContextProvider = ({ children }) => {
       logout()
       return;
     }
-
     setIsAuthenticated(true);
-    navigate(location.pathname);
-  }, []);
 
-  useEffect(() => {
-    if (!token) return;
-
-    setIsAuthenticated(isAuthenticated);
-    if (location.pathname === "/auth/login" || location.pathname === "/auth/register") {
+    if (location.pathname.startsWith("/auth/")) {
       navigate("/dashboard");
     } else {
       navigate(location.pathname);
     }
-  }, [isAuthenticated]);
+  }, []);
 
   const login = (token) => {
     localStorage.setItem("token", token);
