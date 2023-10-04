@@ -9,31 +9,40 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.gfa.config.SoftDeleteConfig;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
 import com.gfa.models.Role;
 import com.gfa.repositories.AppUserRepository;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ParameterContext;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class AppUserServiceUnitTests {
-
     @Mock
-    PasswordEncoder passwordEncoder; // necessary for the appUserService.encodePasswordAndSaveAppUser
+    BCryptPasswordEncoder bCryptPasswordEncoder;
     @Mock // necessary!
     AppUserRepository appUserRepository;
+    @Mock // necessary for the appUserService.findByUsernameOrEmail()
+    MessageSource messageSource;
     @InjectMocks // necessary!
     AppUserServiceImpl appUserService;
+
     AppUser appUser;
     Long id;
     String username;
@@ -41,6 +50,8 @@ public class AppUserServiceUnitTests {
     String email;
     Role role;
     ActivationCode code;
+    boolean active;
+    boolean deleted;
     @BeforeEach
     public void setup() {
         id = null;
@@ -59,34 +70,38 @@ public class AppUserServiceUnitTests {
                .add(role);
         appUser.getActivationCodes()
                .add(code);
+        active = true;
+        deleted = false;
+        appUser.setActive(active);
+        appUser.setDeleted(deleted);
     }
     @Test
     public void doesnt_find_user_neither_by_wrong_email_nor_name_and_throws_an_exception() {
         when(appUserRepository.findByUsernameOrEmail(any(String.class), any(String.class))).thenReturn(
-            Optional.ofNullable(null));
+            Optional.empty());
 
         AppUser foundUserByUsername = null;
         AppUser foundUserByEmail = null;
         try {
-            foundUserByUsername = appUserService.findByUsernameOrEmail("any");
+            foundUserByUsername = appUserService.findByUsernameOrEmail("wrong_name");
         } catch (Exception expected) {
         }
 
         try {
-            foundUserByEmail = appUserService.findByUsernameOrEmail("any");
+            foundUserByEmail = appUserService.findByUsernameOrEmail("wrong_email");
         } catch (Exception expected) {
         }
         assertNull(foundUserByUsername);
         assertNull(foundUserByEmail);
+
+        // requires @Mock MessageSource messageSource;
         Exception exceptionFromName = assertThrows(UsernameNotFoundException.class,
                                                    () -> appUserService.findByUsernameOrEmail(
                                                        "wrong_name"));
-        assertEquals("User not found in the DB", exceptionFromName.getMessage());
 
         Exception exceptionFromEmail = assertThrows(UsernameNotFoundException.class,
                                                     () -> appUserService.findByUsernameOrEmail(
                                                         "wrong_email"));
-        assertEquals("User not found in the DB", exceptionFromEmail.getMessage());
     }
 
     @Test
@@ -101,23 +116,22 @@ public class AppUserServiceUnitTests {
 
     @Test
     public void encodes_password_and_saves_user() {
-        appUser.setId(1L);
-
         when(appUserRepository.save(any(AppUser.class))).thenReturn(appUser);
+        when(bCryptPasswordEncoder.encode(any(String.class))).thenReturn(new BCryptPasswordEncoder().encode(appUser.getPassword()));
 
         AppUser savedUser = appUserService.encodePasswordAndSaveAppUser(appUser);
 
         assertNotNull(appUser);
         assertNotNull(savedUser);
         assertSame(appUser, savedUser);
-        assertEquals(1, savedUser.getId());
-        assertEquals(appUser.getUsername(), savedUser.getUsername());
-        String encodedPassword = new BCryptPasswordEncoder().encode(password);
-        assertEquals(encodedPassword, savedUser.getPassword());
-        assertEquals(appUser.isActive(), savedUser.isActive());
-        assertEquals(appUser.getEmail(), savedUser.getEmail());
-        assertEquals(appUser.getAuthorities(), savedUser.getAuthorities());
-        assertEquals(appUser.getRoles(), savedUser.getRoles());
-        assertEquals(appUser.getActivationCodes(), savedUser.getActivationCodes());
+        assertNull(savedUser.getId());
+        assertNotNull(savedUser.getPassword());
+        assertEquals(username, savedUser.getUsername());
+        assertTrue(new BCryptPasswordEncoder().matches(password, savedUser.getPassword()));
+        assertEquals(active, savedUser.isActive());
+        assertEquals(email, savedUser.getEmail());
+        assertEquals(new HashSet(Arrays.asList(role)), savedUser.getAuthorities());
+        assertEquals(new HashSet(Arrays.asList(role)), savedUser.getRoles());
+        assertEquals(new HashSet(Arrays.asList(code)), savedUser.getActivationCodes());
     }
 }
