@@ -6,7 +6,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
-import com.gfa.repositories.AppUserRepository;
 import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
 import org.springframework.context.MessageSource;
@@ -19,16 +18,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.LocaleResolver;
 
 @EnableWebSecurity
 public class SecurityConfig {
-    //add
-    private final AppUserRepository appUserRepository;
-
     private final MessageSource messageSource;
 
-    public SecurityConfig(AppUserRepository appUserRepository, MessageSource messageSource) {
-        this.appUserRepository = appUserRepository;
+    public SecurityConfig(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
@@ -54,7 +50,7 @@ public class SecurityConfig {
     }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService, LocaleResolver localeResolver) throws Exception {
     http.csrf()
         .disable();
     http.cors();
@@ -79,9 +75,9 @@ public class SecurityConfig {
               .permitAll();
     http.authorizeRequests()
         .anyRequest()
-        .authenticated(); // the rest requires some Role
+        .authenticated(); // the rest require some Role
     http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService,messageSource));
-    http.addFilterBefore(new CustomAuthorizationFilter(tokenService, appUserRepository),
+    http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
                          UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

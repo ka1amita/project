@@ -40,7 +40,7 @@ public class RegistrationController {
 
     @GetMapping("/confirm/{activationCode}")
     public ResponseEntity<? extends ResponseDTO> activateAccount(@PathVariable String activationCode) {
-        String lang = appUserService.activateAccount(activationCode);
-        return ResponseEntity.ok(new RegisterResponseDTO(messageSource.getMessage("dto.activate.response", null, new Locale(lang))));
+        appUserService.activateAccount(activationCode);
+        return ResponseEntity.ok(new RegisterResponseDTO(messageSource.getMessage("dto.activate.response", null, LocaleContextHolder.getLocale())));
     }
 }

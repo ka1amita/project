@@ -58,19 +58,34 @@ function Login() {
   };
 
   const submitHandler = async (e) => {
-    // check rememeber me?
     e.preventDefault();
 
-    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,-./:;<=>?@\[\]\\^_`{|}~]).{8,}$/;
 
-    if (inputs.email.trim().length === 0 /*|| !inputs.email.trim().match(mailFormat)*/) {
-      setErrors({ ...errors, emailError: true });
+    if (inputs.email.trim().length === 0) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        emailError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        emailError: false
+      }));
     }
 
-    if (inputs.password.trim().length < 6) {
-      setErrors({ ...errors, passwordError: true });
+    if (inputs.password.trim().length < 8 || !inputs.password.trim().match(passwordFormat)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: false
+      }));
     }
 
     const newUser = { email: inputs.email, password: inputs.password };
@@ -89,8 +104,11 @@ function Login() {
     } catch (res) {
       if (res.hasOwnProperty("message")) {
         setCredentialsError(res.message);
+      } else if (res.hasOwnProperty("error_message")) {
+        setCredentialsError(res.error_message);
       } else {
-        setCredentialsError(res.errors[0].detail);
+        setCredentialsError("Unknown error");
+        console.log(res);
       }
     }
 

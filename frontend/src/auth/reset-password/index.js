@@ -54,15 +54,34 @@ const PasswordReset = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setNotification(false);
 
-    if (inputs.password.trim().length < 6) {
-      setErrors({ ...errors, passwordError: true });
+    const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,-./:;<=>?@\[\]\\^_`{|}~]).{8,}$/;
+
+    if (inputs.password.trim().length === 0 || !inputs.password.trim().match(passwordFormat)) {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        passwordError: false
+      }));
     }
 
     if (inputs.password_confirmation.trim() !== inputs.password.trim()) {
-      setErrors({ ...errors, confirmationError: true });
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        confirmationError: true
+      }));
       return;
+    } else {
+      setErrors(prevErrors => ({
+        ...prevErrors,
+        confirmationError: false
+      }));
     }
 
     const formData = {
@@ -94,17 +113,30 @@ const PasswordReset = () => {
         textError: "",
       });
 
-      if (errors.passwordError === false && errors.confirmationError === false) {
-        setNotification(true);
-        setTimeout(() => {
-          setNotification(false);
-        }, 10000)
-      }
+      setNotification(true);
+      setTimeout(() => {
+        setNotification(false);
+      }, 10000)
     } catch (err) {
       if (err.hasOwnProperty("errors")) {
-        setErrors({ ...errors, error: true, textError: err.errors.password[0] });
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          textError: err.errors.password[0]
+        }));
       } else if (err.hasOwnProperty("error_message")) {
-        setErrors({ ...errors, error: true, textError: err.error_message });
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          textError: err.error_message
+        }));
+      } else {
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          error: true,
+          textError: "Unknown error"
+        }));
+        console.log(err);
       }
       return null;
     }
@@ -188,7 +220,7 @@ const PasswordReset = () => {
         </MDBox>
       </Card>
       {notification && (
-        <MDAlert color="info" mt="20px" dismissible>
+        <MDAlert color="info" mt="20px">
           <MDTypography variant="body2" color="white">
             Your password change was successful. Go back to
             <MDTypography

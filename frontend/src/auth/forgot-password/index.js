@@ -44,15 +44,13 @@ function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setNotification(false);
 
-    const mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-    if (input.email.trim().length === 0 /*|| !input.email.trim().match(mailFormat)*/) {
+    if (input.email.trim().length === 0) {
       setError({ err: true, textError: "The email/username must be valid" });
       return;
     }
 
-    // somthing not right with the data
     const myData = {
       data: {
         type: "password-forgot",
@@ -64,21 +62,27 @@ function ForgotPassword() {
     };
 
     try {
-      if (isDemo == false) {
+      if (!isDemo) {
         const response = await authService.forgotPassword(myData);
         setError({ err: false, textError: "" });
       }
       setNotification(true);
+      setTimeout(() => {
+        setNotification(false);
+      }, 10000)
     } catch (err) {
-      console.error(err);
       if (err.hasOwnProperty("errors")) {
         if (err.errors.hasOwnProperty("email")) {
           setError({ err: true, textError: err.errors.email[0] });
         } else {
           setError({ err: true, textError: "An error occured" });
+          console.error(err);
         }
       } else if (err.hasOwnProperty("error_message")) {
         setError({ err: true, textError: err.error_message });
+      } else {
+        setError({ err: true, textError: "Unknown error" });
+        console.error(err);
       }
       return null;
     }
@@ -133,7 +137,7 @@ function ForgotPassword() {
         </MDBox>
       </Card>
       {notification && (
-        <MDAlert color="info" mt="20px" dismissible>
+        <MDAlert color="info" mt="20px">
           <MDTypography variant="body2" color="white">
           {isDemo
               ? "You can't update the password in the demo version"
