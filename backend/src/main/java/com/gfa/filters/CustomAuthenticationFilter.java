@@ -5,14 +5,15 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.dtos.responsedtos.ResponseTokensDTO;
 import com.gfa.services.TokenService;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -81,7 +82,6 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         String username = user.getUsername();
 
         Collection<GrantedAuthority> authorities = user.getAuthorities();
-        Calendar now = Calendar.getInstance();
         String issuer = request.getRequestURL()
                 .toString();
         ResponseTokensDTO tokens = tokenService.createTokens(username, issuer, authorities);

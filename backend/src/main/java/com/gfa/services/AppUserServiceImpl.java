@@ -38,7 +38,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class AppUserServiceImpl implements AppUserService {
@@ -53,7 +52,6 @@ public class AppUserServiceImpl implements AppUserService {
     @Value("${ACTIVATION_CODE_MAX_SIZE:48}")
     private final Integer ActivationCodeMaxSize = 48;
     private final SoftDeleteConfig softDeleteConfig;
-    private final HttpServletRequest httpServletRequest;
     private final MessageSource messageSource;
 
     @Autowired
@@ -63,7 +61,6 @@ public class AppUserServiceImpl implements AppUserService {
                               ActivationCodeService activationCodeService,
                               RoleService roleService,
                               SoftDeleteConfig softDeleteConfig,
-                              HttpServletRequest httpServletRequest,
                               MessageSource messageSource) {
         this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -71,14 +68,12 @@ public class AppUserServiceImpl implements AppUserService {
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
         this.softDeleteConfig = softDeleteConfig;
-        this.httpServletRequest = httpServletRequest;
         this.messageSource = messageSource;
     }
 
     @Override
     public ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws
             MessagingException {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<AppUser> appUser = Optional.empty();
         if (passwordResetRequestDTO != null) {
             appUser = appUserRepository.findByEmail(passwordResetRequestDTO.getUsernameOrEmail());
@@ -92,14 +87,13 @@ public class AppUserServiceImpl implements AppUserService {
             emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
-            throw new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale));
+            throw new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale()));
         }
     }
 
     @Override
     public ResponseEntity<ResponseDTO> resetWithCode(PasswordResetWithCodeRequestDTO
                                                              passwordResetWithCodeRequestDTO, String resetCode) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<ActivationCode> activationCode = activationCodeService.findByActivationCodeContains(resetCode);
         if (activationCode.isPresent() && activationCode.get().getCreatedAt().plusMinutes(ActivationCodeExpireMinutes).isAfter(LocalDateTime.now())) {
             if (Utils.IsUserPasswordFormatValid(passwordResetWithCodeRequestDTO.getPassword())) {
@@ -108,21 +102,20 @@ public class AppUserServiceImpl implements AppUserService {
                 saveUser(appUser);
                 activationCodeService.deleteActivationCode(activationCode.get());
             } else {
-                throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, currentLocale));
+                throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, LocaleContextHolder.getLocale()));
             }
         } else {
-            throw new InvalidActivationCodeException(messageSource.getMessage("error.invalid.reset.code", null, currentLocale));
+            throw new InvalidActivationCodeException(messageSource.getMessage("error.invalid.reset.code", null, LocaleContextHolder.getLocale()));
         }
-        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO(messageSource.getMessage("dto.password.reset", null, currentLocale)));
+        return ResponseEntity.ok(new PasswordResetWithCodeResponseDTO(messageSource.getMessage("dto.password.reset", null, LocaleContextHolder.getLocale())));
     }
 
     @Override
     public void addRoleToAppUser(String username, String roleName) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         AppUser appUser =
                 appUserRepository.findByUsername(username)
                         .orElseThrow(() -> new UsernameNotFoundException(
-                                messageSource.getMessage("error.username.not.found", null, currentLocale)));
+                                messageSource.getMessage("error.username.not.found", null, LocaleContextHolder.getLocale())));
         Role role =
                 roleService.findByName(roleName);
         appUser.getRoles()
@@ -154,10 +147,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser findUserByUsername(String username) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         return optAppUser.orElseThrow(
-                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
+                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, LocaleContextHolder.getLocale())));
     }
 
     /**
@@ -165,31 +157,27 @@ public class AppUserServiceImpl implements AppUserService {
      */
     @Deprecated
     public AppUser getAppUser(String username) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<AppUser> optAppUser = appUserRepository.findByUsername(username);
         return optAppUser.orElseThrow(
-                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
+                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, LocaleContextHolder.getLocale())));
     }
 
     @Override
     public AppUser fetchAppUserById(Long id) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         return appUserRepository.findById(id).orElseThrow(()
-                -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale))
+                -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale()))
         );
     }
 
     @Override
     public AppUserResponseDTO fetchUserApi(Long id) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
-        if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, currentLocale));
+        if (id < 0) throw new InvalidIdException(messageSource.getMessage("error.invalid.id", null, LocaleContextHolder.getLocale()));
         AppUser user = fetchAppUserById(id);
         return new AppUserResponseDTO(user);
     }
 
     @Override
     public AppUserResponseDTO updateAppUserApi(Long id, UpdateAppUserDTO request) throws MessagingException {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         isIdValid(id);
         isJSONBodyPresent(request);
         AppUser appUser = fetchAppUserById(id);
@@ -207,7 +195,7 @@ public class AppUserServiceImpl implements AppUserService {
             if (Utils.IsUserPasswordFormatValid(request.getPassword())) {
                 appUser.setPassword(request.getPassword());
             } else
-                throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, currentLocale));
+                throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, LocaleContextHolder.getLocale()));
         }
         if (!oldEmail.equals(appUser.getEmail())) {
             appUser.setActive(false);
@@ -230,10 +218,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public void removeAppUser(Long id) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         isIdValid(id);
         AppUser user = appUserRepository.findById(id).orElseThrow(()
-                -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, currentLocale)));
+                -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale())));
         if (softDeleteConfig.isEnabled()) {
             user.setDeleted(true);
             user.setActive(false);
@@ -255,10 +242,9 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser findByUsernameOrEmail(String login) {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<AppUser> optAppUser = appUserRepository.findByUsernameOrEmail(login, login);
         return optAppUser.orElseThrow(
-                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, currentLocale)));
+                () -> new UsernameNotFoundException(messageSource.getMessage("error.username.not.found", null, LocaleContextHolder.getLocale())));
     }
 
     @Override
@@ -269,22 +255,21 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
-        Locale currentLocale = LocaleContextHolder.getLocale();
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
-            throw new UserAlreadyExistsException(messageSource.getMessage("error.username.exists", null, currentLocale));
+            throw new UserAlreadyExistsException(messageSource.getMessage("error.username.exists", null, LocaleContextHolder.getLocale()));
         }
 
         if (appUserRepository.existsByEmail(request.getEmail())) {
-            throw new EmailAlreadyExistsException(messageSource.getMessage("error.email.exists", null, currentLocale));
+            throw new EmailAlreadyExistsException(messageSource.getMessage("error.email.exists", null, LocaleContextHolder.getLocale()));
         }
 
         if (!request.getEmail().contains("@")) {
-            throw new EmailFormatException(messageSource.getMessage("error.email.missing.at.sign", null, currentLocale));
+            throw new EmailFormatException(messageSource.getMessage("error.email.missing.at.sign", null, LocaleContextHolder.getLocale()));
         }
 
         if (!Utils.IsUserPasswordFormatValid(request.getPassword())) {
-            throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, currentLocale));
+            throw new InvalidPasswordFormatException(messageSource.getMessage("error.invalid.password.format", null, LocaleContextHolder.getLocale()));
         }
 
         AppUser newUser = new AppUser();
@@ -295,21 +280,6 @@ public class AppUserServiceImpl implements AppUserService {
         newUser.setCreatedAt(LocalDateTime.now());
         encodePasswordAndSaveAppUser(newUser);
 
-        //add
-        String langHeader = httpServletRequest.getHeader("Accept-Language");
-        if (langHeader != null) {
-            if(langHeader.contains("en")) {
-                newUser.setPreferredLanguage("en");
-            } else if(langHeader.contains("hu")) {
-                newUser.setPreferredLanguage("hu");
-            } else if(langHeader.contains("cz")) {
-                newUser.setPreferredLanguage("cz");
-            } else {
-                newUser.setPreferredLanguage("en");
-            }
-            newUser.setPreferredLanguage(langHeader.substring(0, 2));  // saves "en", "hu" or "cz" in the database
-        }
-
         ActivationCode activationCode = assignActivationCodeToUser(newUser);
 
         emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
@@ -318,33 +288,28 @@ public class AppUserServiceImpl implements AppUserService {
     }
 
     @Override
-    public String activateAccount(String code) {
+    public void activateAccount(String code) {
         Optional<ActivationCode> activationCodeOpt = activationCodeService.findByActivationCodeContains(code);
-        Locale currentLocale = LocaleContextHolder.getLocale();
 
         if (!activationCodeOpt.isPresent()) {
-            throw new InvalidActivationCodeException(messageSource.getMessage("error.invalid.activation.code", null, currentLocale));
+            throw new InvalidActivationCodeException(messageSource.getMessage("error.invalid.activation.code", null, LocaleContextHolder.getLocale()));
         }
 
         ActivationCode activationCode = activationCodeOpt.get();
         AppUser appUser = activationCode.getAppUser();
-        String language = appUser.getPreferredLanguage();
 
         LocalDateTime activationCodeCreationTime = activationCode.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = activationCodeCreationTime.plusMinutes(ActivationCodeExpireMinutes);
 
         if (now.isAfter(expirationTime)) {
-            throw new ActivationCodeExpiredException(messageSource.getMessage("error.activation.code.expiry", null, new Locale(language)));
+            throw new ActivationCodeExpiredException(messageSource.getMessage("error.activation.code.expiry", null, LocaleContextHolder.getLocale()));
         }
 
         appUser.setActive(true);
-        appUser.setVerifiedAt(LocalDateTime.now());
+        appUser.setVerifiedAt(now);
         appUserRepository.save(appUser);
-        String lang = appUser.getPreferredLanguage();
         activationCodeService.deleteActivationCode(activationCode);
-
-        return lang;
     }
 
     private ActivationCode assignActivationCodeToUser(AppUser appUser) {

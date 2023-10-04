@@ -26,7 +26,7 @@ public interface AppUserService {
 
     AppUser registerUser(RegisterRequestDTO request) throws MessagingException;
 
-    String activateAccount(String activationCode);
+    void activateAccount(String activationCode);
 
     ResponseEntity<ResponseDTO> reset(PasswordResetRequestDTO passwordResetRequestDTO) throws MessagingException;
 
