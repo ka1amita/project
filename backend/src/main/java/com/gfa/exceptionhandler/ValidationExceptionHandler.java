@@ -1,5 +1,6 @@
 package com.gfa.exceptionhandler;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.exceptions.activation.InvalidActivationCodeException;
 import com.gfa.exceptions.todo.TodoAlreadyExistsWithThisNameForThisUserException;
@@ -66,6 +67,11 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(TodoNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleTodoNotFoundException(TodoNotFoundException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDTO> handleTokenExpiredException(TokenExpiredException e) {
         return ResponseEntity.badRequest().body(new ErrorResponseDTO(e.getMessage()));
     }
 }

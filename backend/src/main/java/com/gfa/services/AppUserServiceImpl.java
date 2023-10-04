@@ -270,6 +270,12 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public AppUser registerUser(RegisterRequestDTO request) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
+        List<AppUser> deletedUsers = appUserRepository.findAllDeletedAppUsersList();
+
+        for(AppUser user : deletedUsers) {
+            if(user.getUsername().equals(request.getUsername())) {
+                throw new UserAlreadyExistsException(messageSource.getMessage("error.username.exists", null, currentLocale));            }
+        }
 
         if (appUserRepository.existsByUsername(request.getUsername())) {
             throw new UserAlreadyExistsException(messageSource.getMessage("error.username.exists", null, currentLocale));
