@@ -106,7 +106,7 @@ function DefaultNavbar({ transparent, light, action }) {
       >
         <MDBox
           component={Link}
-          to="/"
+          to={authContext.isAuthenticated ? "/dashboard" : "/auth/login"}
           py={transparent ? 1.5 : 0.75}
           lineHeight={1}
           pl={{ xs: 0, lg: 1 }}
@@ -121,19 +121,6 @@ function DefaultNavbar({ transparent, light, action }) {
               icon="donut_large"
               name="dashboard"
               route="/dashboard"
-              light={light}
-            />
-            <DefaultNavbarLink icon="person" name="profile" route="/profile" light={light} />
-            <DefaultNavbarLink
-              icon="account_circle"
-              name="sign up"
-              route="/authentication/sign-up"
-              light={light}
-            />
-            <DefaultNavbarLink
-              icon="key"
-              name="sign in"
-              route="/authentication/sign-in"
               light={light}
             />
           </MDBox>
