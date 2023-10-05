@@ -32,7 +32,7 @@ public class ValidationExceptionHandler {
 
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ErrorResponseDTO> handleMessagingException(MessagingException ex) {
-        ErrorResponseDTO error = new ErrorResponseDTO(messageSource.getMessage("error.email.invalid.format", null, LocaleContextHolder.getLocale()));
+        ErrorResponseDTO error = new ErrorResponseDTO(ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
