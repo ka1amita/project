@@ -48,6 +48,7 @@ import { AuthContext } from "context";
 import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import MetaTags from 'react-meta-tags'
+import PageNotFound from "layouts/page-not-found";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -287,6 +288,7 @@ export default function App() {
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/pagenotfound" element={<PageNotFound />} />
             <Route
               exact
               path="user-profile"
@@ -308,7 +310,7 @@ export default function App() {
               key="user-management"
             />
             {getRoutes(routes)}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
+            <Route path="*" element={<Navigate to="/pagenotfound" />} />
           </Routes>
         </ThemeProvider>
       )}
