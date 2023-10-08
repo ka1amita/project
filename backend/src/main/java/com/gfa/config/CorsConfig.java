@@ -1,5 +1,6 @@
 package com.gfa.config;
 
+import com.gfa.utils.Endpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,11 +20,13 @@ public class CorsConfig {
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/login", corsConfiguration);
-        source.registerCorsConfiguration("/register", corsConfiguration);
-        source.registerCorsConfiguration("/dashboard", corsConfiguration);
-        source.registerCorsConfiguration("/reset", corsConfiguration);
-        source.registerCorsConfiguration("/reset/*", corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.LOGIN, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.REGISTER, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.DASHBOARD, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.RESET_PASSWORD, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.RESET_PASSWORD + "/*", corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.TODO_API, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.TODO_API + "/*", corsConfiguration);
         return source;
     }
 }
