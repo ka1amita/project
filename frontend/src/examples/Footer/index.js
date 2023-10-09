@@ -67,38 +67,38 @@ function Footer({ company, links }) {
           </Icon>
         </MDBox>
         by
-        <Link href={href} target="_blank">
+        <Link href="" target="_blank">
           <MDTypography variant="button" fontWeight="medium">
-            &nbsp;{name}&nbsp;
+            &nbsp;Commited&nbsp;
           </MDTypography>
         </Link>
-        &amp;
-        <Link href="https://updivision.com" target="_blank">
-          <MDTypography variant="button" fontWeight="medium">
-            &nbsp;UPDIVISION&nbsp;
-          </MDTypography>
-        </Link>
-        for a better web.
+        {/*&amp;*/}
+        {/*<Link href="https://updivision.com" target="_blank">*/}
+        {/*  <MDTypography variant="button" fontWeight="medium">*/}
+        {/*    &nbsp;UPDIVISION&nbsp;*/}
+        {/*  </MDTypography>*/}
+        {/*</Link>*/}
+        {/*for a better web.*/}
       </MDBox>
-      <MDBox
-        component="ul"
-        sx={({ breakpoints }) => ({
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "center",
-          listStyle: "none",
-          mt: 3,
-          mb: 0,
-          p: 0,
+      {/*<MDBox*/}
+      {/*  component="ul"*/}
+      {/*  sx={({ breakpoints }) => ({*/}
+      {/*    display: "flex",*/}
+      {/*    flexWrap: "wrap",*/}
+      {/*    alignItems: "center",*/}
+      {/*    justifyContent: "center",*/}
+      {/*    listStyle: "none",*/}
+      {/*    mt: 3,*/}
+      {/*    mb: 0,*/}
+      {/*    p: 0,*/}
 
-          [breakpoints.up("lg")]: {
-            mt: 0,
-          },
-        })}
-      >
-        {renderLinks()}
-      </MDBox>
+      {/*    [breakpoints.up("lg")]: {*/}
+      {/*      mt: 0,*/}
+      {/*    },*/}
+      {/*  })}*/}
+      {/*>*/}
+      {/*  {renderLinks()}*/}
+      {/*</MDBox>*/}
     </MDBox>
   );
 }
