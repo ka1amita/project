@@ -62,8 +62,7 @@ jobs:
                 command: scp $(find build/libs -name "*.jar") $EC2_USER@$EC2_HOST:~
       - run:
           name: Upload .env
-          command: echo "uploading .env file from S3"
-# replace with command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
+          command: echo "uploading .env file from S3" # TODO
       - run:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
@@ -107,21 +106,22 @@ workflows:
       - deploy:
           name: Deploy to development environment
           requires:
-            - build # change to `test`
+            - build # eplace with `test`
           filters:
             branches:
               ignore:
                 - develop
                 - main
           context:
-            - committed-todo-aws-ec2-dev
+            - committed-test-aws-ec2-dev # replace `test` with `todo`
       - deploy:
           name: Deploy to staging environment
           requires:
-            - build # change to `test`
+            - build # replace with `test`
           filters:
             branches:
               only:
                 - develop
           context:
-            - committed-todo-aws-ec2-staging
+            - committed-test-aws-ec2-staging # replace `test` with `todo`
+
