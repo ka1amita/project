@@ -49,11 +49,10 @@ jobs:
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
       - run:
           name: Clean-up env
-          command: ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env.*")'
+          command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
       - run:
           name: Clean-up jars
-          command: ssh $EC2_USER@$EC2_HOST 'find . -name "*.jar" | xargs rm'
-# find path/to -type f -name "my.name"| xargs rm
+          command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
       - run:
           name: Check clean-up
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
