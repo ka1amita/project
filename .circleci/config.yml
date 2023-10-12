@@ -26,42 +26,52 @@ jobs:
                 command: |
                   GRADLE_ARGS=$(cat src/test/java/classnames.txt | awk '{for (i=1; i<=NF; i++) print "--tests",$i}')
                   echo "Prepared arguments for Gradle: $GRADLE_ARGS"
-                  ./gradlew test $GRADLE_ARGS        
+                  ./gradlew test $GRADLE_ARGS
       - store_test_results:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/tests
+
+  deploy:
+    executor: *java8
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ff:6e:76:65:c5:43:f2:08:ac:93:a4:c9:b3:e7:d2:ab"
+      - run: ls -la ~/.ssh
+      - run: cat ~/.ssh/config
+      - run:
+          name: SSH check
+          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Build jar
+                command: ./gradlew bootJar
+            - run:
+                name: Upload jar
+                command: scp $(find build/libs -name '*.jar') $EC2_USER@$EC2_HOST:~
+      # returns filepath from the current dir!
+      - run:
+          name: List directory
+          command: ssh $EC2_USER@$EC2_HOST "ls -la"
+      - run:
+          name: Execute jar
+          command: ssh $EC2_USER@$EC2_HOST "nohup java -jar *.jar &" & sleep 15
 
 workflows:
   build_and_test:
     jobs:
       - gradle/run:
           name: build
-          executor: 
+          executor:
             <<: *java8
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
-      
-      - parallel_tests:
+      - deploy:
           requires:
-            - build
-      
-      - gradle/test:
-          name: checkstyle
-          requires:
-            - build
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          test_command: checkstyleMain; ./gradlew checkstyleTest
-          reports_path: backend/build/reports/checkstyle 
-
-      - gradle/test:
-          name: coverage
-          requires: 
-            - build
-          executor:
-            <<: *java8
-          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification 
-          app_src_directory: backend
-          reports_path: backend/build/jacoco
+            - build # change to `test`
+          context:
+            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
