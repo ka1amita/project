@@ -28,7 +28,7 @@ class AuthService {
   forgotPassword = async (payload) => {
     const forgotPassword = 'reset';
     const requestData = payload.data.attributes;
-    delete requestData.redirect_url;
+    // delete requestData.redirect_url;
     return await HttpService.post(forgotPassword, requestData);
   }
 
