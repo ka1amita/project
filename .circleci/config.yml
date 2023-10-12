@@ -38,10 +38,6 @@ jobs:
     steps:
       - checkout:
           path: ..
-      # - add_ssh_keys:
-      #     fingerprints:
-      #       - "ff:6e:76:65:c5:43:f2:08:ac:93:a4:c9:b3:e7:d2:ab"
-      - run: ls -la ~/.ssh
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
@@ -67,7 +63,7 @@ jobs:
       - run:
           name: Upload .env
           command: echo "uploading .env file from S3"
-#          command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
+# replace with command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
       - run:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
