@@ -48,10 +48,12 @@ jobs:
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
       - run:
           name: Clean-up
-          command: echo "Doing clean-up"
-#          command: ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env*") && echo $DB_URL'
-#          command: ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".jar*") && echo $DB_URL'
-
+          command: |
+            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env*") && echo $DB_URL'
+            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".jar*") && echo $DB_URL'
+      - run:
+          name: Check clean-up
+          command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - gradle/with_cache:
           steps:
             - run:
@@ -69,7 +71,7 @@ jobs:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - run:
-          name: Check jar
+          name: Check environment variables
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && echo $DB_URL'
       - run:
           name: Execute jar
