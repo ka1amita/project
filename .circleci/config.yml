@@ -46,8 +46,6 @@ jobs:
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
-      # first ssh requires `-o StrictHostKeychecking=no` option or adding to ~/.ssh/known_hosts
-      # note the exit! (`&` might also work)
       - gradle/with_cache:
           steps:
             - run:
@@ -73,7 +71,40 @@ workflows:
             <<: *java8
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+      - parallel_tests:
+          requires:
+            - build
+      - gradle/test:
+          name: checkstyle
+          requires:
+            - build
+          executor:
+            <<: *java8
+          app_src_directory: backend
+          test_command: checkstyleMain; ./gradlew checkstyleTest
+          reports_path: backend/build/reports/checkstyle
+      - gradle/test:
+          name: coverage
+          requires:
+            - build
+          executor:
+            <<: *java8
+          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+          app_src_directory: backend
+          reports_path: backend/build/jacoco
       - deploy:
+          name: Deploy to development environment
+          requires:
+            - build # change to `test`
+          filters:
+            branches:
+              ignore:
+                - develop
+                - main
+          context:
+            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
+      - deploy:
+          name: Deploy to staging environment
           requires:
             - build # change to `test`
           filters:
@@ -81,27 +112,4 @@ workflows:
               only:
                 - develop
           context:
-            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
-#      - parallel_tests:
-#          requires:
-#            - build
-#
-#      - gradle/test:
-#          name: checkstyle
-#          requires:
-#            - build
-#          executor:
-#            <<: *java8
-#          app_src_directory: backend
-#          test_command: checkstyleMain; ./gradlew checkstyleTest
-#          reports_path: backend/build/reports/checkstyle
-#
-#      - gradle/test:
-#          name: coverage
-#          requires:
-#            - build
-#          executor:
-#            <<: *java8
-#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-#          app_src_directory: backend
-#          reports_path: backend/build/jacoco
+            - committed-todo-aws-ec2-staging
