@@ -1,3 +1,9 @@
+### CircleCI
+.circleci/
+
+### Secrets
+*.pem
+
 ### General
 *.zip
 *.log
