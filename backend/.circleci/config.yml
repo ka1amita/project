@@ -33,9 +33,11 @@ jobs:
           path: build/reports/tests
 
   deploy:
+    working_directory: ~/project/backend
     executor: *java8
     steps:
-      - checkout
+      - checkout:
+          path: ..
       - add_ssh_keys:
           fingerprints:
             - "ff:6e:76:65:c5:43:f2:08:ac:93:a4:c9:b3:e7:d2:ab"
@@ -74,6 +76,10 @@ workflows:
       - deploy:
           requires:
             - build # change to `test`
+          filters:
+            branches:
+              only:
+                - develop
           context:
             - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
 #      - parallel_tests:
@@ -99,5 +105,3 @@ workflows:
 #          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
 #          app_src_directory: backend
 #          reports_path: backend/build/jacoco
-#
-
