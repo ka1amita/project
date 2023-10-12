@@ -71,7 +71,11 @@ workflows:
             <<: *java8
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
-
+      - deploy:
+          requires:
+            - build # change to `test`
+          context:
+            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
 #      - parallel_tests:
 #          requires:
 #            - build
@@ -96,12 +100,4 @@ workflows:
 #          app_src_directory: backend
 #          reports_path: backend/build/jacoco
 #
-      - deploy:
-          requires:
-            - build # change to `test`
-#          filters:
-#            branches:
-#              only:
-#                - develop
-          context:
-            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
+
