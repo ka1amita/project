@@ -46,6 +46,12 @@ jobs:
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+      - run:
+          name: Clean-up
+          command: echo "Doing clean-up"
+#          command: ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env*") && echo $DB_URL'
+#          command: ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".jar*") && echo $DB_URL'
+
       - gradle/with_cache:
           steps:
             - run:
@@ -55,6 +61,10 @@ jobs:
                 name: Upload jar
                 command: scp $(find build/libs -name '*.jar') $EC2_USER@$EC2_HOST:~
       # returns filepath from the current dir!
+      - run:
+          name: Upload .env
+          command: echo "uploading .env file from S3"
+#          command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
       - run:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
