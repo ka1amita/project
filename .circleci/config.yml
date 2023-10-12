@@ -60,7 +60,7 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - run:
           name: Execute jar
-          command: ssh $EC2_USER@$EC2_HOST "nohup java -jar *.jar &" & sleep 15
+          command: ssh $EC2_USER@$EC2_HOST "export $(grep -v '^#' .env.$ENV_NAME | xargs) && nohup java -jar *.jar &" & sleep 15
 
 workflows:
   build_and_test:
