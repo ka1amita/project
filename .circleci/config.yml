@@ -33,6 +33,7 @@ jobs:
           path: build/reports/tests
 
   deploy:
+    working_directory: ~/project/backend
     executor: *java8
     steps:
       - checkout
