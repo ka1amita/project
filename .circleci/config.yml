@@ -105,7 +105,7 @@ workflows:
                 - develop
                 - main
           context:
-            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
+            - committed-todo-aws-ec2-dev
       - deploy:
           name: Deploy to staging environment
           requires:
