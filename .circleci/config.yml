@@ -49,8 +49,8 @@ jobs:
       - run:
           name: Clean-up
           command: |
-            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name "".env*"" -v | xargs)'
-            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name "".jar*"" -v | xargs)'
+            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env*" | xargs)'
+            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".jar*" | xargs)'
       - run:
           name: Check clean-up
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
