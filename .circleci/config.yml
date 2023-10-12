@@ -1,4 +1,5 @@
 version: 2.1
+
 orbs:
   gradle: circleci/gradle@3.0.0
 
@@ -14,7 +15,7 @@ jobs:
           path: ..
       - gradle/with_cache:
           steps:
-            # allows "rerun failed tests"; https://circleci.com/docs/rerun-failed-tests/
+            # allows "re-run failed tests"; https://circleci.com/docs/rerun-failed-tests/
             - run:
                 name: Parse classnames and split by timing
                 command: |
@@ -31,7 +32,6 @@ jobs:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/tests
-
   deploy:
     working_directory: ~/project/backend
     executor: *java8
@@ -46,8 +46,17 @@ jobs:
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
-      # first ssh requires `-o StrictHostKeychecking=no` option or adding to ~/.ssh/known_hosts
-      # note the exit! (`&` might also work)
+      - run:
+          name: Clean-up env
+          command: echo "cleaning-up .env giles"
+          # command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
+      - run:
+          name: Clean-up jars
+          command: echo "cleaning-up .env giles"
+          # command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
+      - run:
+          name: Check clean-up
+          command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - gradle/with_cache:
           steps:
             - run:
@@ -55,14 +64,20 @@ jobs:
                 command: ./gradlew bootJar
             - run:
                 name: Upload jar
-                command: scp $(find build/libs -name '*.jar') $EC2_USER@$EC2_HOST:~
-      # returns filepath from the current dir!
+                command: scp $(find build/libs -name "*.jar") $EC2_USER@$EC2_HOST:~
+      - run:
+          name: Upload .env
+          command: echo "uploading .env file from S3"
+#          command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
       - run:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - run:
+          name: Check environment variables
+          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && echo $DB_URL'
+      - run:
           name: Execute jar
-          command: ssh $EC2_USER@$EC2_HOST "nohup java -jar *.jar &" & sleep 15
+          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 15
 
 workflows:
   build_and_test:
@@ -73,7 +88,40 @@ workflows:
             <<: *java8
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+      - parallel_tests:
+          requires:
+            - build
+      - gradle/test:
+          name: checkstyle
+          requires:
+            - build
+          executor:
+            <<: *java8
+          app_src_directory: backend
+          test_command: checkstyleMain; ./gradlew checkstyleTest
+          reports_path: backend/build/reports/checkstyle
+      - gradle/test:
+          name: coverage
+          requires:
+            - build
+          executor:
+            <<: *java8
+          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+          app_src_directory: backend
+          reports_path: backend/build/jacoco
       - deploy:
+          name: Deploy to development environment
+          requires:
+            - build # change to `test`
+          filters:
+            branches:
+              ignore:
+                - develop
+                - main
+          context:
+            - committed-todo-aws-ec2-dev
+      - deploy:
+          name: Deploy to staging environment
           requires:
             - build # change to `test`
           filters:
@@ -81,27 +129,4 @@ workflows:
               only:
                 - develop
           context:
-            - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
-#      - parallel_tests:
-#          requires:
-#            - build
-#
-#      - gradle/test:
-#          name: checkstyle
-#          requires:
-#            - build
-#          executor:
-#            <<: *java8
-#          app_src_directory: backend
-#          test_command: checkstyleMain; ./gradlew checkstyleTest
-#          reports_path: backend/build/reports/checkstyle
-#
-#      - gradle/test:
-#          name: coverage
-#          requires:
-#            - build
-#          executor:
-#            <<: *java8
-#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-#          app_src_directory: backend
-#          reports_path: backend/build/jacoco
+            - committed-todo-aws-ec2-staging
