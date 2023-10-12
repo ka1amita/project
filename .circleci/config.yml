@@ -42,7 +42,6 @@ jobs:
       #     fingerprints:
       #       - "ff:6e:76:65:c5:43:f2:08:ac:93:a4:c9:b3:e7:d2:ab"
       - run: ls -la ~/.ssh
-      - run: cat ~/.ssh/config
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
