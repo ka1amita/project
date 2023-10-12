@@ -17,7 +17,6 @@ import Header from "layouts/user-profile/Header";
 import AuthService from "../../services/auth-service";
 
 const UserProfile = () => {
-  const [isDemo, setIsDemo] = useState(false);
   const [notification, setNotification] = useState(false);
   const [user, setUser] = useState({
     name: "",
@@ -35,9 +34,6 @@ const UserProfile = () => {
 
   const getUserData = async () => {
     const response = await AuthService.getProfile();
-    if (response.data.id == 1) {
-      setIsDemo(process.env.REACT_APP_IS_DEMO === "true");
-    }
     setUser((prevUser) => ({
       ...prevUser,
       ...response.data.attributes,
@@ -199,7 +195,6 @@ const UserProfile = () => {
                   value={user.email}
                   onChange={changeHandler}
                   error={errors.emailError}
-                  disabled={isDemo}
                 />
                 {errors.emailError && (
                   <MDTypography variant="caption" color="error" fontWeight="light">
@@ -207,11 +202,6 @@ const UserProfile = () => {
                   </MDTypography>
                 )}
               </MDBox>
-              {isDemo && (
-                <MDTypography variant="caption" color="text" fontWeight="light">
-                  In the demo version the email can not be updated
-                </MDTypography>
-              )}
             </MDBox>
           </MDBox>
 
@@ -236,7 +226,6 @@ const UserProfile = () => {
                     value={user.newPassword}
                     onChange={changeHandler}
                     error={errors.newPassError}
-                    disabled={isDemo}
                     inputProps={{
                       autoComplete: "new-password",
                       form: {
@@ -270,7 +259,6 @@ const UserProfile = () => {
                     value={user.confirmPassword}
                     onChange={changeHandler}
                     error={errors.confirmPassError}
-                    disabled={isDemo}
                     inputProps={{
                       autoComplete: "confirmPassword",
                       form: {
@@ -284,11 +272,6 @@ const UserProfile = () => {
                     </MDTypography>
                   )}
                 </MDBox>
-                {isDemo && (
-                  <MDTypography variant="caption" color="text" ml={1} fontWeight="light">
-                    In the demo version the password can not be updated
-                  </MDTypography>
-                )}
               </MDBox>
             </MDBox>
             <MDBox mt={4} display="flex" justifyContent="end">
