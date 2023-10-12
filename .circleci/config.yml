@@ -50,9 +50,9 @@ jobs:
       - run:
           name: Clean-up
           command: |
-            ssh $EC2_USER@$EC2_HOST 'echo $(find . -name ".env.*" | xargs)'
-            ssh $EC2_USER@$EC2_HOST 'echo $(find . -name "*.jar" | xargs)'
-          # find . -type f -name | xargs rm
+            ssh $EC2_USER@$EC2_HOST 'rm $(find . -name ".env.*")'
+            ssh $EC2_USER@$EC2_HOST 'find . -name "*.jar" | xargs rm'
+          # find path/to -type f -name "my.name"| xargs rm
       - run:
           name: Check clean-up
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
