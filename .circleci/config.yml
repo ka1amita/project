@@ -60,7 +60,7 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - run:
           name: Check jar
-          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env."$ENV_NAME" | xargs) echo $DB_URL' 
+          command: ssh $EC2_USER@$EC2_HOST "export ENV_NAME=$ENV_NAME && 'export $(grep -v ^# .env.$ENV_NAME | xargs) echo $DB_URL'" 
       - run:
           name: Execute jar
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 15
