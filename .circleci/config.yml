@@ -51,6 +51,7 @@ jobs:
           command: |
             ssh $EC2_USER@$EC2_HOST 'echo $(find . -name ".env.*" | xargs)'
             ssh $EC2_USER@$EC2_HOST 'echo $(find . -name "*.jar" | xargs)'
+          # find . -type f -name | xargs rm
       - run:
           name: Check clean-up
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
