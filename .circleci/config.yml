@@ -15,7 +15,7 @@ jobs:
           path: ..
       - gradle/with_cache:
           steps:
-            # allows "rerun failed tests"; https://circleci.com/docs/rerun-failed-tests/
+            # allows "re-run failed tests"; https://circleci.com/docs/rerun-failed-tests/
             - run:
                 name: Parse classnames and split by timing
                 command: |
@@ -48,10 +48,12 @@ jobs:
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
       - run:
           name: Clean-up env
-          command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
+          command: echo "cleaning-up .env giles"
+          # command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
       - run:
           name: Clean-up jars
-          command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
+          command: echo "cleaning-up .env giles"
+          # command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
       - run:
           name: Check clean-up
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
@@ -63,7 +65,6 @@ jobs:
             - run:
                 name: Upload jar
                 command: scp $(find build/libs -name "*.jar") $EC2_USER@$EC2_HOST:~
-      # returns filepath from the current dir!
       - run:
           name: Upload .env
           command: echo "uploading .env file from S3"
