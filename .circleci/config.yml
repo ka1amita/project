@@ -76,6 +76,10 @@ workflows:
       - deploy:
           requires:
             - build # change to `test`
+          filters:
+            branches:
+              only:
+                - develop
           context:
             - committed-todo-aws-ec2-dev # can concat with <<pipeline.git.branch>> or {{.Branch}} ?
 #      - parallel_tests:
