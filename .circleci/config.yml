@@ -59,6 +59,9 @@ jobs:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
       - run:
+          name: Check jar
+          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && env && echo $DB_URL' 
+      - run:
           name: Execute jar
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 15
 
