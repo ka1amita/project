@@ -32,7 +32,6 @@ jobs:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/tests
-
   deploy:
     working_directory: ~/project/backend
     executor: *java8
