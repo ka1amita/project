@@ -40,14 +40,20 @@ jobs:
           path: ..
       - run:
           name: SSH check
-          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST ps aux
+      # - run:
+      #     name: Reboot and wait
+      #     command: ssh $EC2_USER@$EC2_HOST sudo reboot & sleep 60
       - run:
-          name: Clean-up env
-          command: echo "cleaning-up .env giles"
+          name: Kill Java processes
+          command: ssh $EC2_USER@$EC2_HOST 'killall -v java || true' # suppress error message if no processes are matched
+      - run:
+          name: Clean-up .envs
+          command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
           # command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
       - run:
           name: Clean-up jars
-          command: echo "cleaning-up .env giles"
+          command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
           # command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
       - run:
           name: Check clean-up
@@ -59,11 +65,10 @@ jobs:
                 command: ./gradlew bootJar
             - run:
                 name: Upload jar
-                command: scp $(find build/libs -name "*.jar") $EC2_USER@$EC2_HOST:~
+                command: scp $(find build/libs -name *.jar) $EC2_USER@$EC2_HOST:~
       - run:
           name: Upload .env
-          command: echo "uploading .env file from S3"
-# replace with command: scp .env.$ENV_NAME $EC2_USER@$EC2_HOST:~
+          command: echo downloading .env file from S3 # TODO
       - run:
           name: List directory
           command: ssh $EC2_USER@$EC2_HOST "ls -la"
@@ -72,12 +77,23 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && echo $DB_URL'
       - run:
           name: Execute jar
-          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 15
+          command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 20
+      - run:
+          name: Check Running app 
+          command: ssh $EC2_USER@$EC2_HOST ps aux | grep "java -jar" 
+      - run:
+          name: Check Running app
+          command: ssh $EC2_USER@$EC2_HOST lsof -i :$SERVER_PORT -S || true
 
 workflows:
-  build_and_test:
+  test_and_deploy_to_dev:
+    when:
+      not:
+        and:
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - gradle/run:
+      - gradle/run: &build_job
           name: build
           executor:
             <<: *java8
@@ -105,23 +121,39 @@ workflows:
           app_src_directory: backend
           reports_path: backend/build/jacoco
       - deploy:
-          name: Deploy to development environment
+          name: deploy to development environment
           requires:
-            - build # change to `test`
+            - build # eplace with `test`
           filters:
             branches:
               ignore:
                 - develop
                 - main
           context:
-            - committed-todo-aws-ec2-dev
+            - committed-test-aws-ec2-dev # replace with committed-todo-aws-ec2-dev
+
+  deploy_to_staging:
+    when:
+      equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - gradle/run:
+          <<: *build_job
       - deploy:
-          name: Deploy to staging environment
+          name: deploy to staging environment
           requires:
-            - build # change to `test`
-          filters:
-            branches:
-              only:
-                - develop
+            - build
           context:
-            - committed-todo-aws-ec2-staging
+            - committed-test-aws-ec2-staging # replace with committed-todo-aws-ec2-staging
+  deploy_to_production:
+    when:
+      equal: [ main, << pipeline.git.branch >> ]
+    jobs:
+      - gradle/run: 
+          <<: *build_job
+      - deploy:
+          name: deploy to staging environment
+          requires:
+            - build
+          context:
+            - committed-test-aws-ec2-production # committed-todo-aws-ec2-production
+
