@@ -45,7 +45,7 @@ jobs:
       #     name: Reboot and wait
       #     command: ssh $EC2_USER@$EC2_HOST sudo reboot & sleep 60
       - run:
-          name: Kill Java
+          name: Kill Java processes
           command: |
             sps aux
             sh $EC2_USER@$EC2_HOST killall java
