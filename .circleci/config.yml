@@ -81,7 +81,9 @@ jobs:
       - run:
           name: Check Running app 
           command: ssh $EC2_USER@$EC2_HOST ps aux | grep "java -jar" 
-      - run: ssh $EC2_USER@$EC2_HOST lsof -i :$PORT -S || true
+      - run:
+          name: Check Running app
+          command: ssh $EC2_USER@$EC2_HOST lsof -i :$SERVER_PORT -S || true
 
 workflows:
   test_and_deploy_to_dev:
