@@ -80,10 +80,10 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 20
       - run:
           name: Check Running app 
-          command: ssh $EC2_USER@$EC2_HOST ps aux | grep "java -jar" 
+          command: ssh $EC2_USER@$EC2_HOST ps aux | grep "java -jar fox-dining" 
       - run:
           name: Check Running app
-          command: ssh $EC2_USER@$EC2_HOST lsof -i :$SERVER_PORT -S || true
+          command: ssh $EC2_USER@$EC2_HOST lsof -i :8080 -S
 
 workflows:
   test_and_deploy_to_dev:
