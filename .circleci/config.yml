@@ -84,7 +84,7 @@ workflows:
           - equal: [ develop, << pipeline.git.branch >> ]
           - equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - gradle/run:
+      - gradle/run: &build_job
           name: build
           executor:
             <<: *java8
@@ -128,11 +128,7 @@ workflows:
       equal: [ develop, << pipeline.git.branch >> ]
     jobs:
       - gradle/run:
-          name: build
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+          <<: *build_job
       - deploy:
           name: deploy to staging environment
           requires:
@@ -144,11 +140,7 @@ workflows:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - gradle/run: 
-          name: build
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+          <<: *build_job
       - deploy:
           name: deploy to staging environment
           requires:
