@@ -38,15 +38,17 @@ jobs:
     steps:
       - checkout:
           path: ..
-      # - run:
-      #     name: SSH check
-      #     command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST sudo reboot & sleep 10
-      - run:
-          name: SSH check
-          command: ssh $EC2_USER@$EC2_HOST killall java
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+      # - run:
+      #     name: SSH check
+      #     command: ssh $EC2_USER@$EC2_HOST sudo reboot & sleep 60
+      - run:
+          name: Kill Java
+          command: |
+            sps aux
+            sh $EC2_USER@$EC2_HOST killall java
       - run:
           name: Clean-up .envs
           command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
