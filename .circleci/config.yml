@@ -48,7 +48,7 @@ jobs:
           name: Kill Java processes
           command: |
             ssh $EC2_USER@$EC2_HOST ps aux
-            ssh $EC2_USER@$EC2_HOST killall -q java
+            ssh $EC2_USER@$EC2_HOST killall -q java # suppress error message if no processes are matched
       - run:
           name: Clean-up .envs
           command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
