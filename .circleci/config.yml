@@ -79,8 +79,9 @@ jobs:
           name: Execute jar
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 20
       - run:
-          name: Check Running app
-          command: ssh $EC2_USER@$EC2_HOST ps aux
+          name: Check Running app 
+          command: ssh $EC2_USER@$EC2_HOST ps aux | grep "java -jar" 
+      - run: ssh $EC2_USER@$EC2_HOST lsof -i :$PORT -S
 
 workflows:
   test_and_deploy_to_dev:
