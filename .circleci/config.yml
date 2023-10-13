@@ -42,7 +42,7 @@ jobs:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
       # - run:
-      #     name: SSH check
+      #     name: Reboot and wait
       #     command: ssh $EC2_USER@$EC2_HOST sudo reboot & sleep 60
       - run:
           name: Kill Java
