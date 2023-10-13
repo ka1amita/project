@@ -89,7 +89,7 @@ workflows:
   test_and_deploy_to_dev:
     when:
       not:
-        and:
+        or:
           - equal: [ develop, << pipeline.git.branch >> ]
           - equal: [ main, << pipeline.git.branch >> ]
     jobs:
