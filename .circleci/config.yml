@@ -109,7 +109,7 @@ workflows:
           app_src_directory: backend
           reports_path: backend/build/jacoco
       - deploy:
-          name: Deploy to development environment
+          name: deploy to development environment
           requires:
             - build # eplace with `test`
           filters:
@@ -131,7 +131,7 @@ workflows:
           app_src_directory: backend
           command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - deploy:
-          name: Deploy to staging environment
+          name: deploy to staging environment
           requires:
             - build
           context:
