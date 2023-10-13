@@ -36,11 +36,12 @@ jobs:
     working_directory: ~/project/backend
     executor: *java8
     steps:
+      - checkout:
+          path: ..
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST sudo reboot
-      - checkout:
-          path: ..
+
       # - run:
       #     name: Reboot
       #     command: sudo reboot
@@ -80,7 +81,7 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 20
       - run:
           name: Check Running app
-          command: echo checking if PID is running
+          command: ssh $EC2_USER@$EC2_HOST ps aux
 
 workflows:
   test_and_deploy_to_dev:
