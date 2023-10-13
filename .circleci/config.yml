@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Kill Java processes
           command: |
-            sps aux
+            ps aux
             sh $EC2_USER@$EC2_HOST killall java
       - run:
           name: Clean-up .envs
