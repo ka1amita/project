@@ -42,12 +42,12 @@ jobs:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
       - run:
-          name: Clean-up env
-          command: echo "cleaning-up .env giles"
+          name: Clean-up .envs
+          command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
           # command: ssh $EC2_USER@$EC2_HOST 'rm -vf $(find . -type f -name ".env.*")'
       - run:
           name: Clean-up jars
-          command: echo "cleaning-up .env giles"
+          command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
           # command: ssh $EC2_USER@$EC2_HOST 'find . -type f -name "*.jar" | xargs rm -vf'
       - run:
           name: Check clean-up
@@ -74,7 +74,12 @@ jobs:
           command: ssh $EC2_USER@$EC2_HOST 'export $(grep -v ^# .env.* | xargs) && nohup java -jar *.jar &' & sleep 15
 
 workflows:
-  build_and_test:
+  test_and_deploy_to_dev:
+    when:
+      not:
+        and:
+          - equal: [ develop, << pipeline.git.branch >> ]
+          - equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - gradle/run:
           name: build
@@ -114,14 +119,21 @@ workflows:
                 - main
           context:
             - committed-test-aws-ec2-dev # replace `test` with `todo`
+
+  deploy_to_staging:
+    when:
+      equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - gradle/run:
+          name: build
+          executor:
+            <<: *java8
+          app_src_directory: backend
+          command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - deploy:
           name: Deploy to staging environment
           requires:
-            - build # replace with `test`
-          filters:
-            branches:
-              only:
-                - develop
+            - build
           context:
-            - committed-test-aws-ec2-staging # replace `test` with `todo`
+            - committed-test-aws-ec2-staging
 
