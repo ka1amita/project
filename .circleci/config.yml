@@ -48,7 +48,7 @@ jobs:
           name: Kill Java processes
           command: |
             ssh $EC2_USER@$EC2_HOST ps aux
-            ssh $EC2_USER@$EC2_HOST 'nohup killall java &' & slepp 10
+            ssh $EC2_USER@$EC2_HOST killall -q java
       - run:
           name: Clean-up .envs
           command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
