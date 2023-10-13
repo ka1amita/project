@@ -38,16 +38,12 @@ jobs:
     steps:
       - checkout:
           path: ..
-      - run:
-          name: SSH check
-          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST sudo reboot
-
-      # - run:
-      #     name: Reboot
-      #     command: sudo reboot
       # - run:
       #     name: SSH check
-      #     command: ssh $EC2_USER@$EC2_HOST exit
+      #     command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST sudo reboot & sleep 10
+      - run:
+          name: SSH check
+          command: ssh $EC2_USER@$EC2_HOST killall java
       - run:
           name: SSH check
           command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
