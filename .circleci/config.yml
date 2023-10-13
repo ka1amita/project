@@ -40,15 +40,13 @@ jobs:
           path: ..
       - run:
           name: SSH check
-          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST ps aux
       # - run:
       #     name: Reboot and wait
       #     command: ssh $EC2_USER@$EC2_HOST sudo reboot & sleep 60
       - run:
           name: Kill Java processes
-          command: |
-            ssh $EC2_USER@$EC2_HOST ps aux
-            ssh $EC2_USER@$EC2_HOST killall -q java # suppress error message if no processes are matched
+          command: ssh $EC2_USER@$EC2_HOST killall -q java # suppress error message if no processes are matched
       - run:
           name: Clean-up .envs
           command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
