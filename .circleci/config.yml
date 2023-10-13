@@ -36,17 +36,17 @@ jobs:
     working_directory: ~/project/backend
     executor: *java8
     steps:
+      - run:
+          name: SSH check
+          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST sudo reboot
       - checkout:
           path: ..
-      - run:
-          name: SSH check
-          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
-      - run:
-          name: Reboot
-          command: sudo reboot
-      - run:
-          name: SSH check
-          command: ssh -o StrictHostKeychecking=no $EC2_USER@$EC2_HOST exit
+      # - run:
+      #     name: Reboot
+      #     command: sudo reboot
+      # - run:
+      #     name: SSH check
+      #     command: ssh $EC2_USER@$EC2_HOST exit
       - run:
           name: Clean-up .envs
           command: ssh $EC2_USER@$EC2_HOST echo cleaning-up .env files
