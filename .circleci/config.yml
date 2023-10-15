@@ -56,6 +56,8 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
+      - checkout:
+          path: ..
       - aws-cli/setup:
           aws_access_key_id: AWS_ACCESS_KEY_ID # the orb default
           aws_secret_access_key: AWS_SECRET_ACCESS_KEY # the orb default
@@ -63,8 +65,7 @@ jobs:
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
-      - checkout:
-          path: ..
+
       - gradle/with_cache:
           steps:
             - run:
@@ -163,7 +164,7 @@ workflows:
           archive: true
           env: dev
           context:
-            - committed-daniels-aws-ec2-dev # TODO replace with committed-todo-aws-ec2-dev
+            - committed-daniels-aws-ec2-dev
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
