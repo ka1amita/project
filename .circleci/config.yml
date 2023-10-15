@@ -163,7 +163,7 @@ workflows:
           archive: true
           env: dev
           context:
-            - committed-test-aws-ec2-dev # TODO replace with committed-todo-aws-ec2-dev
+            - committed-daniels-aws-ec2-dev # TODO replace with committed-todo-aws-ec2-dev
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
@@ -176,7 +176,7 @@ workflows:
             - build
           env: staging
           context:
-            - committed-test-aws-ec2-staging # replace with committed-todo-aws-ec2-staging
+            - committed-daniels-aws-ec2-staging
   deploy_to_production:
     when:
       equal: [ main, << pipeline.git.branch >> ]
@@ -190,5 +190,5 @@ workflows:
           archive: true
           env: production
           context:
-            - committed-test-aws-ec2-production # committed-todo-aws-ec2-production
+            - committed-daniels-aws-ec2-production
 
