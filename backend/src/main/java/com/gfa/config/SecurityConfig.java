@@ -6,6 +6,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
+import com.gfa.filters.RibbonFilter;
 import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
 import org.springframework.context.MessageSource;
@@ -50,7 +51,8 @@ public class SecurityConfig {
     }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService, LocaleResolver localeResolver) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService,
+                                         RibbonProperties ribbonProperties) throws Exception {
     http.csrf()
         .disable();
     http.cors();
@@ -76,9 +78,11 @@ public class SecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest require some Role
-    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService,messageSource));
+    http.addFilterBefore(new RibbonFilter(ribbonProperties), UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
-                         UsernamePasswordAuthenticationFilter.class);
+                           UsernamePasswordAuthenticationFilter.class);
+    http.addFilter(
+        new CustomAuthenticationFilter(authenticationManager, tokenService, messageSource));
     return http.build();
   }
 }
