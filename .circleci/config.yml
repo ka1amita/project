@@ -41,10 +41,18 @@ jobs:
     executor: *java8
     parameters:
       env:
-        type: enum
-        default: "dev"
         description: Environment name suffix ("dev", "staging", "production") you want to deploy.
+        type: enum
         enum: ["dev", "staging", "production"]
+        default: "dev"
+      archive:
+        description: Is it desired to archive old application build in S3 bucket?
+        type: boolean
+        default: false
+      rename_files:
+        description: Custom build files (.jar and .env) name.
+        type: string
+        default: ""
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
@@ -64,13 +72,18 @@ jobs:
                 command: ./gradlew bootJar
             - run:
                 name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-                command: mv -v $(find build/libs -type f -name "*.jar") build/libs/todo-app-${ENV}-<<pipeline.git.revision>>.jar
+                command: mv -v $(find build/libs -type f -name "*.jar") build/libs/todo-app-<<parameters.env>>-<<pipeline.git.revision>>.jar
       - run:
           name: Kill previous application instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
-      - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
-          from: ${BUCKET}/build
-          to: ${BUCKET}/old-builds
+
+      - when:
+          condition: <<parameters.archive>>
+          steps: 
+            - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
+                from: ${BUCKET}/build
+                to: ${BUCKET}/old-builds
+    
       - aws-s3/sync: # Replace the old jar inside the S3
           arguments: --delete
           from: build/libs
@@ -83,10 +96,10 @@ jobs:
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
           name: Sync the build files from S3 to EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build \${PWD}/build"
+          command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
       - run:
           name: Check the build files in EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF ${PWD}/build'
+          command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
       - run:
           name: Check environment variables
           command: ssh ${EC2_USER}@${EC2_HOST} env
@@ -96,7 +109,7 @@ jobs:
       - run:
           name: Check running application instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
-      # - discord/status:
+      # - discord/status: #TODO 
       #     webhook: ${DISCORD_WEBHOOK_URL}
       #     success_mentions: "1074798048611414026"
       #     success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
@@ -140,15 +153,17 @@ workflows:
       - deploy_backend:
           name: deploy backend to dev
           requires:
-            - build # eplace with `test`
+            - build # TODO replace with `test`
           filters:
             branches:
               ignore:
                 - develop
                 - main
+          # rename_files: -<<pipeline.git.revision>>
+          archive: true
           env: dev
           context:
-            - committed-test-aws-ec2-dev # replace with committed-todo-aws-ec2-dev
+            - committed-test-aws-ec2-dev # TODO replace with committed-todo-aws-ec2-dev
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
@@ -172,6 +187,7 @@ workflows:
           name: deploy to staging environment
           requires:
             - build
+          archive: true
           env: production
           context:
             - committed-test-aws-ec2-production # committed-todo-aws-ec2-production
