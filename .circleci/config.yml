@@ -58,14 +58,9 @@ jobs:
     steps:
       - checkout:
           path: ..
-      - aws-cli/setup:
-          aws_access_key_id: AWS_ACCESS_KEY_ID # the orb default
-          aws_secret_access_key: AWS_SECRET_ACCESS_KEY # the orb default
-          region: AWS_DEFAULT_REGION #  the orb default
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
-
       - gradle/with_cache:
           steps:
             - run:
@@ -77,14 +72,12 @@ jobs:
       - run:
           name: Kill previous application instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
-
       - when:
           condition: <<parameters.archive>>
           steps: 
             - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
                 from: ${BUCKET}/build
                 to: ${BUCKET}/old-builds
-    
       - aws-s3/sync: # Replace the old jar inside the S3
           arguments: --delete
           from: build/libs
