@@ -56,7 +56,7 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
-      - checkout:
+      - checkout: # has to be the first step in this job otherwise does't work later
           path: ..
       - aws-cli/setup
       - run:
@@ -77,15 +77,15 @@ jobs:
           condition:
             equal: [true, <<parameters.archive>>]
           steps: 
-            - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
+            - aws-s3/sync: # Archive old jar from S3
                 from: ${BUCKET}/build
                 to: ${BUCKET}/old-builds
-      - aws-s3/sync: # Replace the old jar inside the S3
+      - aws-s3/sync: # Replace the old jar and delete .env inside the S3
           arguments: --delete
           from: build/libs
           to: ${BUCKET}/build
-      - aws-s3/copy: # Copy .env.{env} to build/
-          from: ${BUCKET}/envs/.env.<<parameters.env>>
+      - aws-s3/copy: # Copy .env.{env} to the S3
+          from: s3://committed-todo-app/envs/.env.<<parameters.env>>
           to: ${BUCKET}/build/.env.<<parameters.env>>-<<pipeline.git.revision>>
       - run:
           name: Check the build files in S3 
