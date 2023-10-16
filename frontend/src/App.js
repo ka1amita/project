@@ -207,13 +207,13 @@ export default function App() {
         <ThemeProvider theme={darkMode ? themeDark : theme}>
           <CssBaseline />
           {host && environment === "DEV" && (
-            <MDAlert color="info">{host} : {environment}</MDAlert>
+              <MDAlert style={{zIndex: 9999999}} color="info">{host} -> {environment}</MDAlert>
           )}
           {host && environment === "STAGING" && (
-              <MDAlert color="success">{host} : {environment}</MDAlert>
+              <MDAlert style={{zIndex: 9999999}} color="success">{host} -> {environment}</MDAlert>
           )}
           {host && environment === "PRODUCTION" && (
-              <MDAlert color="error">{host} : {environment}</MDAlert>
+              <MDAlert style={{zIndex: 9999999}} color="error">{host} -> {environment}</MDAlert>
           )}
           {layout === "dashboard" && (
             <>
