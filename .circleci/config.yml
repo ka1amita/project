@@ -56,6 +56,7 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
+      - aws-cli/setup
       - checkout:
           path: ..
       - run:
@@ -74,7 +75,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
       - when:
           condition:
-            equal: [[true, <<parameters.archive>>]]
+            equal: [true, <<parameters.archive>>]
           steps: 
             - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
                 from: ${BUCKET}/build
