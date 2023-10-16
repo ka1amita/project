@@ -56,7 +56,7 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
-      - checkout: # has to be the first step in this job otherwise does't work later
+      - checkout: # it has to be the first step in this job otherwise does't work later
           path: ..
       - aws-cli/setup
       - run:
