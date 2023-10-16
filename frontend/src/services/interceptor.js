@@ -14,7 +14,7 @@ export const setupAxiosInterceptors = (onUnauthenticated) => {
   HttpService.addRequestInterceptor(onRequestSuccess, onRequestFail);
 
   const onResponseSuccess = (response) => {
-    authContext.setBackendInfo(response.headers['Environment'], response.headers['Host'])
+    authContext.setBackendInfo(response.headers['environment'], response.headers['hostname'])
     return response;
   }
 
