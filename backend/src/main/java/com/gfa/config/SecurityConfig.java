@@ -6,6 +6,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
+import com.gfa.filters.RibbonFilter;
+import com.gfa.services.EnvironmentService;
 import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
 import org.springframework.context.MessageSource;
@@ -18,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.LocaleResolver;
 
 @EnableWebSecurity
 public class SecurityConfig {
@@ -50,7 +51,9 @@ public class SecurityConfig {
     }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService, LocaleResolver localeResolver) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService,
+                                         RibbonProperties ribbonProperties,
+                                         EnvironmentService environmentService) throws Exception {
     http.csrf()
         .disable();
     http.cors();
@@ -59,7 +62,8 @@ public class SecurityConfig {
     http.authorizeRequests()
         .antMatchers(GET,
                      Endpoint.VERIFY_EMAIL_WITH_TOKEN +"/*",
-                     Endpoint.CONFIRM_WITH_CODE + "/*")
+                     Endpoint.CONFIRM_WITH_CODE + "/*",
+                     Endpoint.RIBBON)
         .permitAll();
     http.authorizeRequests()
         .antMatchers(POST,
@@ -76,9 +80,11 @@ public class SecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest require some Role
-    http.addFilter(new CustomAuthenticationFilter(authenticationManager, tokenService,messageSource));
+    http.addFilterBefore(new RibbonFilter(ribbonProperties, environmentService), UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
-                         UsernamePasswordAuthenticationFilter.class);
+                           UsernamePasswordAuthenticationFilter.class);
+    http.addFilter(
+        new CustomAuthenticationFilter(authenticationManager, tokenService, messageSource));
     return http.build();
   }
 }

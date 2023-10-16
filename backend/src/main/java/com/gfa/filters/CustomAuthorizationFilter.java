@@ -7,13 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gfa.dtos.responsedtos.ErrorResponseDTO;
 import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
-
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
@@ -47,6 +45,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             IOException {
 
         if (request.getServletPath()
+                        .equals(Endpoint.RIBBON) ||
+                request.getServletPath()
                         .equals(Endpoint.REGISTER) ||
                 request.getServletPath()
                         .equals(Endpoint.LOGIN) ||
