@@ -56,9 +56,9 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
-      - aws-cli/setup
       - checkout:
           path: ..
+      - aws-cli/setup
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
