@@ -62,7 +62,8 @@ public class SecurityConfig {
     http.authorizeRequests()
         .antMatchers(GET,
                      Endpoint.VERIFY_EMAIL_WITH_TOKEN +"/*",
-                     Endpoint.CONFIRM_WITH_CODE + "/*")
+                     Endpoint.CONFIRM_WITH_CODE + "/*",
+                     Endpoint.RIBBON)
         .permitAll();
     http.authorizeRequests()
         .antMatchers(POST,

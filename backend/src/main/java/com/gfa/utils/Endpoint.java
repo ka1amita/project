@@ -13,4 +13,5 @@ public interface Endpoint {
     String TODO_API ="/api/todos";
     String REFRESH_TOKEN="/token/refresh";
     String STRINGS="/strings";
+    String RIBBON = "/ribbon";
 }
