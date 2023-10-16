@@ -2,11 +2,26 @@ version: 2.1
 
 orbs:
   gradle: circleci/gradle@3.0.0
+  node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
   # discord: teka23/discord@0.0.1
 
 jobs:
+  build_frontend:
+    working_directory: &frontend ~/project/frontend
+    executor:
+      name: node/default
+    steps:
+      - checkout:
+          path: ..
+      - node/install-packages
+      - run: nmp run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build        
+
   parallel_tests_backend:
     working_directory: &backend ~/project/backend
     executor: &java8
@@ -36,9 +51,25 @@ jobs:
       - store_artifacts:
           path: build/reports/tests
   
-  deploy_backend:
+  build_backend:
     working_directory: *backend
-    executor: *java8
+    executor:
+      <<: *java8
+    steps:
+      - checkout: # it has to be the first step in this job otherwise does't work later
+          path: ..
+      - gradle/with_cache:
+          steps:
+            - run:
+                name: Build the jar
+                command: ./gradlew bootJar
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build/libs 
+
+  deploy_backend_and_frontend:
+    executor: aws-cli/default
     parameters:
       env:
         description: Environment name suffix ("dev", "staging", "production") you want to deploy.
@@ -56,23 +87,15 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
-      - checkout: # it has to be the first step in this job otherwise does't work later
-          path: ..
       - aws-cli/setup
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
-      - gradle/with_cache:
-          steps:
-            - run:
-                name: Build the jar
-                command: ./gradlew bootJar
-            - run:
-                name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-                command: mv -v $(find build/libs -type f -name "*.jar") build/libs/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+      - attach_workspace:
+          at: build
       - run:
-          name: Kill previous application instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+          name: Rename the jar to todo-app-{env}-{commit-hash}.jar
+          command: mv -v $(find build -type f -name "*.jar") build/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -82,7 +105,7 @@ jobs:
                 to: ${BUCKET}/old-builds
       - aws-s3/sync: # Replace the old jar and delete .env inside the S3
           arguments: --delete
-          from: build/libs
+          from: build
           to: ${BUCKET}/build
       - aws-s3/copy: # Copy .env.{env} to the S3
           from: s3://committed-todo-app/envs/.env.<<parameters.env>>
@@ -90,6 +113,9 @@ jobs:
       - run:
           name: Check the build files in S3 
           command: aws s3 ls --recursive ${BUCKET}/build
+      - run:
+          name: Kill previous application instance
+          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
@@ -116,12 +142,14 @@ workflows:
           - equal: [ develop, << pipeline.git.branch >> ]
           - equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - gradle/run: &build_backend
-          name: build_backend
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+      # - gradle/run: &build_backend
+      #     name: build_backend
+      #     executor:
+      #       <<: *java8
+      #     app_src_directory: backend
+      #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification  
+      - build_backend
+      - build_frontend
       - parallel_tests_backend:
           requires:
             - build_backend
@@ -143,17 +171,18 @@ workflows:
           test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
           app_src_directory: backend
           reports_path: backend/build/jacoco
-      - deploy_backend:
-          name: deploy backend to dev
+      - deploy_backend_and_frontend:
+          name: deploy to development environment
           requires:
             - build_backend # TODO replace with `test`
+            - build_frontend
           filters:
             branches:
               ignore:
                 - develop
                 - main
           filename_tag: -<<pipeline.git.revision>>
-          archive: true
+          archive: false
           env: dev
           context:
             - committed-daniels-aws-ec2-dev
@@ -161,12 +190,13 @@ workflows:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
     jobs:
-      - gradle/run:
-          <<: *build_backend
-      - deploy_backend:
+      - build_backend
+      - build_frontend
+      - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
+            - build_frontend
           env: staging
           context:
             - committed-daniels-aws-ec2-staging
@@ -174,13 +204,14 @@ workflows:
     when:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
-      - gradle/run: 
-          <<: *build_backend
-      - deploy_backend:
+      - build_backend
+      - build_frontend
+      - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
-          archive: true
+            - build_frontend
+          archive: false
           env: production
           context:
             - committed-daniels-aws-ec2-production
