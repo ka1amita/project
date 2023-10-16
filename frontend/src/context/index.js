@@ -37,6 +37,7 @@ export const AuthContext = createContext({
   logout: () => {},
   hasRoles: () => {},
   getUsername: () => {},
+  setBackendInfo: () => {},
 });
 
 const AuthContextProvider = ({ children }) => {
@@ -101,8 +102,13 @@ const AuthContextProvider = ({ children }) => {
     return "";
   }
 
+  const setBackendInfo = (env, host) => {
+    localStorage.setItem("environment", env);
+    localStorage.setItem("host", host);
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, register, hasRoles, getUsername }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, register, hasRoles, getUsername, setBackendInfo }}>
       {children}
     </AuthContext.Provider>
   );

@@ -48,6 +48,7 @@ import { AuthContext } from "context";
 import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import PageNotFound from "layouts/page-not-found";
+import MDAlert from "./components/MDAlert";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -66,6 +67,8 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const host = localStorage.getItem("host");
+  const environment = localStorage.getItem("environment");
 
   // Cache for the rtl
   useMemo(() => {
@@ -203,6 +206,15 @@ export default function App() {
       ) : (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
           <CssBaseline />
+          {host && environment === "DEV" && (
+            <MDAlert color="info">{host} : {environment}</MDAlert>
+          )}
+          {host && environment === "STAGING" && (
+              <MDAlert color="success">{host} : {environment}</MDAlert>
+          )}
+          {host && environment === "PRODUCTION" && (
+              <MDAlert color="error">{host} : {environment}</MDAlert>
+          )}
           {layout === "dashboard" && (
             <>
               <Sidenav
