@@ -73,7 +73,8 @@ jobs:
           name: Kill previous application instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
       - when:
-          condition: <<parameters.archive>>
+          condition:
+            equal: [[true, <<parameters.archive>>]]
           steps: 
             - aws-s3/sync: # Archive old jar from S3 # remove step if not desired (the next steps are gonna work)
                 from: ${BUCKET}/build
