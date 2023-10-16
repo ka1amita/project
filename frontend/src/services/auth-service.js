@@ -40,6 +40,11 @@ class AuthService {
     return await HttpService.post(resetPassword, requestData);
   }
 
+  backendCheck = async () => {
+    const backendCheck = 'ribbon';
+    return await HttpService.get(backendCheck);
+  }
+
   getProfile = async() => {
     const getProfile = 'me';
     return await HttpService.get(getProfile);

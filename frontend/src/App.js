@@ -48,6 +48,8 @@ import { AuthContext } from "context";
 import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import PageNotFound from "layouts/page-not-found";
+import MDAlert from "./components/MDAlert";
+import AuthService from "./services/auth-service";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -66,6 +68,8 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const host = localStorage.getItem("host");
+  const environment = localStorage.getItem("environment");
 
   // Cache for the rtl
   useMemo(() => {
@@ -101,6 +105,10 @@ export default function App() {
     authContext.logout();
     navigate("/auth/login");
   });
+
+  useEffect(() => {
+    AuthService.backendCheck();
+  })
 
   // Setting the dir attribute for the body element
   useEffect(() => {
@@ -203,6 +211,15 @@ export default function App() {
       ) : (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
           <CssBaseline />
+          {host && environment === "DEV" && (
+              <MDAlert style={{zIndex: 9999999}} color="info">{host} -> {environment}</MDAlert>
+          )}
+          {host && environment === "STAGING" && (
+              <MDAlert style={{zIndex: 9999999}} color="success">{host} -> {environment}</MDAlert>
+          )}
+          {host && environment === "PRODUCTION" && (
+              <MDAlert style={{zIndex: 9999999}} color="error">{host} -> {environment}</MDAlert>
+          )}
           {layout === "dashboard" && (
             <>
               <Sidenav

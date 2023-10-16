@@ -17,6 +17,7 @@ public class CorsConfig {
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addExposedHeader("*");
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -27,6 +28,7 @@ public class CorsConfig {
         source.registerCorsConfiguration(Endpoint.RESET_PASSWORD + "/*", corsConfiguration);
         source.registerCorsConfiguration(Endpoint.TODO_API, corsConfiguration);
         source.registerCorsConfiguration(Endpoint.TODO_API + "/*", corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.RIBBON, corsConfiguration);
         return source;
     }
 }
