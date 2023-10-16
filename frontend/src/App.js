@@ -49,6 +49,7 @@ import UserProfile from "layouts/user-profile";
 import UserManagement from "layouts/user-management";
 import PageNotFound from "layouts/page-not-found";
 import MDAlert from "./components/MDAlert";
+import AuthService from "./services/auth-service";
 
 export default function App() {
   const authContext = useContext(AuthContext);
@@ -104,6 +105,10 @@ export default function App() {
     authContext.logout();
     navigate("/auth/login");
   });
+
+  useEffect(() => {
+    AuthService.backendCheck();
+  })
 
   // Setting the dir attribute for the body element
   useEffect(() => {
