@@ -119,8 +119,11 @@ jobs:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
-          name: Kill previous application instance
+          name: Kill previous api and nginx instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+      - run:
+          name: Kill previous api and nginx instance
+          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
