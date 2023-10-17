@@ -129,7 +129,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
       - run: 
           name: Copy frontend to default directory
-          command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -r /var/www/html && sudo mv ~/build/html /var/www"
+          command: ssh ${EC2_USER}@${EC2_HOST} "sudo mv -vf ~/build/html /var/www"
       - run: ssh ${EC2_USER}@${EC2_HOST} sudo nginx -s reload
       - run:
           name: Set VARs and execute the jar
