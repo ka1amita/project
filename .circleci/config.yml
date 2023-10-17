@@ -20,7 +20,7 @@ jobs:
           name: Build
           command: | 
             npm run build
-            mv build html
+            mv -v build html
       - persist_to_workspace:
           root: .
           paths:
@@ -130,7 +130,9 @@ jobs:
       - run: 
           name: Copy frontend to default directory
           command: ssh ${EC2_USER}@${EC2_HOST} "sudo mv -vf ~/build/html /var/www"
-      - run: ssh ${EC2_USER}@${EC2_HOST} sudo nginx -s reload
+      - run:
+          name: Reload xginx
+          command: ssh ${EC2_USER}@${EC2_HOST} sudo nginx -s reload
       - run:
           name: Set VARs and execute the jar
           command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
@@ -139,7 +141,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
       - run:
           name: Check running nginx instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid" | xargs ps"
+          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs ps"
       # - discord/status: #TODO
       #     webhook: ${DISCORD_WEBHOOK_URL}
       #     success_mentions: "1074798048611414026"
