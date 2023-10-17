@@ -16,11 +16,15 @@ jobs:
       - checkout:
           path: ..
       - node/install-packages
-      - run: npm run build
+      - run: 
+          name: Build
+          command: | 
+            npm run build
+            mv build html
       - persist_to_workspace:
-          root: build
+          root: .
           paths:
-            - .
+            - html
   parallel_tests_backend:
     working_directory: &backend ~/project/backend
     executor: &java8
@@ -62,10 +66,11 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
+      - run: mv build/libs api
       - persist_to_workspace:
-          root: build/libs
+          root: .
           paths:
-            - .
+            - api
 
   deploy_backend_and_frontend:
     executor: aws-cli/default
@@ -94,7 +99,7 @@ jobs:
           at: build
       - run:
           name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-          command: mv -v $(find build -type f -name "*.jar") build/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+          command: mv -v $(find build/api -type f -name "*.jar") build/api/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -121,12 +126,19 @@ jobs:
       - run:
           name: Check the build files in EC2
           command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
+      - run: 
+          name: Copy frontend to default directory
+          command: ssh ${EC2_USER}@${EC2_HOST} sudo mv build/html /var/www/html
+      - run: sudo nginx -s reload
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
-          name: Check running application instance
+          name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
+      - run:
+          name: Check running nginx instance
+          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid" | xargs ps"
       # - discord/status: #TODO
       #     webhook: ${DISCORD_WEBHOOK_URL}
       #     success_mentions: "1074798048611414026"
