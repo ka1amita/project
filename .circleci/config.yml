@@ -198,8 +198,7 @@ workflows:
           filename_tag: -<<pipeline.git.revision>>
           archive: false
           env: dev
-          context:
-            - committed-daniels-aws-ec2-dev
+
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
@@ -212,8 +211,7 @@ workflows:
             - build_backend
             - build_frontend
           env: staging
-          context:
-            - committed-daniels-aws-ec2-staging
+
   deploy_to_production:
     when:
       equal: [ main, << pipeline.git.branch >> ]
@@ -225,7 +223,4 @@ workflows:
           requires:
             - build_backend
             - build_frontend
-          archive: false
           env: production
-          context:
-            - committed-daniels-aws-ec2-production
