@@ -92,6 +92,7 @@ jobs:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
       - aws-cli/setup
+      - run: echo export EC2_HOST=$(circleci env subst "$EC2_HOST_<<parameters.env>>") >> $BASH_ENV
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
