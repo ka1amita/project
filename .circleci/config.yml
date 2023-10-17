@@ -66,7 +66,7 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
-      - run: mv build/libs api
+      - run: mv -v build/libs api
       - persist_to_workspace:
           root: .
           paths:
@@ -129,8 +129,8 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
       - run: 
           name: Copy frontend to default directory
-          command: ssh ${EC2_USER}@${EC2_HOST} sudo mv build/html /var/www/html
-      - run: sudo nginx -s reload
+          command: ssh ${EC2_USER}@${EC2_HOST} sudo mv -vf build/html /var/www/html
+      - run: ssh ${EC2_USER}@${EC2_HOST} sudo nginx -s reload
       - run:
           name: Set VARs and execute the jar
           command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
