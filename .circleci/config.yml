@@ -99,7 +99,7 @@ jobs:
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
-          steps: 
+          steps:
             - aws-s3/sync: # Archive old jar from S3
                 from: ${BUCKET}/build
                 to: ${BUCKET}/old-builds
@@ -111,7 +111,7 @@ jobs:
           from: s3://committed-todo-app/envs/.env.<<parameters.env>>
           to: ${BUCKET}/build/.env.<<parameters.env>>-<<pipeline.git.revision>>
       - run:
-          name: Check the build files in S3 
+          name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
           name: Kill previous application instance
@@ -128,7 +128,7 @@ jobs:
       - run:
           name: Check running application instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
-      # - discord/status: #TODO 
+      # - discord/status: #TODO
       #     webhook: ${DISCORD_WEBHOOK_URL}
       #     success_mentions: "1074798048611414026"
       #     success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
@@ -215,4 +215,3 @@ workflows:
           env: production
           context:
             - committed-daniels-aws-ec2-production
-
