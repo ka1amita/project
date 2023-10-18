@@ -5,7 +5,8 @@ orbs:
   node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
-  discord: teka23/discord@0.0.1
+#  discord: teka23/discord@0.0.1
+  discord: tkyshm/discord-orb@0.0.8
 
 jobs:
   build_frontend:
@@ -37,8 +38,8 @@ jobs:
           name: Export VARs and Build
           command: |
             set -a && source <(grep -v ^# .env.ec2) && set +a
-            export EC2_HOST=$EC2_DOMAIN_<<parameters.env>>/
-            echo $EC2_HOST
+            export REACT_APP_API_URL=http://$EC2_IP_<<parameters.env>>:8080/
+            echo REACT_APP_API_URL=$REACT_APP_API_URL
             npm run build
             mv -v build html
       - persist_to_workspace:
@@ -115,6 +116,11 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
+      - run:
+          name: Set maximum job duration to 3'30"
+          background: true
+          command: |
+            sleep 210
       - aws-cli/setup
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
@@ -125,10 +131,9 @@ jobs:
             set -a && source <(grep -v ^# .env.ec2) && set +a && echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
             echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
             echo export EC2_USER=$EC2_USER >> $BASH_ENV
-      - run: echo $EC2_IP
-      - run: echo $EC2_HOST
-      - run: echo $EC2_USER
-      - run: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}"
+      - run:
+          name: Check the SSH VARs
+          command: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP}"
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
@@ -171,21 +176,27 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
           name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_IP} "sudo systemctl restart nginx"
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export=EC2_HOST=$EC2_HOST && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 15
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
       - run:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
-      - discord/status:
-          webhook: ${DISCORD_WEBHOOK_URL}
-          success_mentions: "&1163035305545306162"
-          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
-          failure_mentions: "1074798048611414026"
+      - discord/notify:
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
+Check it here: **${EC2_HOST}**"
+          failure_message: ":red_circle: We have to repair it :-( 
+You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
+#      - discord/status:
+#          webhook: ${DISCORD_WEBHOOK_URL}
+#          success_mentions: "&1163035305545306162"
+#          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded! Check this URL: http://$EC2_HOST"
+#          failure_mentions: "1074798048611414026"
+#          failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
 
 workflows:
   test_and_deploy_to_dev:
