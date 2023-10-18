@@ -16,11 +16,12 @@ jobs:
       - checkout:
           path: ..
       - node/install-packages
-      - run: npm run build
+      - run: nmp run build
       - persist_to_workspace:
-          root: build
+          root: .
           paths:
-            - .
+            - build        
+
   parallel_tests_backend:
     working_directory: &backend ~/project/backend
     executor: &java8
@@ -49,7 +50,7 @@ jobs:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/tests
-
+  
   build_backend:
     working_directory: *backend
     executor:
@@ -63,9 +64,9 @@ jobs:
                 name: Build the jar
                 command: ./gradlew bootJar
       - persist_to_workspace:
-          root: build/libs
+          root: .
           paths:
-            - .
+            - build/libs 
 
   deploy_backend_and_frontend:
     executor: aws-cli/default
@@ -146,7 +147,7 @@ workflows:
       #     executor:
       #       <<: *java8
       #     app_src_directory: backend
-      #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
+      #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification  
       - build_backend
       - build_frontend
       - parallel_tests_backend:
