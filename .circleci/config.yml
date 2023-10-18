@@ -28,12 +28,6 @@ jobs:
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
           to: .
-#      - run:
-#          name: Export the actual EC2_HOST domain EC2_IP_{env}:8080/; note the `/` at the end!
-#          command: |
-#            set -a && source <(grep -v ^# .env.ec2) && set +a
-#            echo export REACT_APP_API_URL=http://localhost:8080/ >> $BASH_ENV
-#            echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>") >> $BASH_ENV
       - run: 
           name: Export VARs and Build
           command: |
@@ -90,7 +84,7 @@ jobs:
                 command: ./gradlew bootJar
 
       - run:
-          name: Rename buld/ to api/
+          name: Rename build/ to api/
           command: mv -v build/libs api
       - persist_to_workspace:
           root: .
@@ -131,6 +125,7 @@ jobs:
             set -a && source <(grep -v ^# .env.ec2) && set +a && echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
             echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
             echo export EC2_USER=$EC2_USER >> $BASH_ENV
+            echo export ENV=$(echo <<parameters.env>> | perl -ne 'print uc') >> $BASH_ENV
       - run:
           name: Check the SSH VARs
           command: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP}"
@@ -179,7 +174,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
@@ -188,7 +183,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
           success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
-Check it here: http://**${EC2_HOST}**"
+Check it here: **http://${EC2_HOST}**"
           failure_message: ":red_circle: We have to repair it :-( 
 You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
 #      - discord/status:
