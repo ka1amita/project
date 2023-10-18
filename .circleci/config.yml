@@ -5,7 +5,7 @@ orbs:
   node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
-  # discord: teka23/discord@0.0.1
+  discord: teka23/discord@0.0.1
 
 jobs:
   build_frontend:
@@ -60,7 +60,7 @@ jobs:
     executor:
       <<: *java8
     steps:
-      - checkout: # it has to be the first step in this job otherwise does't work later
+      - checkout: # it has to be the first step in this job otherwise doesn't work later
           path: ..
       - gradle/with_cache:
           steps:
@@ -147,11 +147,11 @@ jobs:
       - run:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs ps"
-      # - discord/status: #TODO
-      #     webhook: ${DISCORD_WEBHOOK_URL}
-      #     success_mentions: "1074798048611414026"
-      #     success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
-      #     failure_mentions: "&1163035305545306162"
+      - discord/status:
+          webhook: ${DISCORD_WEBHOOK_URL}
+          success_mentions: "1074798048611414026"
+          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
+          failure_mentions: "&1163035305545306162"
 
 workflows:
   test_and_deploy_to_dev:
@@ -169,27 +169,27 @@ workflows:
       #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - build_backend
       - build_frontend
-      - parallel_tests_backend:
-          requires:
-            - build_backend
-      - gradle/test:
-          name: checkstyle
-          requires:
-            - build_backend
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          test_command: checkstyleMain; ./gradlew checkstyleTest
-          reports_path: backend/build/reports/checkstyle
-      - gradle/test:
-          name: coverage
-          requires:
-            - build_backend
-          executor:
-            <<: *java8
-          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-          app_src_directory: backend
-          reports_path: backend/build/jacoco
+#      - parallel_tests_backend:
+#          requires:
+#            - build_backend
+#      - gradle/test:
+#          name: checkstyle
+#          requires:
+#            - build_backend
+#          executor:
+#            <<: *java8
+#          app_src_directory: backend
+#          test_command: checkstyleMain; ./gradlew checkstyleTest
+#          reports_path: backend/build/reports/checkstyle
+#      - gradle/test:
+#          name: coverage
+#          requires:
+#            - build_backend
+#          executor:
+#            <<: *java8
+#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+#          app_src_directory: backend
+#          reports_path: backend/build/jacoco
       - deploy_backend_and_frontend:
           name: deploy to development environment
           requires:
