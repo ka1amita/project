@@ -121,10 +121,10 @@ jobs:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
-          name: Kill previous api and nginx instance
+          name: Kill previous java instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
      # - run:
-     #     name: Kill previous api and nginx instance
+     #     name: Kill previous nginx instance
      #     command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
@@ -136,7 +136,7 @@ jobs:
           name: Copy frontend to default directory
           command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
-          name: Set VARs and execute the jar
+          name: Restart nginx
           command: ssh ${EC2_USER}@${EC2_HOST} "sudo systemctl restart nginx"
       - run:
           name: Set VARs and execute the jar
