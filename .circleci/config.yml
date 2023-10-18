@@ -5,7 +5,8 @@ orbs:
   node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
-  discord: teka23/discord@0.0.1
+#  discord: teka23/discord@0.0.1
+  discord: tkyshm/discord-orb@0.0.8
 
 jobs:
   build_frontend:
@@ -180,12 +181,15 @@ jobs:
       - run:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
-      - discord/status:
-          webhook: ${DISCORD_WEBHOOK_URL}
-          success_mentions: "&1163035305545306162"
-          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded! Check this URL: http://$EC2_HOST"
-          failure_mentions: "1074798048611414026"
+      - discord/notify:
+          success_message: ":tada: Hurray,**${CIRCLE_BUILD_URL}** pipeline has succeeded! Check it here: http://$EC2_HOST"
           failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
+#      - discord/status:
+#          webhook: ${DISCORD_WEBHOOK_URL}
+#          success_mentions: "&1163035305545306162"
+#          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded! Check this URL: http://$EC2_HOST"
+#          failure_mentions: "1074798048611414026"
+#          failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
 
 workflows:
   test_and_deploy_to_dev:
