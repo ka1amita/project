@@ -179,7 +179,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 15
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
@@ -188,7 +188,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
           success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
-Check it here: **${EC2_HOST}**"
+Check it here: http://**${EC2_HOST}**"
           failure_message: ":red_circle: We have to repair it :-( 
 You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
 #      - discord/status:
