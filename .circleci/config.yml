@@ -25,6 +25,7 @@ jobs:
           root: .
           paths:
             - html
+  
   parallel_tests_backend:
     working_directory: &backend ~/project/backend
     executor: &java8
@@ -66,6 +67,7 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
+
       - run: mv -v build/libs api
       - persist_to_workspace:
           root: .
@@ -121,9 +123,9 @@ jobs:
       - run:
           name: Kill previous api and nginx instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
-      - run:
-          name: Kill previous api and nginx instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
+     # - run:
+     #     name: Kill previous api and nginx instance
+     #     command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
@@ -135,10 +137,10 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_HOST} "sudo systemctl restart nginx"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && sudo nginx -g 'daemon off;'"
+          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
