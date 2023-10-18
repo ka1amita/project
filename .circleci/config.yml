@@ -171,7 +171,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
           name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_IP} "sudo systemctl restart nginx"
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
           command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export=EC2_HOST=$EC2_HOST && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
