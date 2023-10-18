@@ -116,6 +116,11 @@ jobs:
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
+      - run:
+          name: Set maximum job duration to 3'30"
+          background: true
+          command: |
+            sleep 210
       - aws-cli/setup
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
@@ -174,7 +179,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 15
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
@@ -182,10 +187,10 @@ jobs:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
-          success_message: ":tada: Hurray, **${CIRCLE_BUILD_URL}** pipeline has succeeded! 
-Check it here: ${EC2_HOST}"
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
+Check it here: **${EC2_HOST}**"
           failure_message: ":red_circle: We have to repair it :-( 
-You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
+You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
 #      - discord/status:
 #          webhook: ${DISCORD_WEBHOOK_URL}
 #          success_mentions: "&1163035305545306162"
