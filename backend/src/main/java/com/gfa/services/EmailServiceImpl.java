@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
     private MessageSource messageSource;
     @Autowired
     private HttpServletRequest httpServletRequest;
-    @Value("${FRONTEND_URL:http://localhost:3000/}")
+    @Value("${EC2_HOST:http://localhost/}")
     String frontendUrl;
     @Value("${FRONTEND_RESET_PASSWORD_URL:auth/reset-password/}")
     String frontendResetPasswordUrl;
