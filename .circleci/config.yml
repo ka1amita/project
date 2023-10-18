@@ -38,8 +38,8 @@ jobs:
           name: Export VARs and Build
           command: |
             set -a && source <(grep -v ^# .env.ec2) && set +a
-            export REACT_APP_API_URL=$EC2_DOMAIN_<<parameters.env>>/
-            echo $REACT_APP_API_URL
+            export REACT_APP_API_URL=http://$EC2_IP_<<parameters.env>>:8080/
+            echo REACT_APP_API_URL=$REACT_APP_API_URL
             npm run build
             mv -v build html
       - persist_to_workspace:
@@ -174,7 +174,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export=EC2_HOST=$EC2_HOST && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=$EC2_HOST && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
@@ -182,7 +182,7 @@ jobs:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
-          success_message: ":tada: Hurray,**${CIRCLE_BUILD_URL}** pipeline has succeeded! Check it here: http://$EC2_HOST"
+          success_message: ":tada: Hurray, **${CIRCLE_BUILD_URL}** pipeline has succeeded! Check it here: http://$EC2_HOST"
           failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
 #      - discord/status:
 #          webhook: ${DISCORD_WEBHOOK_URL}
