@@ -12,14 +12,33 @@ jobs:
     working_directory: &frontend ~/project/frontend
     executor:
       name: node/default
+    parameters:
+      env:
+        description: Environment name suffix ("dev", "staging", "production") you want to deploy.
+        type: enum
+        enum: [ "dev", "staging", "production" ]
+        default: "dev"
     steps:
       - checkout:
           path: ..
       - node/install-packages: # TODO compare with node/install from node/install-packages
           include-branch-in-cache-key: false
+      - aws-cli/setup
+      - aws-s3/copy:
+          from: s3://committed-todo-app/envs/.env.ec2
+          to: .
+#      - run:
+#          name: Export the actual EC2_HOST domain EC2_IP_{env}:8080/; note the `/` at the end!
+#          command: |
+#            set -a && source <(grep -v ^# .env.ec2) && set +a
+#            echo export REACT_APP_API_URL=http://localhost:8080/ >> $BASH_ENV
+#            echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>") >> $BASH_ENV
       - run: 
-          name: Build
-          command: | 
+          name: Export VARs and Build
+          command: |
+            set -a && source <(grep -v ^# .env.ec2) && set +a
+            export EC2_HOST=$EC2_DOMAIN_<<parameters.env>>/
+            echo $EC2_HOST
             npm run build
             mv -v build html
       - persist_to_workspace:
@@ -69,7 +88,9 @@ jobs:
                 name: Build the jar
                 command: ./gradlew bootJar
 
-      - run: mv -v build/libs api
+      - run:
+          name: Rename buld/ to api/
+          command: mv -v build/libs api
       - persist_to_workspace:
           root: .
           paths:
@@ -95,10 +116,20 @@ jobs:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
       - aws-cli/setup
-      - run: echo export EC2_HOST=$(circleci env subst "$EC2_HOST_<<parameters.env>>") >> $BASH_ENV
+      - aws-s3/copy:
+          from: s3://committed-todo-app/envs/.env.ec2
+          to: .
+      - run:
+          name: Export the actual EC2_IP_{env}
+          command: |
+            set -a && source <(grep -v ^# .env.ec2) && set +a
+            echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
+            echo $EC2_IP
+            echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
+            echo $EC2_HOST
       - run:
           name: SSH Connection check
-          command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
+          command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
       - attach_workspace:
           at: build
       - run:
@@ -123,31 +154,31 @@ jobs:
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
           name: Kill previous java instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
      # - run:
      #     name: Kill previous nginx instance
-     #     command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
+     #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
+          command: ssh ${EC2_USER}@${EC2_IP} "aws s3 sync --delete ${BUCKET}/build build"
       - run:
           name: Check the build files in EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
+          command: ssh ${EC2_USER}@${EC2_IP} 'ls -laF build'
       - run: 
           name: Copy frontend to default directory
-          command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
           name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_HOST} "sudo systemctl restart nginx"
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo systemctl restart nginx"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export=EC2_HOST=$EC2_HOST && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
+          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
       - run:
           name: Check running nginx instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs ps"
+          command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/status:
           webhook: ${DISCORD_WEBHOOK_URL}
           success_mentions: "1074798048611414026"
@@ -169,6 +200,7 @@ workflows:
       #     app_src_directory: backend
       #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - build_backend
+
       - build_frontend
 #      - parallel_tests_backend:
 #          requires:
@@ -203,31 +235,32 @@ workflows:
                 - main
           filename_tag: -<<pipeline.git.revision>>
           archive: false
-          env: dev
 
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
     jobs:
       - build_backend
-      - build_frontend
+      - build_frontend:
+          env: &staging_environment staging
       - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
             - build_frontend
-          env: staging
+          env: *staging_environment
 
   deploy_to_production:
     when:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - build_backend
-      - build_frontend
+      - build_frontend:
+          env: &production_environment production
       - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
             - build_frontend
-          env: production
+          env: *production_environment
 
