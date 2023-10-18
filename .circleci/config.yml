@@ -183,8 +183,9 @@ jobs:
       - discord/status:
           webhook: ${DISCORD_WEBHOOK_URL}
           success_mentions: "&1163035305545306162"
-          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
+          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded! Check this URL: http://$EC2_HOST"
           failure_mentions: "1074798048611414026"
+          failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
 
 workflows:
   test_and_deploy_to_dev:
