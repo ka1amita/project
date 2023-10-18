@@ -37,8 +37,8 @@ jobs:
           name: Export VARs and Build
           command: |
             set -a && source <(grep -v ^# .env.ec2) && set +a
-            export EC2_HOST=$EC2_DOMAIN_<<parameters.env>>/
-            echo $EC2_HOST
+            export REACT_APP_API_URL=$EC2_DOMAIN_<<parameters.env>>/
+            echo $REACT_APP_API_URL
             npm run build
             mv -v build html
       - persist_to_workspace:
@@ -125,10 +125,9 @@ jobs:
             set -a && source <(grep -v ^# .env.ec2) && set +a && echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
             echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
             echo export EC2_USER=$EC2_USER >> $BASH_ENV
-      - run: echo $EC2_IP
-      - run: echo $EC2_HOST
-      - run: echo $EC2_USER
-      - run: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}"
+      - run:
+          name: Check the SSH VARs
+          command: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP}"
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
