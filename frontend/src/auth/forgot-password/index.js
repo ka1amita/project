@@ -50,7 +50,7 @@ function ForgotPassword() {
             data: {
                 type: "password-forgot",
                 attributes: {
-                    redirect_url: `${window.location.protocol}//${window.location.host}/auth/reset-password`,
+                    redirect_url: `${window.location.protocol}//${window.location.host}/auth/reset-password/`,
                     ...input,
                 },
             },
