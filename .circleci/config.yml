@@ -46,7 +46,7 @@ jobs:
     executor: &java8
       name: gradle/default
       tag: "8.0"
-    parallelism: 5
+    parallelism: 2
     steps:
       - checkout:
           path: ..
@@ -82,7 +82,6 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
-
       - run:
           name: Rename build/ to api/
           command: mv -v build/libs api
@@ -106,7 +105,7 @@ jobs:
       filename_tag:
         description: Custom build files (.jar and .env) name.
         type: string
-        default: ""
+        default: ''
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
@@ -115,6 +114,9 @@ jobs:
           background: true
           command: |
             sleep 210
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
+            --header "Circle-Token: $CIRCLECI_API_TOKEN"
       - aws-cli/setup
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
@@ -128,9 +130,9 @@ jobs:
             echo export ENV=$(echo <<parameters.env>> | perl -ne 'print uc') >> $BASH_ENV
       - run:
           name: Check the SSH VARs
-          command: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP}"
+          command: echo "${EC2_USER}@${EC2_IP}"
       - run:
-          name: SSH Connection check
+          name: SSH connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
       - attach_workspace:
           at: build
@@ -154,9 +156,20 @@ jobs:
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
-      - run:
-          name: Kill previous java instance
-          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+      - run: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
+#      - run:
+#          name: Kill previous java instance
+#          command: |
+#            ssh ${EC2_USER}@${EC2_IP} '{
+#            #!/bin/bash
+#            if [ -f ~/app.pid ];
+#              then
+#                pid=$(cat ~/app.pid)
+#                kill ${pid} || true
+#              else
+#                echo "Last java instance PID not found"
+#            fi
+#            }'
      # - run:
      #     name: Kill previous nginx instance
      #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
@@ -170,11 +183,24 @@ jobs:
           name: Copy frontend to default directory
           command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
-          name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
+          name: Start or restart nginx
+          command: |
+            ssh ${EC2_USER}@${EC2_IP} '{
+            #!/bin/bash
+            if [ -f /run/nginx.pid ];
+              then
+                echo "Reloading nginx"
+                sudo nginx -s reload
+              else
+                echo "Starting nginx"
+                sudo nginx
+            fi
+            pid=$(cat /run/nginx.pid)
+            echo "nginx running under pid ${pid}"
+            }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "grep -v ^# build/.env.* && export EC2_HOST=${EC2_HOST} && ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
@@ -182,10 +208,8 @@ jobs:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
-          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
-Check it here: **http://${EC2_HOST}**"
-          failure_message: ":red_circle: We have to repair it :-( 
-You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check it here: **http://${EC2_HOST}**"
+          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
 #      - discord/status:
 #          webhook: ${DISCORD_WEBHOOK_URL}
 #          success_mentions: "&1163035305545306162"
@@ -241,7 +265,7 @@ workflows:
               ignore:
                 - develop
                 - main
-          filename_tag: -<<pipeline.git.revision>>
+#          filename_tag: -<<pipeline.git.revision>>
           archive: false
 
   deploy_to_staging:
@@ -271,4 +295,3 @@ workflows:
             - build_backend
             - build_frontend
           env: *production_environment
-
