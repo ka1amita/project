@@ -114,6 +114,9 @@ jobs:
           background: true
           command: |
             sleep 210
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
+            --header "Circle-Token: $CIRCLECI_API_TOKEN"
       - aws-cli/setup
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
@@ -189,7 +192,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
           success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check it here: **http://${EC2_HOST}**"
-          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
+          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
 #      - discord/status:
 #          webhook: ${DISCORD_WEBHOOK_URL}
 #          success_mentions: "&1163035305545306162"
