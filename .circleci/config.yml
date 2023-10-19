@@ -108,6 +108,8 @@ jobs:
         default: ''
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
+      DOT_ENV_NAME: .env.<<parameters.env>>-<<pipeline.git.revision>>
+      JAR_NAME: todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
     steps:
       - run:
           name: Set maximum job duration to 3'30"
@@ -138,7 +140,7 @@ jobs:
           at: build
       - run:
           name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-          command: mv -v $(find build/api -type f -name "*.jar") build/api/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+          command: mv -v $(find build/api -type f -name "*.jar") build/api/${JAR_NAME}
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -152,7 +154,7 @@ jobs:
           to: ${BUCKET}/build
       - aws-s3/copy: # Copy .env.{env} to the S3
           from: s3://committed-todo-app/envs/.env.<<parameters.env>>
-          to: ${BUCKET}/build/.env.<<parameters.env>>-<<pipeline.git.revision>>
+          to: ${BUCKET}/build/${DOT_ENV_NAME}
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
@@ -200,13 +202,14 @@ jobs:
             }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
-      - run:
-          name: Check running java instance
-          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV_NAME}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/${JAR_NAME}" & sleep 20
+      - run: sleep 5
       - run:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
+      - run:
+          name: Check running java instance
+          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
       - discord/notify:
           success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check it here: **http://${EC2_HOST}**"
           failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
