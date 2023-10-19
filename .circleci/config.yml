@@ -156,19 +156,20 @@ jobs:
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
-      - run:
-          name: Kill previous java instance
-          command: |
-            ssh ${EC2_USER}@${EC2_IP} '{
-            #!/bin/bash
-            if [ -f ~/app.pid ];
-              then
-                pid=$(cat ~/app.pid)
-                kill ${pid} || true
-              else
-                echo "Last java instance PID not found"
-            fi
-            }'
+      - run: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
+#      - run:
+#          name: Kill previous java instance
+#          command: |
+#            ssh ${EC2_USER}@${EC2_IP} '{
+#            #!/bin/bash
+#            if [ -f ~/app.pid ];
+#              then
+#                pid=$(cat ~/app.pid)
+#                kill ${pid} || true
+#              else
+#                echo "Last java instance PID not found"
+#            fi
+#            }'
      # - run:
      #     name: Kill previous nginx instance
      #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
@@ -199,7 +200,7 @@ jobs:
             }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "grep -v ^# build/.env.* && export EC2_HOST=${EC2_HOST} && ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
