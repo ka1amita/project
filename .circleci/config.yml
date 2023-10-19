@@ -159,8 +159,16 @@ jobs:
       - run:
           name: Kill previous java instance
           command: |
-            set +e # suppress error message if no processes are matched (e.g. after a crash)
-            ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs kill"
+            ssh ${EC2_USER}@${EC2_IP} '{
+            #!/bin/bash
+            if [ -f ~/app.pid ];
+              then
+                pid=$(cat ~/app.pid)
+                kill ${pid} || true
+              else
+                echo "Last java instance PID not found"
+            fi
+            }'
      # - run:
      #     name: Kill previous nginx instance
      #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
@@ -178,7 +186,8 @@ jobs:
           command: |
             ssh ${EC2_USER}@${EC2_IP} '{
             #!/bin/bash
-            if [ -f /run/nginx.pid ]; then
+            if [ -f /run/nginx.pid ];
+              then
                 echo "Reloading nginx"
                 sudo nginx -s reload
               else
