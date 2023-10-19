@@ -201,7 +201,7 @@ jobs:
             }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run: sleep 5
       - run:
           name: Check running nginx instance
