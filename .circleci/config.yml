@@ -46,7 +46,7 @@ jobs:
     executor: &java8
       name: gradle/default
       tag: "8.0"
-    parallelism: 5
+    parallelism: 2
     steps:
       - checkout:
           path: ..
@@ -82,7 +82,6 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
-
       - run:
           name: Rename build/ to api/
           command: mv -v build/libs api
@@ -128,7 +127,7 @@ jobs:
             echo export ENV=$(echo <<parameters.env>> | perl -ne 'print uc') >> $BASH_ENV
       - run:
           name: Check the SSH VARs
-          command: echo "ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP}"
+          command: echo "${EC2_USER}@${EC2_IP}"
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
@@ -182,10 +181,8 @@ jobs:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
       - discord/notify:
-          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! 
-Check it here: **http://${EC2_HOST}**"
-          failure_message: ":red_circle: We have to repair it :-( 
-You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check it here: **http://${EC2_HOST}**"
+          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **`ssh ${EC2_USER}@${EC2_IP}`**"
 #      - discord/status:
 #          webhook: ${DISCORD_WEBHOOK_URL}
 #          success_mentions: "&1163035305545306162"
@@ -241,7 +238,7 @@ workflows:
               ignore:
                 - develop
                 - main
-          filename_tag: -<<pipeline.git.revision>>
+#          filename_tag: -<<pipeline.git.revision>>
           archive: false
 
   deploy_to_staging:
@@ -271,4 +268,3 @@ workflows:
             - build_backend
             - build_frontend
           env: *production_environment
-
