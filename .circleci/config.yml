@@ -108,13 +108,14 @@ jobs:
         default: ''
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
-      DOT_ENV: .env.<<parameters.env>>-<<pipeline.git.revision>>
+      DOT_ENV_NAME: .env.<<parameters.env>>-<<pipeline.git.revision>>
+      JAR_NAME: todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
     steps:
       - run:
-          name: Set maximum job duration to 3'30"
+          name: Set maximum job duration to 3'
           background: true
           command: |
-            sleep 210
+            sleep 180
             curl --request POST \
             --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
             --header "Circle-Token: $CIRCLECI_API_TOKEN"
@@ -139,7 +140,7 @@ jobs:
           at: build
       - run:
           name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-          command: mv -v $(find build/api -type f -name "*.jar") build/api/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+          command: mv -v $(find build/api -type f -name "*.jar") build/api/${JAR_NAME}
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -153,11 +154,13 @@ jobs:
           to: ${BUCKET}/build
       - aws-s3/copy: # Copy .env.{env} to the S3
           from: s3://committed-todo-app/envs/.env.<<parameters.env>>
-          to: ${BUCKET}/build/${DOT_ENV}
+          to: ${BUCKET}/build/${DOT_ENV_NAME}
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
-      - run: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
+      - run: 
+          name: Kill all java instances
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
 #      - run:
 #          name: Kill previous java instance
 #          command: |
@@ -201,8 +204,7 @@ jobs:
             }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
-      - run: sleep 5
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV_NAME}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/${JAR_NAME}" & sleep 20
       - run:
           name: Check running nginx instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
