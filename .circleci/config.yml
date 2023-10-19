@@ -200,7 +200,7 @@ jobs:
             }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_IP} "grep -v ^# build/.env.* && export EC2_HOST=${EC2_HOST} && ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
