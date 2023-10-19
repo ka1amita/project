@@ -1,8 +1,9 @@
 package com.gfa.dtos.requestdtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-
 
 
 public class RegisterRequestDTO {
@@ -13,6 +14,8 @@ public class RegisterRequestDTO {
     private String email;
     @NotEmpty(message = "{error.password.empty.or.null}")
     private String password;
+    @JsonProperty("redirect_url")
+    String redirectUrl;
 
     public RegisterRequestDTO() {
     }
@@ -45,5 +48,13 @@ public class RegisterRequestDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 }

@@ -61,18 +61,22 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void registerConfirmationEmail(String to, String username, String code) throws MessagingException {
+        String url = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + Endpoint.CONFIRM_WITH_CODE + "/";
+        registerConfirmationEmail(to, username, code, url);
+    }
+    @Override
+    public void registerConfirmationEmail(String to, String username, String code, String url) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.subject", null, currentLocale);
         String message = messageSource.getMessage("email.body", new Object[]{username}, currentLocale);
-        String url = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + Endpoint.CONFIRM_WITH_CODE + "/";
         sendMimeMessage(to, subject, message, code, url);
     }
 
     @Override
-    public void resetPasswordEmail(String to, String username, String code, String frontendUrl) throws MessagingException {
+    public void resetPasswordEmail(String to, String username, String code, String url) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.reset.subject", null, currentLocale);
         String body = messageSource.getMessage("email.reset.body", new Object[]{username}, currentLocale);
-        sendMimeMessage(to, subject, body, code, frontendUrl);
+        sendMimeMessage(to, subject, body, code, url);
     }
 }
