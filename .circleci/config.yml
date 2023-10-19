@@ -158,7 +158,9 @@ jobs:
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
           name: Kill previous java instance
-          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+          command: |
+            set +e # suppress error message if no processes are matched (e.g. after a crash)
+            ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs kill"
      # - run:
      #     name: Kill previous nginx instance
      #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
@@ -173,14 +175,19 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
           name: Start or restart nginx
-          command: ssh ${EC2_USER}@${EC2_IP} \<<EOF sudo nginx -s reload
-            if [ ! -f /run/nginx.pid ];
-              then
+          command: |
+            ssh ${EC2_USER}@${EC2_IP} '{
+            #!/bin/bash
+            if [ -f /run/nginx.pid ]; then
+                echo "Reloading nginx"
                 sudo nginx -s reload
               else
+                echo "Starting nginx"
                 sudo nginx
             fi
-            EOF
+            pid=$(cat /run/nginx.pid)
+            echo "nginx running under pid ${pid}"
+            }'
       - run:
           name: Set VARs and execute the jar
           command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
