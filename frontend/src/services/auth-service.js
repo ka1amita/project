@@ -42,7 +42,7 @@ class AuthService {
 
   backendCheck = async () => {
     const backendCheck = 'ribbon';
-    return await HttpService.get(backendCheck);
+    return await HttpService.getRawResponse(backendCheck);
   }
 
   getProfile = async() => {
