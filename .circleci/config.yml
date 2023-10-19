@@ -105,7 +105,7 @@ jobs:
       filename_tag:
         description: Custom build files (.jar and .env) name.
         type: string
-        default: ""
+        default: ''
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
@@ -129,7 +129,7 @@ jobs:
           name: Check the SSH VARs
           command: echo "${EC2_USER}@${EC2_IP}"
       - run:
-          name: SSH Connection check
+          name: SSH connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
       - attach_workspace:
           at: build
@@ -169,8 +169,15 @@ jobs:
           name: Copy frontend to default directory
           command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
-          name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_IP} "sudo nginx -s reload"
+          name: Start or restart nginx
+          command: ssh ${EC2_USER}@${EC2_IP} \<<EOF sudo nginx -s reload
+            if [ ! -f /run/nginx.pid ];
+              then
+                sudo nginx -s reload
+              else
+                sudo nginx
+            fi
+            EOF
       - run:
           name: Set VARs and execute the jar
           command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/.env.*) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
