@@ -25,6 +25,11 @@ class AuthService {
     return await HttpService.post(logoutEndpoint);
   };
 
+  activateUser = async (token) => {
+    const activateUser = 'confirm/' + token;
+    return await HttpService.get(activateUser);
+  }
+
   forgotPassword = async (payload) => {
     const forgotPassword = 'reset';
     const requestData = payload.data.attributes;

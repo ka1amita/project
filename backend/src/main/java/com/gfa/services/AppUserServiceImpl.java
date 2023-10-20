@@ -84,7 +84,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeService.saveActivationCode(new ActivationCode(Utils.GenerateActivationCode(ActivationCodeMaxSize), appUser.get()));
-            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode(), passwordResetRequestDTO.getRedirect_url());
+            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode(), passwordResetRequestDTO.getRedirectUrl());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
             throw new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale()));
@@ -290,7 +290,12 @@ public class AppUserServiceImpl implements AppUserService {
 
         ActivationCode activationCode = assignActivationCodeToUser(newUser);
 
-        emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
+        if(Utils.isNotNullOrEmpty(request.getRedirectUrl())) {
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode(), request.getRedirectUrl());
+        } else {
+            emailService.registerConfirmationEmail(newUser.getEmail(), newUser.getUsername(), activationCode.getActivationCode());
+        }
+
 
         return newUser;
     }
