@@ -84,7 +84,7 @@ public class AppUserServiceImpl implements AppUserService {
 
         if (appUser.isPresent()) {
             ActivationCode activationCode = activationCodeService.saveActivationCode(new ActivationCode(Utils.GenerateActivationCode(ActivationCodeMaxSize), appUser.get()));
-            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode());
+            emailService.resetPasswordEmail(appUser.get().getEmail(), appUser.get().getUsername(), activationCode.getActivationCode(), passwordResetRequestDTO.getRedirect_url());
             return ResponseEntity.ok(new PasswordResetResponseDTO(activationCode.getActivationCode()));
         } else {
             throw new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale()));
