@@ -16,12 +16,16 @@ jobs:
       - checkout:
           path: ..
       - node/install-packages
-      - run: nmp run build
+      - run: 
+          name: Build
+          command: | 
+            npm run build
+            mv -v build html
       - persist_to_workspace:
           root: .
           paths:
-            - build        
-
+            - html
+  
   parallel_tests_backend:
     working_directory: &backend ~/project/backend
     executor: &java8
@@ -50,7 +54,7 @@ jobs:
           path: build/test-results/test
       - store_artifacts:
           path: build/reports/tests
-  
+
   build_backend:
     working_directory: *backend
     executor:
@@ -63,10 +67,12 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
+
+      - run: mv -v build/libs api
       - persist_to_workspace:
           root: .
           paths:
-            - build/libs 
+            - api
 
   deploy_backend_and_frontend:
     executor: aws-cli/default
@@ -88,6 +94,7 @@ jobs:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
     steps:
       - aws-cli/setup
+      - run: echo export EC2_HOST=$(circleci env subst "$EC2_HOST_<<parameters.env>>") >> $BASH_ENV
       - run:
           name: SSH Connection check
           command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
@@ -95,7 +102,7 @@ jobs:
           at: build
       - run:
           name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-          command: mv -v $(find build -type f -name "*.jar") build/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+          command: mv -v $(find build/api -type f -name "*.jar") build/api/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -114,20 +121,32 @@ jobs:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
       - run:
-          name: Kill previous application instance
+          name: Kill previous java instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
+     # - run:
+     #     name: Kill previous nginx instance
+     #     command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
       - run:
           name: Check the build files in EC2
           command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
+      - run: 
+          name: Copy frontend to default directory
+          command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
+      - run:
+          name: Restart nginx
+          command: ssh ${EC2_USER}@${EC2_HOST} "sudo systemctl restart nginx"
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/*.jar" & sleep 20
+          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
       - run:
-          name: Check running application instance
+          name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
+      - run:
+          name: Check running nginx instance
+          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs ps"
       # - discord/status: #TODO
       #     webhook: ${DISCORD_WEBHOOK_URL}
       #     success_mentions: "1074798048611414026"
@@ -147,7 +166,7 @@ workflows:
       #     executor:
       #       <<: *java8
       #     app_src_directory: backend
-      #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification  
+      #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - build_backend
       - build_frontend
       - parallel_tests_backend:
@@ -184,8 +203,7 @@ workflows:
           filename_tag: -<<pipeline.git.revision>>
           archive: false
           env: dev
-          context:
-            - committed-daniels-aws-ec2-dev
+
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
@@ -198,8 +216,7 @@ workflows:
             - build_backend
             - build_frontend
           env: staging
-          context:
-            - committed-daniels-aws-ec2-staging
+
   deploy_to_production:
     when:
       equal: [ main, << pipeline.git.branch >> ]
@@ -211,7 +228,5 @@ workflows:
           requires:
             - build_backend
             - build_frontend
-          archive: false
           env: production
-          context:
-            - committed-daniels-aws-ec2-production
+
