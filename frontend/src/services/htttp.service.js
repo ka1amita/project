@@ -15,6 +15,7 @@ export class HttpService {
   };
 
   get = async (url) => await this.request(this.getOptionsConfig("get", url));
+  getRawResponse = async (url) => await this.requestWithRawResponse(this.getOptionsConfig("get", url));
 
   post = async (url, data) => await this.request(this.getOptionsConfig("post", url, data));
 
@@ -39,6 +40,14 @@ export class HttpService {
         .request(options)
         .then((res) => resolve(res.data))
         .catch((ex) => reject(ex.response.data));
+    });
+  }
+  requestWithRawResponse(options) {
+    return new Promise((resolve, reject) => {
+      this._axios
+          .request(options)
+          .then((res) => resolve(res))
+          .catch((ex) => reject(ex.response));
     });
   }
 }
