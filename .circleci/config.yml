@@ -161,6 +161,9 @@ jobs:
       - run: 
           name: Kill all java instances
           command: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
+      - run:
+          name: Kill all java instances witl -SIGKILL
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo killall -KILL java || true" # until debugged in Terraform
 #      - run:
 #          name: Kill previous java instance
 #          command: |
