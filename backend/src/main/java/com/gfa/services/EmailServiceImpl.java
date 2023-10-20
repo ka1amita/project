@@ -28,10 +28,6 @@ public class EmailServiceImpl implements EmailService {
     private MessageSource messageSource;
     @Autowired
     private HttpServletRequest httpServletRequest;
-    @Value("${EC2_HOST:http://localhost/}")
-    String frontendUrl;
-    @Value("${FRONTEND_RESET_PASSWORD_URL:auth/reset-password/}")
-    String frontendResetPasswordUrl;
 
     @Override
     public void sendSimpleMessage(String to, String subject, String text) {
@@ -65,19 +61,22 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void registerConfirmationEmail(String to, String username, String code) throws MessagingException {
+        String url = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + Endpoint.CONFIRM_WITH_CODE + "/";
+        registerConfirmationEmail(to, username, code, url);
+    }
+    @Override
+    public void registerConfirmationEmail(String to, String username, String code, String url) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.subject", null, currentLocale);
-        String message=messageSource.getMessage("email.body", new Object[]{username}, currentLocale);
-        String url = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + Endpoint.CONFIRM_WITH_CODE + "/";
+        String message = messageSource.getMessage("email.body", new Object[]{username}, currentLocale);
         sendMimeMessage(to, subject, message, code, url);
     }
 
     @Override
-    public void resetPasswordEmail(String to, String username, String code) throws MessagingException {
+    public void resetPasswordEmail(String to, String username, String code, String url) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String subject = messageSource.getMessage("email.reset.subject", null, currentLocale);
-        String body= messageSource.getMessage("email.reset.body", new Object[]{username}, currentLocale);
-        String url = frontendUrl + frontendResetPasswordUrl;
-        sendMimeMessage(to,subject, body, code, url);
+        String body = messageSource.getMessage("email.reset.body", new Object[]{username}, currentLocale);
+        sendMimeMessage(to, subject, body, code, url);
     }
 }

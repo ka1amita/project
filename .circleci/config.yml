@@ -82,6 +82,7 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
+
       - run:
           name: Rename build/ to api/
           command: mv -v build/libs api
@@ -120,6 +121,7 @@ jobs:
             --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
             --header "Circle-Token: $CIRCLECI_API_TOKEN"
       - aws-cli/setup
+
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
           to: .

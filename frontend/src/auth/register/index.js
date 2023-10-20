@@ -116,7 +116,7 @@ function Register() {
     const myData = {
       data: {
         type: "users",
-        attributes: { ...newUser, password_confirmation: newUser.password },
+        attributes: { ...newUser, password_confirmation: newUser.password, redirect_url: `${window.location.protocol}//${window.location.host}/auth/login/` },
         relationships: {
           roles: {
             data: [
