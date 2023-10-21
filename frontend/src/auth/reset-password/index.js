@@ -45,13 +45,6 @@ const PasswordReset = () => {
     });
   };
 
-  useEffect(() => {
-    // get the token and email sent in the url
-    // const queryParams = new URLSearchParams(window.location. .pathname .search);
-    // setToken(queryParams.get("token"));
-    // setEmail(queryParams.get("email"));
-  }, []);
-
   const submitHandler = async (e) => {
     e.preventDefault();
     setNotification(false);

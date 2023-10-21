@@ -23,6 +23,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(Endpoint.LOGIN, corsConfiguration);
         source.registerCorsConfiguration(Endpoint.REGISTER, corsConfiguration);
+        source.registerCorsConfiguration(Endpoint.CONFIRM_WITH_CODE + "/*", corsConfiguration);
         source.registerCorsConfiguration(Endpoint.DASHBOARD, corsConfiguration);
         source.registerCorsConfiguration(Endpoint.RESET_PASSWORD, corsConfiguration);
         source.registerCorsConfiguration(Endpoint.RESET_PASSWORD + "/*", corsConfiguration);

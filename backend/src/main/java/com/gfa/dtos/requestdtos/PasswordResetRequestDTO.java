@@ -10,6 +10,8 @@ public class PasswordResetRequestDTO extends RequestDTO {
     @JsonProperty("email")
     @JsonAlias("username")
     String usernameOrEmail;
+    @JsonProperty("redirect_url")
+    String redirectUrl;
 
     public PasswordResetRequestDTO() {
     }
@@ -18,11 +20,24 @@ public class PasswordResetRequestDTO extends RequestDTO {
         this.usernameOrEmail = usernameOrEmail;
     }
 
+    public PasswordResetRequestDTO(String usernameOrEmail, String redirectUrl) {
+        this.usernameOrEmail = usernameOrEmail;
+        this.redirectUrl = redirectUrl;
+    }
+
     public String getUsernameOrEmail() {
         return usernameOrEmail;
     }
 
     public void setUsernameOrEmail(String usernameOrEmail) {
         this.usernameOrEmail = usernameOrEmail;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
     }
 }
