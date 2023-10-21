@@ -1,9 +1,6 @@
 import HttpService from "./htttp.service";
-import { AuthContext } from "context";
-import {useContext} from "react";
 
 export const setupAxiosInterceptors = (onUnauthenticated) => {
-  const authContext = useContext(AuthContext);
   const onRequestSuccess = async (config) => {
     const token = localStorage.getItem("token");
     config.headers.Authorization = `Bearer ${token}`;
@@ -13,10 +10,7 @@ export const setupAxiosInterceptors = (onUnauthenticated) => {
 
   HttpService.addRequestInterceptor(onRequestSuccess, onRequestFail);
 
-  const onResponseSuccess = (response) => {
-    authContext.setBackendInfo(response.headers['environment'], response.headers['hostname'])
-    return response;
-  }
+  const onResponseSuccess = (response) => response;
 
   const onResponseFail = (error) => {
     const status = error.status || error.response.status;

@@ -68,8 +68,8 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
-  const host = localStorage.getItem("host");
-  const environment = localStorage.getItem("environment");
+  const [host, setHost] = useState("");
+  const [environment, setEnvironment] = useState("");
 
   // Cache for the rtl
   useMemo(() => {
@@ -107,8 +107,11 @@ export default function App() {
   });
 
   useEffect(() => {
-    AuthService.backendCheck();
-  })
+    AuthService.backendCheck().then((response) => {
+      setHost(response.headers['hostname']);
+      setEnvironment(response.headers['environment'])
+    })
+  }, [])
 
   // Setting the dir attribute for the body element
   useEffect(() => {
@@ -237,6 +240,7 @@ export default function App() {
           {layout === "vr" && <Configurator />}
           <Routes>
             <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/login/:token" element={<Login />} />
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password/:token" element={<ResetPassword />} />

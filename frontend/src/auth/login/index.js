@@ -1,7 +1,7 @@
-import { useContext, useState } from "react";
+import {useContext, useEffect, useState} from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -28,13 +28,27 @@ import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
 import AuthService from "services/auth-service";
 import { AuthContext } from "context";
+import MDAlert from "../../components/MDAlert";
 
 function Login() {
   const authContext = useContext(AuthContext);
 
+  let {token} = useParams();
   const [user, setUser] = useState({});
   const [credentialsErros, setCredentialsError] = useState(null);
   const [rememberMe, setRememberMe] = useState(false);
+
+  const [successSB, setSuccessSB] = useState(false);
+  const openSuccessSB = () => setSuccessSB(true);
+  const closeSuccessSB = () => setSuccessSB(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const renderSuccessSB = (
+      <MDAlert color="success">
+        <MDTypography variant="body2" color="white">
+          {successMessage}
+        </MDTypography>
+      </MDAlert>
+  );
 
   const [inputs, setInputs] = useState({
     email: "",
@@ -45,6 +59,20 @@ function Login() {
     emailError: false,
     passwordError: false,
   });
+
+  useEffect(() => {
+    if(token) {
+      AuthService.activateUser(token).then(r => {
+        setSuccessMessage(r.message);
+        openSuccessSB();
+        setTimeout(() => {
+          closeSuccessSB();
+        }, 10000)
+      }).catch(err => {
+        console.log(err);
+      });
+    }
+  }, []);
 
   const addUserHandler = (newUser) => setUser(newUser);
 
@@ -59,6 +87,8 @@ function Login() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    closeSuccessSB();
 
     const passwordFormat = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!"#$%&'()*+,-./:;<=>?@\[\]\\^_`{|}~]).{8,}$/;
 
@@ -239,6 +269,9 @@ function Login() {
           </MDBox>
         </MDBox>
       </Card>
+      <MDBox mt={3} mb={1} textAlign="center">
+        {successSB && (renderSuccessSB)}
+      </MDBox>
     </BasicLayoutLanding>
   );
 }

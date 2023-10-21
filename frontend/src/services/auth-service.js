@@ -25,6 +25,11 @@ class AuthService {
     return await HttpService.post(logoutEndpoint);
   };
 
+  activateUser = async (token) => {
+    const activateUser = 'confirm/' + token;
+    return await HttpService.get(activateUser);
+  }
+
   forgotPassword = async (payload) => {
     const forgotPassword = 'reset';
     const requestData = payload.data.attributes;
@@ -42,7 +47,7 @@ class AuthService {
 
   backendCheck = async () => {
     const backendCheck = 'ribbon';
-    return await HttpService.get(backendCheck);
+    return await HttpService.getRawResponse(backendCheck);
   }
 
   getProfile = async() => {
