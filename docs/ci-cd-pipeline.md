@@ -50,6 +50,31 @@ particular _pipeline_ works in detail.
 
 ## Documentation
 
+### Set up _CircleCI_ _pipeline_
+
+There are two ways how to set up a CicleCi pipeline:
+
++ under an existing CircleCI organization
++ under a new CircleCI organization
+
+### Set up under an existing CircleCI organization
+
+@formatter:off
+1. [Sign up](https://circleci.com/signup/) or [sign in](https://circleci.com/vcs-authorize/) to a personal account in [CircleCI web application](https://app.circleci.com/dashboard).
+2. Connect the CircleCI web application to the GitHub repository (by continuing the wizard):
+   1. Select `green-fox-academy` GitHub organization.
+   2. Install & Authorize CircleCI App to `simensis-osic-devops-zwei` repository. ()
+3. Create a project (by continuing the wizard or using a [link](https://app.circleci.com/projects/create-project/)).
+
+### Set up under an existing CircleCI organization
+
+1. Follow the link from an invitation email. (Do not attempt to sign up directly from the Sign Up page!).
+2. Connect the CircleCI web application to the GitHub repository (by continuing the wizard):
+   1. Select `green-fox-academy` GitHub organization.
+   2. Install & Authorize CircleCI App to `simensis-osic-devops-zwei` repository. ()
+3. Create a project (by continuing the wizard or using a [link](https://app.circleci.com/projects/create-project/)).
+@formatter:on
+
 
 
 
