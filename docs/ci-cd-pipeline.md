@@ -1,13 +1,12 @@
 # CircleCI
 
 <!-- TOC -->
-
 * [CircleCI](#circleci)
   * [Audience](#audience)
   * [Scope](#scope)
   * [Documentation](#documentation)
     * [Triggering CircleCI pipeline (Explaining the workflow configuration)](#triggering-circleci-pipeline-explaining-the-workflow-configuration)
-    * [Behaviour of CircleCI Pipeline](#behaviour-of-circleci-pipeline)
+    * [Behaviour of CircleCI pipeline workflows](#behaviour-of-circleci-pipeline-workflows)
     * [Setting up CircleCI pipeline](#setting-up-circleci-pipeline)
     * [Setting up CircleCI project](#setting-up-circleci-project)
       * [Setting up under an existing CircleCI organization](#setting-up-under-an-existing-circleci-organization)
@@ -16,7 +15,6 @@
     * [Define Committed application environmental variables](#define-committed-application-environmental-variables)
     * [Define Committed application EC2 instances credentials](#define-committed-application-ec2-instances-credentials)
 * [Technical writing](#technical-writing)
-
 <!-- TOC -->
 
 ## Audience
@@ -64,9 +62,11 @@ particular _pipeline_ works in detail.
 
 ## Documentation
 
-### Triggering CircleCI pipeline (Explaining the workflow configuration)
+### CircleCI pipeline configuration
 
-The CircleCI pipeline triggers by one of the following ways:
+#### Triggering CircleCI pipeline
+
+The CircleCI pipeline are triggered by one of the following events:
 
 + Triggering it manually using the CircleCI web application.
 + Opening a [^pull request] using GitHub.
@@ -74,27 +74,64 @@ The CircleCI pipeline triggers by one of the following ways:
   + a [^default branch]
   + a branch with an associated [^pull request]
 
-### Behaviour of CircleCI pipeline workflows
+#### CircleCI workflows
 
-The CircleCI pipeline has the following workflows configured:
+The Committed project CircleCI pipeline has the following workflows configured:
 
 + The `test_and_deploy_to_dev`
 + The `deploy_to_staging`
 + The `deploy_to_production`
 
-The `test_and_deploy_to_dev` workflow consists of the following jobs:
+The individual CircleCI workflows consist of CircleCI jobs and are associated witch Git branches, and deployment environments according to the
+following table:
 
-+ building of a `jar`
-+ testing of code
-+ checking of code style
-+ deploying to `dev` environment
+| Workflow name            | Jobs                                                                                                                                | Associated branch | Associated environment |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------|------------------------|
+| `deploy_to_production`   | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `main` branch     | `production`           |
+| `deploy_to_staging`      | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `develop` branch  | `staging`              |
+| `test_and_deploy_to_dev` | `build_backend`<br>`build_frontend`<br>`test_backend_code`<br>`test_checkstyle`<br>`test_coverage`<br>`deploy_backend_and_frontend` | any other branch  | `dev`                  |
 
-These jobs depend one on another according to the following diagram:
-```test_and_deploy_to_dev
-graph LR
+#### CircleCI jobs
+
+The CircleCI jobs perform the following tasks:
+
++ `build_backend` builds a Java (backend) part
++ `build_frontend` builds a React (frontend) part
++ `test_backend_code` tests the Java code
++ `test_checkstyle` checks the Java code style
++ `test_coverage` checks the Java code test coverage
++ `deploy_backend_and_frontend` deploys the Committed application
+
+#### Behaviour of CircleCI pipeline workflows
+
+The jobs depend one on another according to the following diagram:
+
+```mermaid
+---
+title: test_and_deploy_to_dev
+---
+flowchart TB
+  A[build_backend] --> B[test_backend_code] --> C[deploy_backend_and_frontend]
+  A --> D[test_checkstyle] --> C
+  A --> E[test_coverage] --> C
+  F[build_frontend] ---> C
 ```
-
-[//]: # (TODO)
+```mermaid
+---
+title: deploy_to_staging
+---
+flowchart TB
+  A[build_backend] --> B[deploy_backend_and_frontend]
+  C[build_frontend] --> B
+```
+```mermaid
+---
+title: deploy_to_production
+---
+flowchart TB
+  A[build_backend] --> B[deploy_backend_and_frontend]
+  C[build_frontend] --> B
+```
 
 ### Setting up CircleCI pipeline
 
