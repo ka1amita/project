@@ -78,18 +78,18 @@ The CircleCI pipeline are triggered by one of the following events:
 
 The Committed project CircleCI pipeline has the following workflows configured:
 
-+ The `test_and_deploy_to_dev`
-+ The `deploy_to_staging`
-+ The `deploy_to_production`
++ `test_and_deploy_to_dev`
++ `deploy_to_staging`
++ `deploy_to_production`
 
 The individual CircleCI workflows consist of CircleCI jobs and are associated witch Git branches, and deployment environments according to the
 following table:
 
 | Workflow name            | Jobs                                                                                                                                | Associated branch | Associated environment |
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------|------------------------|
-| `deploy_to_production`   | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `main` branch     | `production`           |
-| `deploy_to_staging`      | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `develop` branch  | `staging`              |
-| `test_and_deploy_to_dev` | `build_backend`<br>`build_frontend`<br>`test_backend_code`<br>`test_checkstyle`<br>`test_coverage`<br>`deploy_backend_and_frontend` | any other branch  | `dev`                  |
+| `deploy_to_production`   | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `main`            | `production`           |
+| `deploy_to_staging`      | `build_backend`<br>`build_frontend`<br>`deploy_backend_and_frontend`                                                                | `develop`         | `staging`              |
+| `test_and_deploy_to_dev` | `build_backend`<br>`build_frontend`<br>`test_backend_code`<br>`test_checkstyle`<br>`test_coverage`<br>`deploy_backend_and_frontend` | any other         | `dev`                  |
 
 #### CircleCI jobs
 
