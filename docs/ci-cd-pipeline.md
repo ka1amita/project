@@ -1,12 +1,31 @@
+# CircleCI
+
+<!-- TOC -->
+
+* [CircleCI](#circleci)
+  * [Audience](#audience)
+  * [Scope](#scope)
+  * [Documentation](#documentation)
+    * [Triggering CircleCI pipeline (Explaining the workflow configuration)](#triggering-circleci-pipeline-explaining-the-workflow-configuration)
+    * [Behaviour of CircleCI Pipeline](#behaviour-of-circleci-pipeline)
+    * [Setting up CircleCI pipeline](#setting-up-circleci-pipeline)
+    * [Setting up CircleCI project](#setting-up-circleci-project)
+      * [Setting up under an existing CircleCI organization](#setting-up-under-an-existing-circleci-organization)
+      * [Setting up under an existing CircleCI organization](#setting-up-under-an-existing-circleci-organization-1)
+    * [Set up CircleCI pipeline](#set-up-circleci-pipeline)
+    * [Define Committed application environmental variables](#define-committed-application-environmental-variables)
+    * [Define Committed application EC2 instances credentials](#define-committed-application-ec2-instances-credentials)
+* [Technical writing](#technical-writing)
+
+<!-- TOC -->
+
 ## Audience
 
-This document is intended for a _software developer_ (who works on the _Committed_ project) **not**
-familiar with _[^CircleCI]_ _[^pipeline]_...
-???
-This document is intended for a _software developer_ familiar with _[^CircleCI]_ _[^pipeline]_
-who is tasked with set-up of a configured _pipeline_ for a _Committed_ project.
+This document is intended for a _software developer_ **not** familiar with _[^CircleCI]_
+_[^pipeline]_ tasked with set-up of a configured _pipeline_ for a _Committed_ project.
 
-You must read "_Committed_ project: Infrastructure" documentation prior to reading this document.
+You require the "_Committed_ project: Infrastructure" documentation to be able to finish the
+CircleCi pipeline set-up.
 
 ## Scope
 
@@ -22,6 +41,7 @@ particular _pipeline_ works in detail.
 
 [^workflow]: https://developers.google.com/tech-writing/one/documents
 
+[//]: # (TODO remove the paragraph below)
 + Who is your target audience?
   + > Colleagues from the Committed team.
 + What is your target audience's goal? Why are they reading this document?
@@ -42,32 +62,69 @@ particular _pipeline_ works in detail.
     >   + Input secret key from _GitHub_ and _AWS_.
     >   + Input credentials for different environment available on _AWS_.
 
-+ CI/CD PIPELINE
-+ ON PR CREATION
-+ AUTOMATIC BUILD / TEST / DEPLOY (DEVELOPMENT)
-+ ON PR APPROVAL
-+ DEPLOY (STAGING)
-
 ## Documentation
 
-### Set up _CircleCI_ _pipeline_
+### Triggering CircleCI pipeline (Explaining the workflow configuration)
+
+The CircleCI pipeline triggers by one of the following ways:
+
++ Triggering it manually using the CircleCI web application.
++ Opening a [^pull request] using GitHub.
++ Pushing a commit to GitHub to one of the following branches:
+  + a [^default branch]
+  + a branch with an associated [^pull request]
+
+### Behaviour of CircleCI pipeline workflows
+
+The CircleCI pipeline has the following workflows configured:
+
++ The `test_and_deploy_to_dev`
++ The `deploy_to_staging`
++ The `deploy_to_production`
+
+The `test_and_deploy_to_dev` workflow consists of the following jobs:
+
++ building of a `jar`
++ testing of code
++ checking of code style
++ deploying to `dev` environment
+
+These jobs depend one on another according to the following diagram:
+```test_and_deploy_to_dev
+graph LR
+```
+
+[//]: # (TODO)
+
+### Setting up CircleCI pipeline
+
+To set up a CircleCI project you must follow these steps:
+
+1. Set up CircleCI project.
+2. Set up CircleCI pipeline.
+3. Define Committed application environmental variables.
+4. Define Committed application EC2 instances credentials.
+
+### Setting up CircleCI project
 
 There are two ways how to set up a CicleCi pipeline:
 
 + under an existing CircleCI organization
 + under a new CircleCI organization
 
-### Set up under an existing CircleCI organization
+#### Setting up under an existing CircleCI organization
 
-@formatter:off
++ @formatter:off
 1. [Sign up](https://circleci.com/signup/) or [sign in](https://circleci.com/vcs-authorize/) to a personal account in [CircleCI web application](https://app.circleci.com/dashboard).
 2. Connect the CircleCI web application to the GitHub repository (by continuing the wizard):
    1. Select `green-fox-academy` GitHub organization.
    2. Install & Authorize CircleCI App to `simensis-osic-devops-zwei` repository. ()
 3. Create a project (by continuing the wizard or using a [link](https://app.circleci.com/projects/create-project/)).
+@formatter:on
 
-### Set up under an existing CircleCI organization
+#### Setting up under an existing CircleCI organization
 
+@formatter:off
 1. Follow the link from an invitation email. (Do not attempt to sign up directly from the Sign Up page!).
 2. Connect the CircleCI web application to the GitHub repository (by continuing the wizard):
    1. Select `green-fox-academy` GitHub organization.
@@ -75,8 +132,44 @@ There are two ways how to set up a CicleCi pipeline:
 3. Create a project (by continuing the wizard or using a [link](https://app.circleci.com/projects/create-project/)).
 @formatter:on
 
+### Set up CircleCI pipeline
 
+1. Add environment variables listed in the following table to the CircleCI project:
+   @formatter:off
 
+| Name                    | Reference                                                             | Requirements |
+|-------------------------|-----------------------------------------------------------------------|--------------|
+| `AWS_ACCESS_KEY_ID`     | [Committed project: Infrastructure documentation][1] AWS AIM User     | Access:      |
+| `AWS_SECRET_ACCESS_KEY` | [Committed project: Infrastructure documentation][1] AWS AIM User     |              |
+| `AWS_DEFAULT_REGION`    | [Committed project: Infrastructure documentation][1] AWS              |              |
+| `CIRCLECI_API_TOKEN`    | `CircleCI > Project Settings > API Permissions > Add API Token`       |              |
+| `DISCORD_WEBHOOK_URL`   | `Discord > Discord Group > Server Settings > Integrations > Webhooks` | Scope: Admin |
+@formatter:on
+
+2. Add AWS EC2 SHH key to the CircleCI project
+   under `CircleCI > Project Settings > SSH Keys > Additional SSH Keys > Add SSH key`
+   referring to [Committed project: Infrastructure documentation][1].
+3. Configure CircleCi organization's security settings
+   referring to `CircleCI > Organization Settings > Security > Orb Security Settings > Yes`
+4. Configure CircleCi project to build only pull requests
+   referring to `CircleCI > Project Settings > Advanced > Only build pull requests > On`
+
+### Define Committed application environmental variables
+
+1. Connect to a Committed Project Git repository.
+2. Connect to AWS S3 bucket[1].
+3. Copy file `.env.sample` from the Git repository to the S3 bucket
+   filepath `s3://committed-todo-app/envs/.env.{environment}` where `environment` is one
+   of `env`. `staging` or `production`.
+4. Set the variables to the desired values and save the file.
+
+### Define Committed application EC2 instances credentials
+
+1. Connect to a Committed Project Git repository.
+2. Connect to AWS S3 bucket[1].
+3. Copy file `.env.ec2` from the Git repository to the S3 bucket
+   filepath `s3://committed-todo-app/envs/.env.ec2`.
+4. Set the variables to the desired values and save the file.
 
 ```
 + Take the following steps to get started with the Frambus app:
@@ -87,6 +180,15 @@ There are two ways how to set up a CicleCi pipeline:
   1. ...webhool in GitHub, Discord
 + co mit nainstalovane
 ```
+
+[1]: add a link
+
+[^default branch]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch
+
+[^pull request]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests
+
+[//]: # (TODO)
+
 
 # Technical writing
 
