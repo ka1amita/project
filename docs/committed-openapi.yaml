@@ -1,0 +1,416 @@
+openapi: "3.0.3"
+info:
+  title: "fox_dining API"
+  description: "fox_dining API"
+  version: "1.0.0"
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /reset/:
+    post:
+      summary: "POST reset/"
+      operationId: "index"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetRequestDTO"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /reset/{resetCode}:
+    post:
+      summary: "POST reset/{resetCode}"
+      operationId: "passwordResetWithCode"
+      parameters:
+        - name: "resetCode"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetWithCodeRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/todos/{id}:
+    patch:
+      summary: "PATCH api/todos/{id}"
+      operationId: "update"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTodoDTO"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    delete:
+      summary: "DELETE api/todos/{id}"
+      operationId: "destroy"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      summary: "GET api/todos/{id}"
+      operationId: "show"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/todos/:
+    post:
+      summary: "POST api/todos/"
+      operationId: "create"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoCreateRequestDTO"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      summary: "GET api/todos/"
+      operationId: "index"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ResponseDTO"
+  /register:
+    post:
+      summary: "POST register"
+      operationId: "registerUser"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /confirm/{activationCode}:
+    get:
+      summary: "GET confirm/{activationCode}"
+      operationId: "activateAccount"
+      parameters:
+        - name: "activationCode"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /token/refresh:
+    post:
+      summary: "POST token/refresh"
+      operationId: "refreshTokens"
+      responses:
+        "200":
+          description: "OK"
+  /api/users/{id}:
+    patch:
+      summary: "PATCH api/users/{id}"
+      operationId: "update"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAppUserDTO"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    delete:
+      summary: "DELETE api/users/{id}"
+      operationId: "destroy"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      summary: "GET api/users/{id}"
+      operationId: "show"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/users/:
+    post:
+      summary: "POST api/users/"
+      operationId: "store"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      summary: "GET api/users/"
+      operationId: "index"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "by"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "direction"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            enum:
+              - "ASC"
+              - "DESC"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ResponseDTO"
+  /api/users/deleted:
+    get:
+      summary: "GET api/users/deleted"
+      operationId: "indexDeleted"
+      parameters:
+        - name: "page"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "size"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "by"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "direction"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            enum:
+              - "ASC"
+              - "DESC"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ResponseDTO"
+  /dashboard/:
+    get:
+      summary: "GET dashboard/"
+      operationId: "index"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /strings:
+    get:
+      summary: "GET strings"
+      operationId: "strings"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /ribbon:
+    get:
+      summary: "GET ribbon"
+      operationId: "sendRibbonData"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    PasswordResetRequestDTO:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        redirect_url:
+          type: "string"
+    PasswordResetWithCodeRequestDTO:
+      type: "object"
+      properties:
+        password:
+          type: "string"
+    UpdateTodoDTO:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+        description:
+          type: "string"
+        due_date:
+          type: "string"
+        app_user:
+          type: "string"
+    TodoCreateRequestDTO:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+        description:
+          type: "string"
+        due_date:
+          type: "string"
+        app_user:
+          type: "string"
+    ResponseDTO:
+      type: "object"
+      properties: { }
+    RegisterRequestDTO:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        email:
+          type: "string"
+        password:
+          type: "string"
+        redirect_url:
+          type: "string"
+    UpdateAppUserDTO:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        email:
+          type: "string"
+        password:
+          type: "string"
