@@ -23,11 +23,7 @@
 
 ### Audience
 
-This document is intended for a software developers familiar with the following:
-
-+ Spring Boot Security
-+ REST API
-+ JWT
+This document is intended for a software developers.
 
 ### Scope
 
@@ -40,6 +36,14 @@ This document doesn't describe any of the following:
 
 + frontend implementation of the above
 + implementations of the above on the code level
+
+### Prerequisites
+
+This document requires familiarity with the following topics:
++ Spring Boot Security
++ REST API
++ JWT
+
 
 ## Authentication and Authorization
 
