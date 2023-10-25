@@ -1,21 +1,25 @@
 <!-- TOC -->
-
 * [About the presentation](#about-the-presentation)
-   * [Scope](#scope)
-   * [Public](#public)
+  * [Scope](#scope)
+  * [Public](#public)
 * [Presentation](#presentation)
-   * [Personal Introduction](#personal-introduction)
-      * [slide](#slide)
-         * [notes](#notes)
-            * [past](#past)
-            * [present](#present)
-            * [future](#future)
-   * [Tech Stack](#tech-stack)
-      * [slide](#slide-1)
-         * [notes](#notes-1)
-            * [Backend](#backend)
-            * [DevOps](#devops)
-
+  * [Personal Introduction](#personal-introduction)
+    * [slide](#slide)
+    * [notes](#notes)
+        * [past](#past)
+        * [present](#present)
+        * [future](#future)
+  * [Tech Stack](#tech-stack)
+    * [slide](#slide-1)
+    * [note](#note)
+        * [Backend](#backend)
+        * [DevOps](#devops)
+  * [CircleCI tricks](#circleci-tricks)
+    * [slide](#slide-2)
+      * [custom timeout job](#custom-timeout-job)
+      * [env parameter](#env-parameter)
+      * [exec and check](#exec-and-check)
+    * [note](#note-1)
 <!-- TOC -->
 
 # About the presentation
@@ -46,7 +50,7 @@ Hiring agents and **line managers** from IT companies including ones from abroad
 
 lab photo
 
-#### notes
+### note
 
 > Aaaah already Daniel? Let me quickly finish something..._git push --force_ (whispering) :-)
 
@@ -100,7 +104,7 @@ _some funny picture for these two sections:_
 
 _being stuck in a circle meme_
 
-#### note
+### note
 
 ##### Backend
 
@@ -121,8 +125,8 @@ Naturally I did all of that while working with **IntelliJ** **IDE**(A) using **J
 
 ##### DevOps
 
-Later, while working on the _DevOvs_ part, I implemented a **circleCI** _continuous deployment_*
-*pipeline**.
+Later, while working on the _DevOvs_ part, I implemented a **circleCI** _continuous deployment_ 
+to **AWS** **S3** and **EC2**.
 > Between us: I don't know how they had come with the **name**, but thanks to recurring **changes** 
 > in the **deployments** I really felt like being stuck in a circle :-)
 
@@ -133,12 +137,81 @@ learned a bit of **shell** along the way, which I think is going to pay of in th
 
 ### slide
 
-![img.png](img.png)
+![img.png](test_and_deploy_to_dev.png)
+![img_1.png](deploy_backend_and_frontend.png)
 
-#### note
+#### custom timeout job
+
+```yml
+      - run:
+          name: Set maximum job duration to 3'
+          background: true
+          command: |
+            sleep 180
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
+            --header "Circle-Token: $CIRCLECI_API_TOKEN"
+```
+
+#### env parameter
+
+```yml
+jobs:
+  #...
+  deploy_job:
+    parameters:
+      env:
+        description: Environment suffix you want to deploy to.
+        type: enum
+        enum: ["dev", "staging", "production"]
+        default: "dev"
+  #...
+```
+```yml
+workflows:
+  deploy_to_staging:
+    when:
+      equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - build_backend
+      - build_frontend:
+          env: &staging_environment staging
+      - deploy_backend_and_frontend:
+          name: deploy to staging environment
+          requires:
+            - build_backend
+            - build_frontend
+          env: *staging_environment
+```
+```yml
+      - run:
+          name: Export the actual EC2_IP_{env}
+          command: |
+            set -a && source <(grep -v ^# .env.ec2) && set +a && echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
+            echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
+            echo export EC2_USER=$EC2_USER >> $BASH_ENV
+            echo export ENV=$(echo <<parameters.env>> | perl -ne 'print uc') >> $BASH_ENV
+```
+
+#### execute java and check pid
+
+```yml
+      - run:
+          name: Set VARs and execute the jar
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV_NAME}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/${JAR_NAME}" & sleep 20
+      - run:
+          name: Check running java instance
+          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
+```
+
+#### notify
+
+```yml
+      - discord/notify:
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check the webpage here: **http://${EC2_HOST}** or login here: **\\`ssh ${EC2_USER}@${EC2_IP}\\`**"
+          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
+```
+### note
 
 That bring me to what I would like to show you now. I have picked a couple of interesting solutions
 > from **Stackoverflow** I MEAN my **own configuration**.
-
-
-
