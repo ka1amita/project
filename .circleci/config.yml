@@ -5,7 +5,6 @@ orbs:
   node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
-#  discord: teka23/discord@0.0.1
   discord: tkyshm/discord-orb@0.0.8
 
 jobs:
@@ -82,7 +81,6 @@ jobs:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
-
       - run:
           name: Rename build/ to api/
           command: mv -v build/libs api
@@ -121,7 +119,6 @@ jobs:
             --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
             --header "Circle-Token: $CIRCLECI_API_TOKEN"
       - aws-cli/setup
-
       - aws-s3/copy:
           from: s3://committed-todo-app/envs/.env.ec2
           to: .
@@ -163,6 +160,9 @@ jobs:
       - run: 
           name: Kill all java instances
           command: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
+      - run:
+          name: Kill all java instances witl -SIGKILL
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo killall -KILL java || true" # until debugged in Terraform
 #      - run:
 #          name: Kill previous java instance
 #          command: |
@@ -176,9 +176,9 @@ jobs:
 #                echo "Last java instance PID not found"
 #            fi
 #            }'
-     # - run:
-     #     name: Kill previous nginx instance
-     #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
+#      - run:
+#          name: Kill previous nginx instance
+#          command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_IP} "aws s3 sync --delete ${BUCKET}/build build"
@@ -214,14 +214,8 @@ jobs:
           name: Check running java instance
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
       - discord/notify:
-          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check it here: **http://${EC2_HOST}**"
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check the webpage here: **http://${EC2_HOST}** or login here: **\\`ssh ${EC2_USER}@${EC2_IP}\\`**"
           failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
-#      - discord/status:
-#          webhook: ${DISCORD_WEBHOOK_URL}
-#          success_mentions: "&1163035305545306162"
-#          success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded! Check this URL: http://$EC2_HOST"
-#          failure_mentions: "1074798048611414026"
-#          failure_message: ":red_circle: We have to repair it :-( You can login using this: `ssh ${EC2_USER}@${EC2_IP}`"
 
 workflows:
   test_and_deploy_to_dev:
