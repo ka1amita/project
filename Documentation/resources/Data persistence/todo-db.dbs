@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="MySql" id="Project-21e" database="MySql" >
+	<schema name="todo_app_for_documentation" >
+		<table name="activation_codes" row_count="0" spec="" >
+			<column name="id" type="BIGINT" jt="-5" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="activation_code" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="created_at" type="DATETIME" length="6" jt="93" mandatory="y" />
+			<column name="app_user_id" type="BIGINT" jt="-5" />
+			<index name="pk_activation_codes" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UK_8pjngo69fa03naejodctkpo54" unique="UNIQUE_KEY" >
+				<column name="activation_code" />
+			</index>
+			<index name="FKgk34atc0al1xlfask3is4r6kc" unique="NORMAL" >
+				<column name="app_user_id" />
+			</index>
+			<fk name="FKgk34atc0al1xlfask3is4r6kc" to_schema="todo_app_for_documentation" to_table="app_users" options="" >
+				<fk_column name="app_user_id" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci]]></options>
+		</table>
+		<table name="app_users" row_count="1" spec="" >
+			<column name="id" type="BIGINT" jt="-5" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="active" type="BOOLEAN" length="1" jt="16" mandatory="y" />
+			<column name="created_at" type="TIMESTAMP" jt="93" mandatory="y" />
+			<column name="deleted" type="BOOLEAN" length="1" jt="16" mandatory="y" />
+			<column name="email" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="password" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="username" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="verified_at" type="TIMESTAMP" jt="93" />
+			<index name="pk_app_users" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UK_spsnwr241e9k9c8p5xl4k45ih" unique="UNIQUE_KEY" >
+				<column name="username" />
+			</index>
+			<index name="UK_4vj92ux8a2eehds1mdvmks473" unique="UNIQUE_KEY" >
+				<column name="email" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci]]></options>
+		</table>
+		<table name="app_users_roles" row_count="0" spec="" >
+			<column name="app_user_id" type="BIGINT" jt="-5" mandatory="y" />
+			<column name="role_id" type="BIGINT" jt="-5" mandatory="y" />
+			<index name="pk_app_users_roles" unique="PRIMARY_KEY" >
+				<column name="app_user_id" />
+				<column name="role_id" />
+			</index>
+			<index name="FK39u46wfuk650kxgrw2eaayqp" unique="NORMAL" >
+				<column name="role_id" />
+			</index>
+			<fk name="FK39u46wfuk650kxgrw2eaayqp" to_schema="todo_app_for_documentation" to_table="roles" options="" >
+				<fk_column name="role_id" pk="id" />
+			</fk>
+			<fk name="FKjbe8lt8c1um2wc23xniiakyuf" to_schema="todo_app_for_documentation" to_table="app_users" options="" >
+				<fk_column name="app_user_id" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci]]></options>
+		</table>
+		<table name="roles" row_count="4" spec="" >
+			<column name="id" type="BIGINT" jt="-5" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="name" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<index name="pk_roles" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="UK_ofx66keruapi6vyqpv6f2or37" unique="UNIQUE_KEY" >
+				<column name="name" />
+			</index>
+			<options><![CDATA[ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci]]></options>
+		</table>
+		<table name="todos" row_count="0" spec="" >
+			<column name="id" type="BIGINT" jt="-5" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="completed" type="BOOLEAN" length="1" jt="16" mandatory="y" />
+			<column name="deleted" type="BOOLEAN" length="1" jt="16" mandatory="y" />
+			<column name="description" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="due_date" type="TIMESTAMP" jt="93" />
+			<column name="title" type="VARCHAR" length="255" jt="12" mandatory="y" />
+			<column name="app_user_id" type="BIGINT" jt="-5" />
+			<index name="pk_todos" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<index name="FKml5lb81vmi2r8kiby3jhni9bn" unique="NORMAL" >
+				<column name="app_user_id" />
+			</index>
+			<fk name="FKml5lb81vmi2r8kiby3jhni9bn" to_schema="todo_app_for_documentation" to_table="app_users" options="" >
+				<fk_column name="app_user_id" pk="id" />
+			</fk>
+			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci]]></options>
+		</table>
+	</schema>
+	<layout name="Main Layout" id="Layout-92f" joined_routing="y" show_column_type="y" show_relation="columns" >
+		<entity schema="todo_app_for_documentation" name="activation_codes" color="BED3F4" x="336" y="384" />
+		<entity schema="todo_app_for_documentation" name="app_users" color="BED3F4" x="48" y="96" />
+		<entity schema="todo_app_for_documentation" name="app_users_roles" color="BED3F4" x="336" y="96" />
+		<entity schema="todo_app_for_documentation" name="roles" color="BED3F4" x="576" y="96" />
+		<callout x="800" y="80" pointer="Round" >
+			<comment><![CDATA[This is a layout. You can create multiple layouts with the same or different tables. 
+
+Edit tables by double-clicking the table headers.]]></comment>
+		</callout>
+		<group name="Flyway - V001" color="ECF0F7" >
+			<entity schema="todo_app_for_documentation" name="app_users_roles" />
+			<entity schema="todo_app_for_documentation" name="activation_codes" />
+			<entity schema="todo_app_for_documentation" name="roles" />
+			<entity schema="todo_app_for_documentation" name="app_users" />
+		</group>
+		<browser id="Browse-1971" name="Callout" confirm_updates="y" >
+			<browse_table schema="todo_app_for_documentation" entity="app_users" x="20" y="20" width="817" height="104" >
+				<browse_table schema="todo_app_for_documentation" entity="app_users_roles" fk="FKjbe8lt8c1um2wc23xniiakyuf" x="896" y="22" width="244" height="100" />
+			</browse_table>
+		</browser>
+		<browser id="Browse-666" name="Callout_001" confirm_updates="y" >
+			<browse_table schema="todo_app_for_documentation" entity="roles" x="207" y="96" width="225" height="167" />
+		</browser>
+	</layout>
+	<layout name="Main Layout_001" id="Layout-2cc" show_column_type="y" show_relation="columns" >
+		<entity schema="todo_app_for_documentation" name="app_users" color="BED3F4" x="48" y="224" />
+		<callout x="560" y="80" pointer="Round" >
+			<comment><![CDATA[This is a layout. You can create multiple layouts with the same or different tables. 
+
+Edit tables by double-clicking the table headers.]]></comment>
+		</callout>
+		<group name="Flyway - V006" color="ECF0F7" >
+			<entity schema="todo_app_for_documentation" name="app_users" />
+		</group>
+	</layout>
+	<layout name="Main Layout_002" id="Layout-946" joined_routing="y" show_column_type="y" show_relation="columns" >
+		<entity schema="todo_app_for_documentation" name="todos" color="3986C1" x="48" y="80" />
+		<group name="Flyway - V005" color="C4E0F9" >
+			<entity schema="todo_app_for_documentation" name="todos" />
+		</group>
+		<query id="Query-329" name="Builder" >
+			<query_table schema="todo_app_for_documentation" name="todos" alias="t" x="48" y="48" >
+				<column name="id" />
+				<column name="completed" />
+				<column name="deleted" />
+				<column name="description" />
+				<column name="due_date" />
+				<column name="title" />
+				<column name="app_user_id" />
+				<query_table schema="todo_app_for_documentation" name="app_users" alias="au" x="352" y="64" fk="FKml5lb81vmi2r8kiby3jhni9bn" type="Inner Join" />
+			</query_table>
+		</query>
+	</layout>
+	<layout name="Todo database" id="Layout-1370" joined_routing="y" show_column_type="y" show_relation="columns" >
+		<entity schema="todo_app_for_documentation" name="activation_codes" color="3986C1" x="368" y="352" />
+		<entity schema="todo_app_for_documentation" name="app_users" color="3986C1" x="48" y="80" />
+		<entity schema="todo_app_for_documentation" name="app_users_roles" color="3986C1" x="336" y="80" />
+		<entity schema="todo_app_for_documentation" name="roles" color="3986C1" x="576" y="80" />
+		<entity schema="todo_app_for_documentation" name="todos" color="3986C1" x="48" y="352" />
+		<group name="Todo database" color="C4E0F9" >
+			<entity schema="todo_app_for_documentation" name="app_users" />
+			<entity schema="todo_app_for_documentation" name="app_users_roles" />
+			<entity schema="todo_app_for_documentation" name="roles" />
+			<entity schema="todo_app_for_documentation" name="activation_codes" />
+			<entity schema="todo_app_for_documentation" name="todos" />
+		</group>
+	</layout>
+	<layout name="~Layout with Sample Tools" id="Layout-2526" show_column_type="y" show_relation="columns" >
+		<entity schema="todo_app_for_documentation" name="activation_codes" color="BED3F4" x="336" y="320" />
+		<entity schema="todo_app_for_documentation" name="app_users" color="BED3F4" x="48" y="48" />
+		<entity schema="todo_app_for_documentation" name="app_users_roles" color="BED3F4" x="336" y="48" />
+		<entity schema="todo_app_for_documentation" name="roles" color="BED3F4" x="576" y="48" />
+		<entity schema="todo_app_for_documentation" name="todos" color="BED3F4" x="48" y="320" />
+		<script name="SQL Editor" id="Editor-1138" language="SQL" >
+			<string><![CDATA[SELECT
+	id, active, created_at, deleted, email, password, username, verified_at
+FROM
+	todo_app_for_documentation.app_users s;]]></string>
+		</script>
+		<browser id="Browse-2568" name="Relational Data Explorer" confirm_updates="y" >
+			<browse_table schema="todo_app_for_documentation" entity="app_users" x="-2147483648" y="-2147483648" width="-2147483648" height="-2147483648" >
+				<browse_table schema="todo_app_for_documentation" entity="activation_codes" fk="FKgk34atc0al1xlfask3is4r6kc" x="40" y="-2147483648" width="500" height="350" />
+			</browse_table>
+		</browser>
+		<query id="Query-3a5" name="Query Builder" >
+			<query_table schema="todo_app_for_documentation" name="app_users" alias="au" x="48" y="48" >
+				<column name="id" />
+				<column name="active" />
+				<column name="created_at" />
+				<column name="deleted" />
+				<column name="email" />
+				<column name="password" />
+				<column name="username" />
+				<column name="verified_at" />
+				<query_table schema="todo_app_for_documentation" name="activation_codes" alias="ac" x="240" y="48" fk="FKgk34atc0al1xlfask3is4r6kc" type="Inner Join" >
+					<column name="id" />
+					<column name="activation_code" />
+					<column name="created_at" />
+					<column name="app_user_id" />
+				</query_table>
+			</query_table>
+		</query>
+		<form name="Report" id="Report-10db" template="Page" css="container-fluid" view="frame" >
+			<var name="samplePageNumber" type="4" value="0" mandatory="n" />
+			<var name="sampleRecordsPerPage" type="4" value="100" mandatory="n" />
+			<body name="Body" template="Grid" pos="0,0,0,0,f,f" layout="{{-2,-2,-2,-2,-1},{-2,-2,-2,-2}}" scroll="n" html="n" >
+				<cell type="label" name="App_users Data" template="H3" pos="0,0,1,0,l,c" />
+				<cell type="chart" name="Pie" template="Pie" pos="0,1,4,1,l,c" max_records="20" >
+					<form_script type="DataSource" language="SQL" >
+						<var name="id" type="-5" />
+						<var name="active" type="16" />
+						<var name="created_at" type="93" />
+						<var name="deleted" type="16" />
+						<var name="email" />
+						<var name="password" />
+						<var name="username" />
+						<var name="verified_at" type="93" />
+						<script ><![CDATA[SELECT * FROM todo_app_for_documentation.app_users]]></script>
+					</form_script>
+					<param name="item" value="username" />
+					<param name="width" value="100%" />
+					<param name="title" value="Sample Chart" />
+					<param name="value" value="id" />
+					<param name="height" value="400px" />
+				</cell>
+				<tableview name="sample" template="Table" css="table table-striped table-sm table-hover" pos="0,2,4,2,f,f" layout="{{-2,-2,-2,-2,-2,-2,-2},{-2,-2}}" scroll="n" html="n" header_rows="1" >
+					<form_script type="DataSource" language="SQL" >
+						<var name="id" type="-5" />
+						<var name="active" type="16" />
+						<var name="created_at" type="93" />
+						<var name="deleted" type="16" />
+						<var name="email" />
+						<var name="password" />
+						<var name="username" />
+						<var name="verified_at" type="93" />
+						<script ><![CDATA[SELECT * FROM todo_app_for_documentation.app_users]]></script>
+					</form_script>
+					<cell type="label" name="id" pos="0,0,0,0,c,c" />
+					<cell type="label" name="active" pos="1,0,1,0,c,c" />
+					<cell type="label" name="created_at" pos="2,0,2,0,c,c" />
+					<cell type="label" name="deleted" pos="3,0,3,0,c,c" />
+					<cell type="label" name="email" pos="4,0,4,0,c,c" />
+					<cell type="label" name="password" pos="5,0,5,0,c,c" />
+					<cell type="label" name="${id}" template="Plain" pos="0,1,0,1,l,c" />
+					<cell type="label" name="${active}" template="Plain" pos="1,1,1,1,l,c" />
+					<cell type="label" name="${created_at}" template="Plain" pos="2,1,2,1,l,c" />
+					<cell type="label" name="${deleted}" template="Plain" pos="3,1,3,1,l,c" />
+					<cell type="label" name="${email}" template="Plain" pos="4,1,4,1,l,c" />
+					<cell type="label" name="${password}" template="Plain" pos="5,1,5,1,l,c" />
+					<cell type="button" name="More" template="Plain" css="btn btn-sm btn-secondary" pos="6,1,6,1,c,c" ref_id="Report-10db" />
+				</tableview>
+				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="0,3,0,3,l,c" glyph="bi-chevron_double_left" ref_id="Report-10db" >
+					<var name="samplePageNumber" value="0" />
+				</cell>
+				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="1,3,1,3,l,c" glyph="bi-chevron_left" ref_id="Report-10db" >
+					<var name="samplePageNumber" value="${Math.max(0,samplePageNumber-1)}" />
+				</cell>
+				<cell type="label" name="Page ${samplePageNumber+1}" pos="2,3,2,3,l,c" />
+				<cell type="href" name="" disabled="${!sampleHasNextPage}" pos="3,3,3,3,l,c" glyph="bi-chevron_right" ref_id="Report-10db" >
+					<var name="samplePageNumber" value="${( samplePageNumber+1 )}" />
+				</cell>
+			</body>
+		</form>
+	</layout>
+</project>

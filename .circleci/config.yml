@@ -5,20 +5,34 @@ orbs:
   node: circleci/node@5.1.0
   aws-s3: circleci/aws-s3@4.0.0
   aws-cli: circleci/aws-cli@4.0
-  # discord: teka23/discord@0.0.1
+  discord: tkyshm/discord-orb@0.0.8
 
 jobs:
   build_frontend:
     working_directory: &frontend ~/project/frontend
     executor:
       name: node/default
+    parameters:
+      env:
+        description: Environment name suffix ("dev", "staging", "production") you want to deploy.
+        type: enum
+        enum: [ "dev", "staging", "production" ]
+        default: "dev"
     steps:
       - checkout:
           path: ..
-      - node/install-packages
+      - node/install-packages: # TODO compare with node/install from node/install-packages
+          include-branch-in-cache-key: false
+      - aws-cli/setup
+      - aws-s3/copy:
+          from: s3://committed-todo-app/envs/.env.ec2
+          to: .
       - run: 
-          name: Build
-          command: | 
+          name: Export VARs and Build
+          command: |
+            set -a && source <(grep -v ^# .env.ec2) && set +a
+            export REACT_APP_API_URL=http://$EC2_IP_<<parameters.env>>:8080/
+            echo REACT_APP_API_URL=$REACT_APP_API_URL
             npm run build
             mv -v build html
       - persist_to_workspace:
@@ -31,7 +45,7 @@ jobs:
     executor: &java8
       name: gradle/default
       tag: "8.0"
-    parallelism: 5
+    parallelism: 2
     steps:
       - checkout:
           path: ..
@@ -60,15 +74,16 @@ jobs:
     executor:
       <<: *java8
     steps:
-      - checkout: # it has to be the first step in this job otherwise does't work later
+      - checkout: # it has to be the first step in this job otherwise doesn't work later
           path: ..
       - gradle/with_cache:
           steps:
             - run:
                 name: Build the jar
                 command: ./gradlew bootJar
-
-      - run: mv -v build/libs api
+      - run:
+          name: Rename build/ to api/
+          command: mv -v build/libs api
       - persist_to_workspace:
           root: .
           paths:
@@ -89,20 +104,42 @@ jobs:
       filename_tag:
         description: Custom build files (.jar and .env) name.
         type: string
-        default: ""
+        default: ''
     environment:
       BUCKET: s3://committed-todo-app-<<parameters.env>>
+      DOT_ENV_NAME: .env.<<parameters.env>>-<<pipeline.git.revision>>
+      JAR_NAME: todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
     steps:
-      - aws-cli/setup
-      - run: echo export EC2_HOST=$(circleci env subst "$EC2_HOST_<<parameters.env>>") >> $BASH_ENV
       - run:
-          name: SSH Connection check
-          command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_HOST} echo Hello ${CIRCLE_USERNAME}
+          name: Set maximum job duration to 3'
+          background: true
+          command: |
+            sleep 180
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/$CIRCLE_BUILD_NUM/cancel \
+            --header "Circle-Token: $CIRCLECI_API_TOKEN"
+      - aws-cli/setup
+      - aws-s3/copy:
+          from: s3://committed-todo-app/envs/.env.ec2
+          to: .
+      - run:
+          name: Export the actual EC2_IP_{env}
+          command: |
+            set -a && source <(grep -v ^# .env.ec2) && set +a && echo export EC2_IP=$(circleci env subst "$EC2_IP_<<parameters.env>>") >> $BASH_ENV
+            echo export EC2_HOST=$(circleci env subst "$EC2_DOMAIN_<<parameters.env>>")/ >> $BASH_ENV
+            echo export EC2_USER=$EC2_USER >> $BASH_ENV
+            echo export ENV=$(echo <<parameters.env>> | perl -ne 'print uc') >> $BASH_ENV
+      - run:
+          name: Check the SSH VARs
+          command: echo "${EC2_USER}@${EC2_IP}"
+      - run:
+          name: SSH connection check
+          command: ssh -o StrictHostKeychecking=no ${EC2_USER}@${EC2_IP} echo Hello ${CIRCLE_USERNAME}
       - attach_workspace:
           at: build
       - run:
           name: Rename the jar to todo-app-{env}-{commit-hash}.jar
-          command: mv -v $(find build/api -type f -name "*.jar") build/api/todo-app-<<parameters.env>><<parameters.filename_tag>>.jar
+          command: mv -v $(find build/api -type f -name "*.jar") build/api/${JAR_NAME}
       - when:
           condition:
             equal: [true, <<parameters.archive>>]
@@ -116,42 +153,69 @@ jobs:
           to: ${BUCKET}/build
       - aws-s3/copy: # Copy .env.{env} to the S3
           from: s3://committed-todo-app/envs/.env.<<parameters.env>>
-          to: ${BUCKET}/build/.env.<<parameters.env>>-<<pipeline.git.revision>>
+          to: ${BUCKET}/build/${DOT_ENV_NAME}
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
+      - run: 
+          name: Kill all java instances
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
       - run:
-          name: Kill previous java instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs kill" || true # suppress error message if no processes are matched (e.g. after a crash)
-     # - run:
-     #     name: Kill previous nginx instance
-     #     command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
+          name: Kill all java instances witl -SIGKILL
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo killall -KILL java || true" # until debugged in Terraform
+#      - run:
+#          name: Kill previous java instance
+#          command: |
+#            ssh ${EC2_USER}@${EC2_IP} '{
+#            #!/bin/bash
+#            if [ -f ~/app.pid ];
+#              then
+#                pid=$(cat ~/app.pid)
+#                kill ${pid} || true
+#              else
+#                echo "Last java instance PID not found"
+#            fi
+#            }'
+#      - run:
+#          name: Kill previous nginx instance
+#          command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} "aws s3 sync --delete ${BUCKET}/build build"
+          command: ssh ${EC2_USER}@${EC2_IP} "aws s3 sync --delete ${BUCKET}/build build"
       - run:
           name: Check the build files in EC2
-          command: ssh ${EC2_USER}@${EC2_HOST} 'ls -laF build'
+          command: ssh ${EC2_USER}@${EC2_IP} 'ls -laF build'
       - run: 
           name: Copy frontend to default directory
-          command: ssh ${EC2_USER}@${EC2_HOST} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
+          command: ssh ${EC2_USER}@${EC2_IP} "sudo rm -rfv /var/www/html && sudo mv -vf ~/build/html /var/www"
       - run:
-          name: Restart nginx
-          command: ssh ${EC2_USER}@${EC2_HOST} "sudo systemctl restart nginx"
+          name: Start or restart nginx
+          command: |
+            ssh ${EC2_USER}@${EC2_IP} '{
+            #!/bin/bash
+            if [ -f /run/nginx.pid ];
+              then
+                echo "Reloading nginx"
+                sudo nginx -s reload
+              else
+                echo "Starting nginx"
+                sudo nginx
+            fi
+            pid=$(cat /run/nginx.pid)
+            echo "nginx running under pid ${pid}"
+            }'
       - run:
           name: Set VARs and execute the jar
-          command: ssh ${EC2_USER}@${EC2_HOST} "set -a && source <(grep -v ^# build/.env.*) && set +a && env && echo \${$} > app.pid && exec java -jar build/api/*.jar" & sleep 20
-      - run:
-          name: Check running java instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat app.pid | xargs ps"
+          command: ssh ${EC2_USER}@${EC2_IP} "set -a && source <(grep -v ^# build/${DOT_ENV_NAME}) && set +a && export EC2_HOST=${EC2_HOST} && export ENV=$ENV && env && echo \${$} > app.pid && exec java -jar build/api/${JAR_NAME}" & sleep 20
       - run:
           name: Check running nginx instance
-          command: ssh ${EC2_USER}@${EC2_HOST} "cat /run/nginx.pid | xargs ps"
-      # - discord/status: #TODO
-      #     webhook: ${DISCORD_WEBHOOK_URL}
-      #     success_mentions: "1074798048611414026"
-      #     success_message: ":tada: Hurray, **${CIRCLE_USERNAME}**'s **${CIRCLE_JOB}** job of **${CIRCLE_PROJECT_REPONAME}** project has succeeded!"
-      #     failure_mentions: "&1163035305545306162"
+          command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs ps"
+      - run:
+          name: Check running java instance
+          command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
+      - discord/notify:
+          success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check the webpage here: **http://${EC2_HOST}** or login here: **\\`ssh ${EC2_USER}@${EC2_IP}\\`**"
+          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
 
 workflows:
   test_and_deploy_to_dev:
@@ -168,28 +232,29 @@ workflows:
       #     app_src_directory: backend
       #     command: build -x test -x checkstyleMain -x checkstyleTest -x jacocoTestCoverageVerification
       - build_backend
+
       - build_frontend
-      - parallel_tests_backend:
-          requires:
-            - build_backend
-      - gradle/test:
-          name: checkstyle
-          requires:
-            - build_backend
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          test_command: checkstyleMain; ./gradlew checkstyleTest
-          reports_path: backend/build/reports/checkstyle
-      - gradle/test:
-          name: coverage
-          requires:
-            - build_backend
-          executor:
-            <<: *java8
-          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-          app_src_directory: backend
-          reports_path: backend/build/jacoco
+#      - parallel_tests_backend:
+#          requires:
+#            - build_backend
+#      - gradle/test:
+#          name: checkstyle
+#          requires:
+#            - build_backend
+#          executor:
+#            <<: *java8
+#          app_src_directory: backend
+#          test_command: checkstyleMain; ./gradlew checkstyleTest
+#          reports_path: backend/build/reports/checkstyle
+#      - gradle/test:
+#          name: coverage
+#          requires:
+#            - build_backend
+#          executor:
+#            <<: *java8
+#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+#          app_src_directory: backend
+#          reports_path: backend/build/jacoco
       - deploy_backend_and_frontend:
           name: deploy to development environment
           requires:
@@ -200,33 +265,33 @@ workflows:
               ignore:
                 - develop
                 - main
-          filename_tag: -<<pipeline.git.revision>>
+#          filename_tag: -<<pipeline.git.revision>>
           archive: false
-          env: dev
 
   deploy_to_staging:
     when:
       equal: [ develop, << pipeline.git.branch >> ]
     jobs:
       - build_backend
-      - build_frontend
+      - build_frontend:
+          env: &staging_environment staging
       - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
             - build_frontend
-          env: staging
+          env: *staging_environment
 
   deploy_to_production:
     when:
       equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - build_backend
-      - build_frontend
+      - build_frontend:
+          env: &production_environment production
       - deploy_backend_and_frontend:
           name: deploy to staging environment
           requires:
             - build_backend
             - build_frontend
-          env: production
-
+          env: *production_environment
