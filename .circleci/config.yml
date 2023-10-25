@@ -176,9 +176,9 @@ jobs:
 #                echo "Last java instance PID not found"
 #            fi
 #            }'
-     # - run:
-     #     name: Kill previous nginx instance
-     #     command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
+#      - run:
+#          name: Kill previous nginx instance
+#          command: ssh ${EC2_USER}@${EC2_IP} "cat /run/nginx.pid | xargs sudo kill"|| true # suppress error message if no processes are matched (e.g. after a crash)
       - run:
           name: Sync the build files from S3 to EC2
           command: ssh ${EC2_USER}@${EC2_IP} "aws s3 sync --delete ${BUCKET}/build build"

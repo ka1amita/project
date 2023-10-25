@@ -13,21 +13,28 @@ public class Utils {
     private static final String ActivationCodeGenerationSample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     public static String GenerateActivationCode(Integer size) {
-        Random random = new Random();
-        return random.ints(0, ActivationCodeGenerationSample.length())
-                .limit(size)
-                .mapToObj(x -> String.valueOf(ActivationCodeGenerationSample.charAt(x)))
-                .collect(Collectors.joining());
+        if (size != null && size > 0) {
+            Random random = new Random();
+            return random.ints(0, ActivationCodeGenerationSample.length())
+                    .limit(size)
+                    .mapToObj(x -> String.valueOf(ActivationCodeGenerationSample.charAt(x)))
+                    .collect(Collectors.joining());
+        }
+        return "";
     }
 
     public static Boolean IsUserPasswordFormatValid(String password) {
-        return password.matches(UserPasswordPattern);
+        if (isNotNullOrEmpty(password)) {
+            return password.matches(UserPasswordPattern);
+        }
+        return false;
     }
 
     public static Boolean hasAdminRole(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> "ADMIN".equals(grantedAuthority.getAuthority()));
     }
+
     public static Boolean isNotNullOrEmpty(String field) {
         return field != null && !field.isEmpty();
     }
