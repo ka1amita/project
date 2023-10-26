@@ -44,7 +44,7 @@ jobs:
     working_directory: &backend ~/project/backend
     executor: &java8
       name: gradle/default
-      tag: "8.0"
+      tag: "17.0" # because of UtilsTest.java the build fails during compilation with "8.0"
     parallelism: 2
     steps:
       - checkout:
@@ -245,16 +245,16 @@ workflows:
             <<: *java8
           app_src_directory: backend
           test_command: checkstyleMain; ./gradlew checkstyleTest
-#          reports_path: backend/build/reports/checkstyle
-#      - gradle/test:
-#          name: coverage
-#          requires:
-#            - build_backend
-#          executor:
-#            <<: *java8
-#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-#          app_src_directory: backend
-#          reports_path: backend/build/jacoco
+          reports_path: backend/build/reports/checkstyle
+      - gradle/test:
+          name: coverage
+          requires:
+            - build_backend
+          executor:
+            <<: *java8
+          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+          app_src_directory: backend
+          reports_path: backend/build/jacoco
       - deploy_backend_and_frontend:
           name: deploy to development environment
           requires:
