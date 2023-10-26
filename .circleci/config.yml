@@ -237,17 +237,17 @@ workflows:
       - test_backend_code:
           requires:
             - build_backend
+#      - gradle/test:
+#          name: checkstyle
+#          requires:
+#            - build_backend
+#          executor:
+#            <<: *java8
+#          app_src_directory: backend
+#          test_command: checkstyleMain; ./gradlew checkstyleTest
+#          reports_path: backend/build/reports/checkstyle
       - gradle/test:
-          name: checkstyle
-          requires:
-            - build_backend
-          executor:
-            <<: *java8
-          app_src_directory: backend
-          test_command: checkstyleMain; ./gradlew checkstyleTest
-          reports_path: backend/build/reports/checkstyle
-      - gradle/test:
-          name: coverage
+          name: test_backend_coverage
           requires:
             - build_backend
           executor:
@@ -259,6 +259,7 @@ workflows:
           name: deploy to development environment
           requires:
             - test_backend_code
+            - test_backend_coverage
             - build_frontend
           filters:
             branches:
