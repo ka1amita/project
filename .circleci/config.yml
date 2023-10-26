@@ -40,7 +40,7 @@ jobs:
           paths:
             - html
   
-  parallel_tests_backend:
+  test_backend_code:
     working_directory: &backend ~/project/backend
     executor: &java8
       name: gradle/default
@@ -234,17 +234,17 @@ workflows:
       - build_backend
 
       - build_frontend
-#      - parallel_tests_backend:
-#          requires:
-#            - build_backend
-#      - gradle/test:
-#          name: checkstyle
-#          requires:
-#            - build_backend
-#          executor:
-#            <<: *java8
-#          app_src_directory: backend
-#          test_command: checkstyleMain; ./gradlew checkstyleTest
+      - test_backend_code:
+          requires:
+            - build_backend
+      - gradle/test:
+          name: checkstyle
+          requires:
+            - build_backend
+          executor:
+            <<: *java8
+          app_src_directory: backend
+          test_command: checkstyleMain; ./gradlew checkstyleTest
 #          reports_path: backend/build/reports/checkstyle
 #      - gradle/test:
 #          name: coverage
@@ -258,7 +258,7 @@ workflows:
       - deploy_backend_and_frontend:
           name: deploy to development environment
           requires:
-            - build_backend # TODO replace with `test`
+            - test_backend_code
             - build_frontend
           filters:
             branches:
