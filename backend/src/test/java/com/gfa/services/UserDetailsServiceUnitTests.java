@@ -1,20 +1,22 @@
 package com.gfa.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.gfa.models.AppUser;
 import com.gfa.repositories.AppUserRepository;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -23,6 +25,10 @@ public class UserDetailsServiceUnitTests {
 
   @Mock // necessary!
   AppUserRepository appUserRepository;
+
+  @Mock
+  MessageSource messageSource;
+
   @InjectMocks // necessary!
   UserDetailsServiceImpl userDetailsService;
 
@@ -65,12 +71,14 @@ public class UserDetailsServiceUnitTests {
 
   @Test
   public void throws_exception_if_doesnt_find_any_user() {
-
     when(appUserRepository.findByUsernameOrEmail(any(String.class), any(String.class))).thenReturn(
-        Optional.ofNullable(null));
-
+        Optional.empty());
+    // wasn't passing because Junit 4 use: import static org.junit.Assert.assertThrows;
     assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername(
         "any"));
+    when(messageSource.getMessage(any(String.class), any(), any(
+        Locale.class))).thenReturn("User not found in the DB");
+
     String message = null;
     try {
       userDetailsService.loadUserByUsername(

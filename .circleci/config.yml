@@ -40,11 +40,11 @@ jobs:
           paths:
             - html
   
-  parallel_tests_backend:
+  test_backend_code:
     working_directory: &backend ~/project/backend
     executor: &java8
       name: gradle/default
-      tag: "8.0"
+      tag: "17.0" # because of UtilsTest.java the build fails during compilation with "8.0"
     parallelism: 2
     steps:
       - checkout:
@@ -157,7 +157,7 @@ jobs:
       - run:
           name: Check the build files in S3
           command: aws s3 ls --recursive ${BUCKET}/build
-      - run: 
+      - run:
           name: Kill all java instances
           command: ssh ${EC2_USER}@${EC2_IP} "sudo killall java || true" # until debugged in Terraform
       - run:
@@ -234,9 +234,9 @@ workflows:
       - build_backend
 
       - build_frontend
-#      - parallel_tests_backend:
-#          requires:
-#            - build_backend
+      - test_backend_code:
+          requires:
+            - build_backend
 #      - gradle/test:
 #          name: checkstyle
 #          requires:
@@ -246,19 +246,20 @@ workflows:
 #          app_src_directory: backend
 #          test_command: checkstyleMain; ./gradlew checkstyleTest
 #          reports_path: backend/build/reports/checkstyle
-#      - gradle/test:
-#          name: coverage
-#          requires:
-#            - build_backend
-#          executor:
-#            <<: *java8
-#          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
-#          app_src_directory: backend
-#          reports_path: backend/build/jacoco
+      - gradle/test:
+          name: test_backend_coverage
+          requires:
+            - build_backend
+          executor:
+            <<: *java8
+          test_command: jacocoTestReport && ./gradlew jacocoTestCoverageVerification
+          app_src_directory: backend
+          reports_path: backend/build/jacoco
       - deploy_backend_and_frontend:
           name: deploy to development environment
           requires:
-            - build_backend # TODO replace with `test`
+            - test_backend_code
+            - test_backend_coverage
             - build_frontend
           filters:
             branches:

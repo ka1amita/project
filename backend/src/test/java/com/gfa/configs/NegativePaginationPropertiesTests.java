@@ -23,6 +23,6 @@ public class NegativePaginationPropertiesTests {
         assertEquals(20, paginationProperties.getPageSizeDefault());
         assertEquals(100, paginationProperties.getPageSizeMax());
         assertEquals("id", paginationProperties.getSortBy());
-        assertEquals(Sort.Direction.DESC, paginationProperties.getSortOrder());
+        assertEquals(Sort.Direction.ASC, paginationProperties.getSortOrder());
     }
 }

@@ -24,12 +24,12 @@
 
 ### Audience
 
-This document is intended for a software developer not familiar with [^CircleCI]
-[^pipeline] tasked with set-up of a configured pipeline for a Committed project.
+This document is intended for a software developer not familiar with [CircleCI]
+[pipeline] tasked with set-up of a configured pipeline for a Committed application.
 
 ### Scope
 
-This document describes the overall [^workflow] and a set-up of a configured _CircleCi pipeline_ for
+This document describes the overall [workflow] and a set-up of a configured _CircleCi pipeline_ for
 a _Committed_ project.
 
 This document does not describe how to configure a _CircleCi pipeline_, nor it explains how this
@@ -37,8 +37,15 @@ particular _pipeline_ works in detail.
 
 ### Prerequisites
 
-This document depends on [^Committed project: Infrastructure documentation] for the set-up of the
-CircleCi pipeline.
+To follow this document you require the following:
+
++ access to the Committed application GitHub repository
+  + SSH Deploy key
++ configured AWS resources according to [Committed application: Infrastructure]
++ access to Committed application AWS S3 bucket
+  + AWS access key
++ Discord account
+  + access to Webhooks
 
 ## CircleCI pipeline configuration
 
@@ -47,14 +54,14 @@ CircleCi pipeline.
 The CircleCI pipeline are triggered by one of the following events:
 
 + Triggering it manually using the CircleCI web application.
-+ Opening a [^pull request] using GitHub.
++ Opening a [pull request] using GitHub.
 + Pushing a commit to GitHub to one of the following branches:
-  + a [^default branch]
-  + a branch with an associated [^pull request]
+    + a [default branch]
+    + a branch with an associated [pull request]
 
 ### CircleCI workflows
 
-The Committed project CircleCI pipeline has the following workflows configured:
+The Committed application CircleCI pipeline has the following workflows configured:
 
 + `test_and_deploy_to_dev`
 + `deploy_to_staging`
@@ -168,11 +175,11 @@ There are two ways how to set up a CircleCi pipeline:
 
 | Name                    | Reference                                                             | Requirements |
 |-------------------------|-----------------------------------------------------------------------|--------------|
-| `AWS_ACCESS_KEY_ID`     | [^Committed project: Infrastructure documentation] AWS AIM User       | Access:      |
-| `AWS_SECRET_ACCESS_KEY` | [^Committed project: Infrastructure documentation] AWS AIM User       |              |
-| `AWS_DEFAULT_REGION`    | [^Committed project: Infrastructure documentation] AWS                |              |
-| `CIRCLECI_API_TOKEN`    | `CircleCI > Project Settings > API Permissions > Add API Token`       |              |
-| `DISCORD_WEBHOOK_URL`   | `Discord > Discord Group > Server Settings > Integrations > Webhooks` | Scope: Admin |
+| `AWS_ACCESS_KEY_ID`     | [Committed application: Infrastructure] AWS AIM User                  |              |
+| `AWS_SECRET_ACCESS_KEY` | [Committed application: Infrastructure] AWS AIM User                  |              |
+| `AWS_DEFAULT_REGION`    | [Committed application: Infrastructure] AWS                           |              |
+| `CIRCLECI_API_TOKEN`    | `CircleCI > Project Settings > API Permissions > Add API Token`       | Scope: Admin |
+| `DISCORD_WEBHOOK_URL`   | `Discord > Discord Group > Server Settings > Integrations > Webhooks` |              |
 
 2. Add AWS EC2 SHH key to the CircleCI project
    under `CircleCI > Project Settings > SSH Keys > Additional SSH Keys > Add SSH key`.
@@ -198,9 +205,13 @@ There are two ways how to set up a CircleCi pipeline:
    filepath `s3://committed-todo-app/envs/.env.ec2`.
 4. Set the variables to the appropriate values and save the file.
 
-[^circleCI]: https://circleci.com/
-[^pipeline]: https://circleci.com/docs/pipelines/
-[^workflow]: https://circleci.com/docs/workflows/
-[^default branch]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch
-[^pull request]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests
-[^Committed project: Infrastructure documentation]:
+[circleCI]: https://circleci.com/
+
+[pipeline]: https://circleci.com/docs/pipelines/
+
+[workflow]: https://circleci.com/docs/workflows/
+
+[default branch]: https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch
+
+[pull request]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests
+[Committed application: Infrastructure]:
