@@ -215,7 +215,7 @@ jobs:
           command: ssh ${EC2_USER}@${EC2_IP} "cat app.pid | xargs ps"
       - discord/notify:
           success_message: ":tada: Hurray, ${CIRCLE_BUILD_URL} pipeline has succeeded! Check the webpage here: **http://${EC2_HOST}** or login here: **\\`ssh ${EC2_USER}@${EC2_IP}\\`**"
-          failure_message: ":red_circle: We have to repair it :-( You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
+          failure_message: ":red_circle: We have to repair it :-( ${CIRCLE_BUILD_URL} pipeline has failed! You can login into the server using this: **ssh ${EC2_USER}@${EC2_IP}**"
 
 workflows:
   test_and_deploy_to_dev:
