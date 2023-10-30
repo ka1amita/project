@@ -7,10 +7,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import com.gfa.filters.CustomAuthenticationFilter;
 import com.gfa.filters.CustomAuthorizationFilter;
 import com.gfa.filters.RibbonFilter;
-import com.gfa.services.EnvironmentService;
-import com.gfa.services.TokenService;
 import com.gfa.utils.Endpoint;
-import org.springframework.context.MessageSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,32 +16,41 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 public class SecurityConfig {
-    private final MessageSource messageSource;
+    private final RibbonFilter ribbonFilter;
+    private final CustomAuthorizationFilter customAuthorizationFilter;
+    private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(MessageSource messageSource) {
-        this.messageSource = messageSource;
+    @Autowired
+    public SecurityConfig(RibbonFilter ribbonFilter,
+                          CustomAuthorizationFilter customAuthorizationFilter,
+                          UserDetailsService userDetailsService,
+                          CustomAuthenticationFilter customAuthenticationFilter) {
+        this.ribbonFilter = ribbonFilter;
+        this.customAuthorizationFilter = customAuthorizationFilter;
+        this.customAuthenticationFilter = customAuthenticationFilter;
+        this.userDetailsService = userDetailsService;
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                                                       UserDetailsService userDetailsService)
+    public AuthenticationManager authenticationManager(HttpSecurity http)
             throws Exception {
 
         AuthenticationManager authenticationManager =
                 http.getSharedObject(AuthenticationManagerBuilder.class)
                         .userDetailsService(userDetailsService)
-                        .passwordEncoder(bCryptPasswordEncoder)
+                        .passwordEncoder(passwordEncoder())
                         .and()
                         .build();
         http.authenticationManager(authenticationManager);
@@ -51,9 +58,8 @@ public class SecurityConfig {
     }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, TokenService tokenService,
-                                         RibbonProperties ribbonProperties,
-                                         EnvironmentService environmentService) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http
+                                        ) throws Exception {
     http.csrf()
         .disable();
     http.cors();
@@ -80,11 +86,9 @@ public class SecurityConfig {
     http.authorizeRequests()
         .anyRequest()
         .authenticated(); // the rest require some Role
-    http.addFilterBefore(new RibbonFilter(ribbonProperties, environmentService), UsernamePasswordAuthenticationFilter.class);
-    http.addFilterBefore(new CustomAuthorizationFilter(tokenService),
-                           UsernamePasswordAuthenticationFilter.class);
-    http.addFilter(
-        new CustomAuthenticationFilter(authenticationManager, tokenService, messageSource));
+      http.addFilterBefore(ribbonFilter, UsernamePasswordAuthenticationFilter.class);
+      http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+      http.addFilter(customAuthenticationFilter);
     return http.build();
   }
 }

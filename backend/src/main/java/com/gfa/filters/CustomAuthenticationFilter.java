@@ -14,7 +14,9 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -25,17 +27,20 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final MessageSource messageSource;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager,
-                                      TokenService tokenService, MessageSource messageSource) {
-        this.authenticationManager = authenticationManager;
+    @Autowired
+    public CustomAuthenticationFilter(TokenService tokenService,
+                                      @Lazy AuthenticationManager authenticationManager,
+                                      MessageSource messageSource) {
         this.tokenService = tokenService;
+        this.setAuthenticationManager(authenticationManager);
         this.messageSource = messageSource;
     }
 
@@ -69,7 +74,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginInput, password);
-        return authenticationManager.authenticate(authenticationToken);
+        return this.getAuthenticationManager()
+                   .authenticate(authenticationToken);
     }
 
     @Override

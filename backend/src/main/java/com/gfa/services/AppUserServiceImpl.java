@@ -20,8 +20,10 @@ import com.gfa.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.Locale;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.gfa.dtos.responsedtos.AppUserResponseDTO;
 import com.gfa.dtos.requestdtos.UpdateAppUserDTO;
 import org.springframework.data.domain.Page;
@@ -42,7 +43,7 @@ import javax.mail.MessagingException;
 @Service
 public class AppUserServiceImpl implements AppUserService {
     private final AppUserRepository appUserRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final ActivationCodeService activationCodeService;
     private final RoleService roleService;
@@ -56,14 +57,14 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Autowired
     public AppUserServiceImpl(AppUserRepository appUserRepository,
-                              BCryptPasswordEncoder bCryptPasswordEncoder,
+                              @Lazy PasswordEncoder passwordEncoder,
                               EmailService emailService,
                               ActivationCodeService activationCodeService,
                               RoleService roleService,
                               SoftDeleteConfig softDeleteConfig,
                               MessageSource messageSource) {
         this.appUserRepository = appUserRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.activationCodeService = activationCodeService;
         this.roleService = roleService;
@@ -132,7 +133,7 @@ public class AppUserServiceImpl implements AppUserService {
 
     @Override
     public AppUser encodePasswordAndSaveAppUser(AppUser appUser) {
-        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         return appUserRepository.save(appUser);
     }
 
@@ -141,7 +142,7 @@ public class AppUserServiceImpl implements AppUserService {
      */
     @Deprecated
     public AppUser saveUser(AppUser appUser) {
-        appUser.setPassword(bCryptPasswordEncoder.encode(appUser.getPassword()));
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         return appUserRepository.save(appUser);
     }
 
