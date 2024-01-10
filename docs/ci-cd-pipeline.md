@@ -173,13 +173,15 @@ There are two ways how to set up a CircleCi pipeline:
 
 1. Add environment variables listed in the following table to the CircleCI project:
 
-| Name                    | Reference                                                             | Requirements |
-|-------------------------|-----------------------------------------------------------------------|--------------|
-| `AWS_ACCESS_KEY_ID`     | [Committed application: Infrastructure] AWS AIM User                  |              |
-| `AWS_SECRET_ACCESS_KEY` | [Committed application: Infrastructure] AWS AIM User                  |              |
-| `AWS_DEFAULT_REGION`    | [Committed application: Infrastructure] AWS                           |              |
-| `CIRCLECI_API_TOKEN`    | `CircleCI > Project Settings > API Permissions > Add API Token`       | Scope: Admin |
-| `DISCORD_WEBHOOK_URL`   | `Discord > Discord Group > Server Settings > Integrations > Webhooks` |              |
+| Name                    | Reference                                                                    | Requirements |
+|-------------------------|------------------------------------------------------------------------------|--------------|
+| `AWS_ACCESS_KEY_ID`     | [Committed application: Infrastructure] AWS AIM User                         |              |
+| `AWS_SECRET_ACCESS_KEY` | [Committed application: Infrastructure] AWS AIM User                         |              |
+| `AWS_DEFAULT_REGION`    | [Committed application: Infrastructure] AWS                                  |              |
+| Repository Deploy Key   | `GitHub > <repository> > Settings > Security > Deploy keys > Add Deploy key` | default      |
+| AWS SSH Key             | `AWS > EC2 > Instances > ...`[^add-ssh-key]                                  |              |
+| `CIRCLECI_API_TOKEN`    | `CircleCI > Project Settings > API Permissions > Add API Token`              | Scope: Admin |
+| `DISCORD_WEBHOOK_URL`   | `Discord > Discord Group > Server Settings > Integrations > Webhooks`        |              |
 
 2. Add AWS EC2 SHH key to the CircleCI project
    under `CircleCI > Project Settings > SSH Keys > Additional SSH Keys > Add SSH key`.
@@ -187,6 +189,9 @@ There are two ways how to set up a CircleCi pipeline:
    under `CircleCI > Organization Settings > Security > Orb Security Settings > Yes`.
 4. Configure CircleCi project to build only pull requests
    under `CircleCI > Project Settings > Advanced > Only build pull requests > On`.
+
+[^optional]: optional; for additional features
+[^add-ssh-key]: copy it to `EC2:~/.ssh/. ssh/authorized_keys` of use `ssh-copy-id` command
 
 ### Defining Committed application environmental variables
 
