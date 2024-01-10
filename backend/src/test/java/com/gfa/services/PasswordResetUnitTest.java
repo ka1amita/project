@@ -9,7 +9,6 @@ import com.gfa.exceptions.user.InvalidPasswordFormatException;
 import com.gfa.exceptions.user.UserNotFoundException;
 import com.gfa.models.ActivationCode;
 import com.gfa.models.AppUser;
-import com.gfa.repositories.ActivationCodeRepository;
 import com.gfa.repositories.AppUserRepository;
 import java.util.HashSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-
 public class PasswordResetUnitTest {
     @Mock
     private AppUserRepository appUserRepository;
@@ -40,11 +38,8 @@ public class PasswordResetUnitTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Mock
     private MessageSource messageSource;
-
-
     @InjectMocks
     private AppUserServiceImpl appUserService;
-
 
     private AppUser appUser = new AppUser("Will Doe", "newPassword1234@", "example2@mail.com", new HashSet<>());
     private ActivationCode activationCode = new ActivationCode("ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd", appUser);
@@ -63,9 +58,9 @@ public class PasswordResetUnitTest {
         when(activationCodeServiceImp.saveActivationCode(any())).thenReturn(activationCode);
         PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
 
-        assert passwordResetResponseDTO != null;
-        assert passwordResetResponseDTO.getUniqueResetCode() != null;
-        assert passwordResetResponseDTO.getUniqueResetCode().length() == 48;
+        assertNotNull(passwordResetResponseDTO);
+        assertNotNull(passwordResetResponseDTO.getUniqueResetCode());
+        assertEquals(48, passwordResetResponseDTO.getUniqueResetCode().length());
     }
 
     @Test
@@ -77,9 +72,9 @@ public class PasswordResetUnitTest {
         when(activationCodeServiceImp.saveActivationCode(any())).thenReturn(activationCode);
         PasswordResetResponseDTO passwordResetResponseDTO = (PasswordResetResponseDTO) appUserService.reset(passwordResetRequestDTO).getBody();
 
-        assert passwordResetResponseDTO != null;
-        assert passwordResetResponseDTO.getUniqueResetCode() != null;
-        assert passwordResetResponseDTO.getUniqueResetCode().length() == 48;
+        assertNotNull(passwordResetResponseDTO);
+        assertNotNull(passwordResetResponseDTO.getUniqueResetCode());
+        assertEquals(48, passwordResetResponseDTO.getUniqueResetCode().length());
     }
 
     @Test
@@ -89,7 +84,7 @@ public class PasswordResetUnitTest {
         when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+        assertThrows(UserNotFoundException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
     }
@@ -101,11 +96,10 @@ public class PasswordResetUnitTest {
         when(appUserRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(appUserRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+        assertThrows(UserNotFoundException.class, () -> {
             appUserService.reset(passwordResetRequestDTO).getBody();
         });
     }
-
 
     @Test
     void Password_Reset_With_Code_Is_Successful_With_Code_And_Password() {
@@ -120,7 +114,8 @@ public class PasswordResetUnitTest {
     void Password_Reset_With_Code_Is_Failed_With_Code_And_No_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
         when(activationCodeServiceImp.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
-        InvalidPasswordFormatException exception = assertThrows(InvalidPasswordFormatException.class, () -> {
+
+        assertThrows(InvalidPasswordFormatException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "ctrauzhrdquulnctfhyrtiaztmrsnniwxggfoeurcbyctvhd").getBody();
         });
     }
@@ -129,7 +124,8 @@ public class PasswordResetUnitTest {
     void Password_Reset_With_Code_Is_Failed_With_No_Code_And_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("newPassword1234@");
         when(activationCodeServiceImp.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
-        InvalidActivationCodeException exception = assertThrows(InvalidActivationCodeException.class, () -> {
+
+        assertThrows(InvalidActivationCodeException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
         });
     }
@@ -138,7 +134,8 @@ public class PasswordResetUnitTest {
     void Password_Reset_With_Code_Is_Failed_With_No_Code_And_No_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("");
         when(activationCodeServiceImp.findByActivationCodeContains(anyString())).thenReturn(Optional.empty());
-        InvalidActivationCodeException exception = assertThrows(InvalidActivationCodeException.class, () -> {
+
+        assertThrows(InvalidActivationCodeException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
         });
     }
@@ -147,7 +144,8 @@ public class PasswordResetUnitTest {
     void Password_Reset_With_Code_Is_Failed_With_Code_And_Invalid_Password() {
         PasswordResetWithCodeRequestDTO passwordResetWithCodeRequestDTO = new PasswordResetWithCodeRequestDTO("1234");
         when(activationCodeServiceImp.findByActivationCodeContains(anyString())).thenReturn(Optional.of(activationCode));
-        InvalidPasswordFormatException exception = assertThrows(InvalidPasswordFormatException.class, () -> {
+
+        assertThrows(InvalidPasswordFormatException.class, () -> {
             appUserService.resetWithCode(passwordResetWithCodeRequestDTO, "").getBody();
         });
     }
