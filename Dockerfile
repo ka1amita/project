@@ -19,4 +19,4 @@ COPY backend/.env .env
 
 EXPOSE 8080
 
-CMD ["java", "-Dspring.config.import=optional:file:.env[.properties]", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
