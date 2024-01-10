@@ -26,8 +26,6 @@ The project was created by me and three other students during the last month of 
 
 The app was deployed to multiple environments on cloud but is currently offline.
 
-I don't intend to continue as I prefer to work on my own projects at the moment. Check them out!
-
 ## Description
 
 Todo app. Created with _Spring_ API and _React_ frontend.
