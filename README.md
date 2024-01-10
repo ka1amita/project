@@ -21,8 +21,7 @@
 
 ## Introduction
 
-This is a fork of a project created during a bootcamp I have successfully finished recently.
-The project was created by me and three other students during the last month of the bootcamp.
+This project was created by me and three other students during the last month of a bootcamp.
 
 The app was deployed to multiple environments on cloud but is currently offline.
 
