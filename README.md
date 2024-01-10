@@ -2,6 +2,8 @@
 
 <!-- TOC -->
 * [Committed project](#committed-project)
+  * [Introduction](#introduction)
+  * [Description](#description)
   * [Getting started](#getting-started)
     * [Prerequisites](#prerequisites)
     * [Set-up DB](#set-up-db)
@@ -13,7 +15,8 @@
         * [Start Backend](#start-backend-1)
         * [Start Frontend](#start-frontend-1)
     * [Try it](#try-it)
-    * [CircleCI Dashboard](#circleci-dashboard)
+  * [My Contributions](#my-contributions)
+  * [CircleCI Dashboard](#circleci-dashboard)
 <!-- TOC -->
 
 ## Introduction
