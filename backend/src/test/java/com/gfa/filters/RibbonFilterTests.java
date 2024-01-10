@@ -8,15 +8,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.gfa.config.RibbonProperties;
 import com.gfa.services.EnvironmentService;
+import com.gfa.services.TokenService;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,7 +27,6 @@ class RibbonFilterTests {
     @Autowired
     MockMvc mockMvc;
 
-    HttpServletResponse response = new MockHttpServletResponse();
     @MockBean
     HttpServletRequest request;
     @MockBean
@@ -36,8 +34,7 @@ class RibbonFilterTests {
     @MockBean
     EnvironmentService environmentService;
     @MockBean
-    CustomAuthorizationFilter customAuthorizationFilter;
-    // It has to be Mocked too! (But I don't understand why.)
+    TokenService tokenService;
 
     @Test
     public void responseContainsHeadersWithInformationAboutEnvironment() throws Exception {
