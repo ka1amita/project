@@ -59,8 +59,8 @@ Todo app. Created with _Spring_ API and _React_ frontend.
 
 1. Open project (`File > Open..`) form the `backend` directory
 2. `cp .env.sample .env`
-   > [!TIP]
-   > You can now override the DB credentials inside `.env`
+> [!TIP]
+> You can now override the DB credentials inside `.env`
 3. Using the _IntelliJ_'s _Run Configurations_ run the default configuration (or run
    the `com/gfa/ProjectApplication.java` file)
 
@@ -69,9 +69,9 @@ Todo app. Created with _Spring_ API and _React_ frontend.
 1. Open project (`File > Open..`) form the `frontend` directory
 2. `cp .env.sample .env`
 3. Using the _IntelliJ_'s _Run Configurations_ run the `npm start` configuration
-   > [!NOTE]
-   > You might need to create it first. Don't forgot to specify the `package.json` filepath
-   > (you can find it in the `frontend` directory)
+> [!NOTE]
+> You might need to create it first. Don't forgot to specify the `package.json` filepath
+> (you can find it in the `frontend` directory)
 4. [Try it](#try-it)
 
 #### Using shell
@@ -81,8 +81,8 @@ Todo app. Created with _Spring_ API and _React_ frontend.
 Starting from the _Git_ repository root:
 1. `cd backend`
 2. `cp .env.sample .env`
-   > [!TIP]
-   > You can now override the DB credentials inside `.env`
+> [!TIP]
+> You can now override the DB credentials inside `.env`
 3. `./gradlew bootRun`
 
 ##### Start Frontend
@@ -95,8 +95,8 @@ Starting from the _Git_ repository root:
    `export REACT_APP_API_URL="http://localhost:8080/"`
 4. `npm run build`
 5. `cp -r build/ /opt/homebrew/var/www/`
-   > [!WARNING]  
-   > Will override (default) files!
+> [!WARNING]  
+> Will override (default) files!
 6. `cp -r build/ /opt/homebrew/var/www/`
 7. `nginx -c $(pwd)/nginx/config`
 
@@ -104,8 +104,8 @@ Starting from the _Git_ repository root:
 
 1. [check it here](http://127.0.0.1:80)
 2. [register](http://localhost/auth/register) and [login](http://localhost/auth/login)
-   > [!NOTE]  
-   > It's mostly mock template, but you can create some [todos](http://localhost/todos)
+> [!NOTE]  
+> It's mostly mock template, but you can create some [todos](http://localhost/todos)
 
 ## My Contributions
 
