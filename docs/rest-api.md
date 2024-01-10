@@ -5,6 +5,7 @@
   * [About this document](#about-this-document)
     * [Audience](#audience)
     * [Scope](#scope)
+    * [Prerequisites](#prerequisites)
   * [Authentication and Authorization](#authentication-and-authorization)
     * [JWT Implementation](#jwt-implementation)
     * [JWT Configuration](#jwt-configuration)
@@ -43,7 +44,6 @@ This document requires familiarity with the following topics:
 + Spring Boot Security
 + REST API
 + JWT
-
 
 ## Authentication and Authorization
 
