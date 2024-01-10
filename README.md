@@ -16,6 +16,19 @@
     * [CircleCI Dashboard](#circleci-dashboard)
 <!-- TOC -->
 
+## Introduction
+
+This is a fork of a project created during a bootcamp I have successfully finished recently.
+The project was created by me and three other students during the last month of the bootcamp.
+
+The app was deployed to multiple environments on cloud but is currently offline.
+
+I don't intend to continue as I prefer to work on my own projects at the moment. Check them out!
+
+## Description
+
+Todo app. Created with _Spring_ API and _React_ frontend.
+
 ## Getting started
 
 ### Prerequisites
@@ -93,7 +106,18 @@ Starting from the _Git_ repository root:
    > [!NOTE]  
    > It's mostly mock template, but you can create some [todos](http://localhost/todos)
 
-### CircleCI Dashboard
+## My Contributions
+
++ [x] Spring Security with JWT
++ [x] DB migrations with Flyway
++ [x] i18n and l10n
++ [x] testing with Junit and Postman
++ [x] CI/CD pipeline with CircleCI
++ [x] deployment to AWS as jar or Docker image
++ [X] [documentation](docs/)
+
+
+## CircleCI Dashboard
 
 [![CircleCI](https://circleci.com/gh/green-fox-academy/simensis-osic-devops-zwei.svg?style=svg&circle-token=1fb56c98fa1dccdd4290292136985d0732e51e59)](https://app.circleci.com/pipelines/github/green-fox-academy/simensis-osic-devops-zwei?branch=develop)
 
