@@ -1,27 +1,68 @@
 # Committed project
 
-## Try it!
+<!-- TOC -->
+* [Committed project](#committed-project)
+  * [Getting started](#getting-started)
+    * [Prerequisites](#prerequisites)
+    * [Set-up DB](#set-up-db)
+    * [Run it](#run-it)
+      * [Using IntelliJ](#using-intellij)
+        * [Start Backend](#start-backend)
+        * [Start Frontend](#start-frontend)
+      * [Using shell](#using-shell)
+        * [Start Backend](#start-backend-1)
+        * [Start Frontend](#start-frontend-1)
+    * [Try it](#try-it)
+    * [CircleCI Dashboard](#circleci-dashboard)
+<!-- TOC -->
+
+## Getting started
 
 ### Prerequisites
 
 + _MySQL_ DB
-+ _npm_
-+ _NGINX_
++ _IntelliJ_ IDEA or _npm_ and _NGINX_
 
 ### Set-up DB
 
-+ set up MySQL DB like this
++ set up MySQL DB according to the following table:
 
-```shell
-DB_URL=jdbc:mysql://localhost:3306/committed_app?serverTimezone=UTC
-DB_USERNAME=root
-DB_PASSWORD=password
-```
+| property      | value            |
+|---------------|------------------|
+| address       | `localhost:3306` |
+| database name | `committed_app`  |
+| user          | `root`           |
+| password      | `password`       |
 
 > [!TIP]  
 > You can use different values and override them later in the set-up
 
-### Start Backend
+### Run it
+
+#### Using IntelliJ
+
+##### Start Backend
+
+1. Open project (`File > Open..`) form the `backend` directory
+2. `cp .env.sample .env`
+   > [!TIP]
+   > You can now override the DB credentials inside `.env`
+3. Using the _IntelliJ_'s _Run Configurations_ run the default configuration (or run
+   the `com/gfa/ProjectApplication.java` file)
+
+##### Start Frontend
+
+1. Open project (`File > Open..`) form the `frontend` directory
+2. `cp .env.sample .env`
+3. Using the _IntelliJ_'s _Run Configurations_ run the `npm start` configuration
+   > [!NOTE]
+   > You might need to create it first. Don't forgot to specify the `package.json` filepath
+   > (you can find it in the `frontend` directory)
+4. [Try it](#try-it)
+
+#### Using shell
+
+##### Start Backend
 
 Starting from the _Git_ repository root:
 1. `cd backend`
@@ -30,9 +71,11 @@ Starting from the _Git_ repository root:
    > You can now override the DB credentials inside `.env`
 3. `./gradlew bootRun`
 
-### Start Frontend
+##### Start Frontend
 
-1. `cd ../frontend` directory (parent of this `README.md` file) if not already
+Starting from the _Git_ repository root:
+
+1. `cd frontend` directory (parent of this `README.md` file) if not already
 2. `npm install`
 3. set environmental variable corresponding to the backend address
    `export REACT_APP_API_URL="http://localhost:8080/"`
@@ -42,10 +85,13 @@ Starting from the _Git_ repository root:
    > Will override (default) files!
 6. `cp -r build/ /opt/homebrew/var/www/`
 7. `nginx -c $(pwd)/nginx/config`
-8. [check it here](http://127.0.0.1:80)
-9. [register](http://127.0.0.1/auth/register) and [login](http://127.0.0.1/auth/login)
+
+### Try it
+
+1. [check it here](http://127.0.0.1:80)
+2. [register](http://localhost/auth/register) and [login](http://localhost/auth/login)
    > [!NOTE]  
-   > It's mostly mock template, but you can create some [todos](http://127.0.0.1:80/todos)
+   > It's mostly mock template, but you can create some [todos](http://localhost/todos)
 
 ### CircleCI Dashboard
 
