@@ -3,6 +3,8 @@
 
 ### Secrets
 *.pem
+.env*
+!.env.sample
 
 ### General
 *.zip
@@ -15,7 +17,7 @@ logs
 .DS_Store
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 .env
 *.iws
 *.iml
